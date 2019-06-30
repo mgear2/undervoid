@@ -25,11 +25,12 @@ class Game:
         self.game_folder = path.dirname(__file__)
         self.data_folder = path.join(self.game_folder, 'data')
         self.img_folder = path.join(self.data_folder, 'img')
+        self.maps_folder = path.join(self.data_folder, 'maps')
         self.undervoid_icon = pg.image.load(path.join(self.img_folder, 'voidbullet.png')).convert_alpha()
         self.undervoid_icon = pg.transform.scale(self.undervoid_icon, (64, 64))
         pg.display.set_icon(self.undervoid_icon)
         self.map_data = []
-        with open(path.join(self.game_folder, 'map1.txt'), 'rt') as f:
+        with open(path.join(self.maps_folder, 'map1.txt'), 'rt') as f:
             for line in f:
                 self.map_data.append(line)
 
