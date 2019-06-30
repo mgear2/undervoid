@@ -1,5 +1,6 @@
 # Undervoid  
 Copyright © 2019 Matthew Geary  
+All artwork by Matthew Geary unless otherwise stated. 
   
 ## Usage  
   

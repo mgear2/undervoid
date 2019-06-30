@@ -11,6 +11,8 @@ import sys
 from os import path
 from settings import *
 from sprites import *
+from tilemap import Map
+from tilemap import Camera
 
 class Game:
     def __init__(self):
@@ -26,22 +28,31 @@ class Game:
         self.data_folder = path.join(self.game_folder, 'data')
         self.img_folder = path.join(self.data_folder, 'img')
         self.maps_folder = path.join(self.data_folder, 'maps')
+        self.music_folder = path.join(self.data_folder, 'music')
         self.undervoid_icon = pg.image.load(path.join(self.img_folder, 'voidbullet.png')).convert_alpha()
         self.undervoid_icon = pg.transform.scale(self.undervoid_icon, (64, 64))
         pg.display.set_icon(self.undervoid_icon)
-        self.map_data = []
-        with open(path.join(self.maps_folder, 'map1.txt'), 'rt') as f:
-            for line in f:
-                self.map_data.append(line)
+        # https://stackoverflow.com/questions/43845800/how-do-i-add-background-music-to-my-python-game#43845914
+        pg.mixer.init()
+        pg.mixer.music.load(path.join(self.music_folder, 'Leaving Home.mp3'))
+        pg.mixer.music.play(-1, 0.0)
+        self.map = Map(path.join(self.maps_folder, 'map1.txt'))
 
     def new(self):
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
-        self.player = Player(self, 10, 10)
-        for row, tiles in enumerate(self.map_data):
+        self.player_sprite = pg.sprite.Group()
+        for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
+                #if tile == '.' or tile == 'P':
+                #    Floor(self, col, row)
                 if tile == '1':
                     Wall(self, col, row)
+                if tile == 'P':
+                    #Floor(self, col, row)
+                    self.player = Player(self, col, row)
+        self.camera = Camera(self.map.width, self.map.height)
+
     def run(self):
         self.playing = True
         while self.playing:
@@ -56,6 +67,7 @@ class Game:
 
     def update(self):
         self.all_sprites.update()
+        self.camera.update(self.player)
 
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
@@ -66,7 +78,8 @@ class Game:
     def draw(self):
         self.screen.fill(BGCOLOR)
         self.draw_grid()
-        self.all_sprites.draw(self.screen)
+        for sprite in self.all_sprites:
+            self.screen.blit(sprite.image, self.camera.apply(sprite))
         pg.display.flip()
 
     def events(self):
@@ -76,14 +89,6 @@ class Game:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     self.quit()
-                if event.key == pg.K_LEFT:
-                    self.player.move(dx=-1)
-                if event.key == pg.K_RIGHT:
-                    self.player.move(dx=1)
-                if event.key == pg.K_UP:
-                    self.player.move(dy=-1)
-                if event.key == pg.K_DOWN:
-                    self.player.move(dy=1)
 
     def show_start_screen(self):
         pass
