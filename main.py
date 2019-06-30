@@ -1,4 +1,9 @@
-# Example code, drawn from
+# Copyright © 2019 Matthew Geary
+# [This program is licensed under the "MIT License"]
+# Please see the file LICENSE in the source
+# distribution of this software for license terms.
+
+# Example code drawn from
 # https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap
 
 import pygame as pg
@@ -17,17 +22,25 @@ class Game:
         self.load_data()
 
     def load_data(self):
-        game_folder = path.dirname(__file__)
-        map_data = []
-        with open(path.join(game_folder, 'map1.txt'), 'rt') as f:
+        self.game_folder = path.dirname(__file__)
+        self.data_folder = path.join(self.game_folder, 'data')
+        self.img_folder = path.join(self.data_folder, 'img')
+        self.undervoid_icon = pg.image.load(path.join(self.img_folder, 'voidbullet.png')).convert_alpha()
+        self.undervoid_icon = pg.transform.scale(self.undervoid_icon, (64, 64))
+        pg.display.set_icon(self.undervoid_icon)
+        self.map_data = []
+        with open(path.join(self.game_folder, 'map1.txt'), 'rt') as f:
             for line in f:
-                map_data.append(line)
+                self.map_data.append(line)
 
     def new(self):
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.player = Player(self, 10, 10)
-
+        for row, tiles in enumerate(self.map_data):
+            for col, tile in enumerate(tiles):
+                if tile == '1':
+                    Wall(self, col, row)
     def run(self):
         self.playing = True
         while self.playing:

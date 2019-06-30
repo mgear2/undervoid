@@ -1,3 +1,8 @@
+# Copyright © 2019 Matthew Geary
+# [This program is licensed under the "MIT License"]
+# Please see the file LICENSE in the source
+# distribution of this software for license terms.
+
 # Example code, drawn from
 # https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap
 
@@ -11,12 +16,12 @@ RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
 
 # game settings
-WIDTH = 1920   # 16 * 64 or 32 * 32 or 64 * 16
-HEIGHT = 1080  # 16 * 48 or 32 * 24 or 64 * 12
+WIDTH = 1080   # 16 * 64 or 32 * 32 or 64 * 16
+HEIGHT = 720  # 16 * 48 or 32 * 24 or 64 * 12
 FPS = 60
 TITLE = "Undervoid"
 BGCOLOR = DARKGREY
 
-TILESIZE = 32
+TILESIZE = 96
 GRIDWIDTH = WIDTH / TILESIZE
 GRIDHEIGHT = HEIGHT / TILESIZE

@@ -1,16 +1,24 @@
+# Copyright © 2019 Matthew Geary
+# [This program is licensed under the "MIT License"]
+# Please see the file LICENSE in the source
+# distribution of this software for license terms.
+
 # Example code, drawn from
 # https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap
 
 import pygame as pg
 from settings import *
+from os import path
 
 class Player(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(YELLOW)
+        #self.image = pg.Surface((TILESIZE, TILESIZE))
+        #self.image.load(path.join(self.game.img_folder, 'voidwalker.png'))
+        self.image = pg.image.load(path.join(self.game.img_folder, 'voidwalker.png'))
+        self.image = pg.transform.scale(self.image, (TILESIZE, TILESIZE))
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
