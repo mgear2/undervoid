@@ -31,6 +31,8 @@ class Game:
         self.music_folder = path.join(self.data_folder, 'music')
         self.undervoid_icon = pg.image.load(path.join(self.img_folder, 'voidbullet.png')).convert_alpha()
         self.undervoid_icon = pg.transform.scale(self.undervoid_icon, (64, 64))
+        self.player_img = pg.image.load(path.join(self.img_folder, PLAYER_IMG)).convert_alpha()
+        #self.player_img = pg.transform.scale(self.player_img, (TILESIZE, TILESIZE))
         pg.display.set_icon(self.undervoid_icon)
         # https://stackoverflow.com/questions/43845800/how-do-i-add-background-music-to-my-python-game#43845914
         pg.mixer.init()

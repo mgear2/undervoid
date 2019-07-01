@@ -6,6 +6,8 @@
 # Example code, drawn from
 # https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap
 
+import pygame as pg
+
 # define some colors (R, G, B)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -28,3 +30,6 @@ GRIDHEIGHT = HEIGHT / TILESIZE
 
 # player settings
 PLAYER_SPEED = 500
+PLAYER_ROT_SPEED = 250
+PLAYER_IMG = 'voidwalker.png'
+PLAYER_HIT_RECT = pg.Rect(0, 0, 35, 35)
