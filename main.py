@@ -17,18 +17,20 @@ from tilemap import Camera
 class Game:
     def __init__(self):
         pg.init()
-        self.screen = pg.display.set_mode((WIDTH, HEIGHT))
-        pg.display.set_caption(TITLE)
+        self.screen = pg.display.set_mode((GEN_SETTINGS['WIDTH'], GEN_SETTINGS['HEIGHT']))
+        pg.display.set_caption(GEN_SETTINGS['TITLE'])
         self.clock = pg.time.Clock()
         pg.key.set_repeat(100, 100)
         self.load_data()
 
     def load_data(self):
         self.game_folder = path.dirname(__file__)
+
         self.data_folder = path.join(self.game_folder, 'data')
         self.img_folder = path.join(self.data_folder, 'img')
         self.maps_folder = path.join(self.data_folder, 'maps')
         self.music_folder = path.join(self.data_folder, 'music')
+
         self.undervoid_icon = pg.image.load(path.join(self.img_folder, IMAGES['ICON_IMG'])).convert_alpha()
         self.undervoid_icon = pg.transform.scale(self.undervoid_icon, (64, 64))
         self.player_img = pg.image.load(path.join(self.img_folder, IMAGES['PLAYER_IMG'])).convert_alpha()
@@ -65,7 +67,7 @@ class Game:
     def run(self):
         self.playing = True
         while self.playing:
-            self.dt = self.clock.tick(FPS) / 1000
+            self.dt = self.clock.tick(GEN_SETTINGS['FPS']) / 1000
             self.events()
             self.update()
             self.draw()
@@ -79,14 +81,14 @@ class Game:
         self.camera.update(self.player)
 
     def draw_grid(self):
-        for x in range(0, WIDTH, TILESIZE):
-            pg.draw.line(self.screen, LIGHTGREY, (x, 0), (x, HEIGHT))
-        for y in range(0, HEIGHT, TILESIZE):
-            pg.draw.line(self.screen, LIGHTGREY, (0, y), (WIDTH, y))
+        for x in range(0, GEN_SETTINGS['WIDTH'], GEN_SETTINGS['TILESIZE']):
+            pg.draw.line(self.screen, COLORS['LIGHTGREY'], (x, 0), (x, GEN_SETTINGS['HEIGHT']))
+        for y in range(0, GEN_SETTINGS['HEIGHT'], GEN_SETTINGS['TILESIZE']):
+            pg.draw.line(self.screen, COLORS['LIGHTGREY'], (0, y), (GEN_SETTINGS['WIDTH'], y))
 
     def draw(self):
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
-        self.screen.fill(BGCOLOR)
+        self.screen.fill(GEN_SETTINGS['BGCOLOR'])
         #self.draw_grid()
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))

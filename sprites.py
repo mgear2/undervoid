@@ -33,10 +33,10 @@ class Player(pg.sprite.Sprite):
         self.game = game
         self.image = game.player_img
         self.rect = self.image.get_rect()
-        self.hit_rect = PLAYER_HIT_RECT
+        self.hit_rect = PLAYER_SETTINGS['HIT_RECT']
         self.hit_rect.center = self.rect.center
         self.vel = vec(0, 0)
-        self.pos = vec(x, y) * TILESIZE
+        self.pos = vec(x, y) * GEN_SETTINGS['TILESIZE']
         self.rot = 0
 
     def get_keys(self):
@@ -45,16 +45,16 @@ class Player(pg.sprite.Sprite):
         keys = pg.key.get_pressed()
         if keys[pg.K_LEFT] or keys[pg.K_a]:
             #self.vel.x = -PLAYER_SPEED
-            self.rot_speed = PLAYER_ROT_SPEED
+            self.rot_speed = PLAYER_SETTINGS['ROT_SPEED']
         if keys[pg.K_RIGHT] or keys[pg.K_d]:
             #self.vel.x = PLAYER_SPEED
-            self.rot_speed = -PLAYER_ROT_SPEED
+            self.rot_speed = -PLAYER_SETTINGS['ROT_SPEED']
         if keys[pg.K_UP] or keys[pg.K_w]:
             #self.vel.y = -PLAYER_SPEED
-            self.vel = vec(PLAYER_SPEED, 0).rotate(-self.rot)
+            self.vel = vec(PLAYER_SETTINGS['SPEED'], 0).rotate(-self.rot)
         if keys[pg.K_DOWN] or keys[pg.K_s]:
             #self.vel.y = PLAYER_SPEED
-            self.vel = vec(-PLAYER_SPEED, 0).rotate(-self.rot)
+            self.vel = vec(-PLAYER_SETTINGS['SPEED'], 0).rotate(-self.rot)
         #if self.vel.x != 0 and self.vel.y != 0:
             # correct diagonal movement to be same speed
             # multiply by 1/sqrt(2)
@@ -100,7 +100,7 @@ class Mob(pg.sprite.Sprite):
         self.game = game
         self.image = game.thrall_img
         self.rect = self.image.get_rect()
-        self.pos = vec(x, y) * TILESIZE
+        self.pos = vec(x, y) * GEN_SETTINGS['TILESIZE']
         self.rect.center = self.pos
         self.rot = 0
 
@@ -116,12 +116,12 @@ class Wall(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.image.load(path.join(self.game.img_folder, IMAGES['WALL_IMG']))
-        self.image = pg.transform.scale(self.image, (TILESIZE, TILESIZE))
+        self.image = pg.transform.scale(self.image, (GEN_SETTINGS['TILESIZE'], GEN_SETTINGS['TILESIZE']))
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
-        self.rect.x = x * TILESIZE
-        self.rect.y = y * TILESIZE
+        self.rect.x = x * GEN_SETTINGS['TILESIZE']
+        self.rect.y = y * GEN_SETTINGS['TILESIZE']
 
 class Floor(pg.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -129,9 +129,9 @@ class Floor(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.image.load(path.join(self.game.img_folder, IMAGES['FLOOR_IMG']))
-        self.image = pg.transform.scale(self.image, (TILESIZE, TILESIZE))
+        self.image = pg.transform.scale(self.image, (GEN_SETTINGS['TILESIZE'], GEN_SETTINGS['TILESIZE']))
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
-        self.rect.x = x * TILESIZE
-        self.rect.y = y * TILESIZE
+        self.rect.x = x * GEN_SETTINGS['TILESIZE']
+        self.rect.y = y * GEN_SETTINGS['TILESIZE']

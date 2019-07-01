@@ -9,43 +9,44 @@
 import pygame as pg
 
 # define some colors (R, G, B)
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-DARKGREY = (40, 40, 40)
-LIGHTGREY = (100, 100, 100)
-GREEN = (0, 255, 0)
-RED = (255, 0, 0)
-YELLOW = (255, 255, 0)
-DARKBLUE = (0, 0, 50)
+
+COLORS = {
+    'WHITE': (255, 255, 255),
+    'BLACK': (0, 0, 0),
+    'DARKGREY': (40, 40, 40),
+    'LIGHTGREY': (100, 100, 100),
+    'GREEN': (0, 255, 0),
+    'RED': (255, 0, 0),
+    'YELLOW': (255, 255, 0),
+    'DARKBLUE':  (0, 0, 50)
+}
 
 # game settings
-WIDTH = 1024   # 16 * 64 or 32 * 32 or 64 * 16
-HEIGHT = 768  # 16 * 48 or 32 * 24 or 64 * 12
-FPS = 120
-TITLE = "Undervoid"
-BGCOLOR = DARKBLUE
 
-TILESIZE = 64
-GRIDWIDTH = WIDTH / TILESIZE
-GRIDHEIGHT = HEIGHT / TILESIZE
+GEN_SETTINGS = {
+    'WIDTH': 1024,   # 16 * 64 or 32 * 32 or 64 * 16
+    'HEIGHT': 768,  # 16 * 48 or 32 * 24 or 64 * 12
+    'FPS': 120,
+    'TITLE': 'Undervoid',
+    'BGCOLOR': DARKBLUE,
+    'TILESIZE': 64,
+}
 
-CURSOR_IMG = 'cursor.gif'
-WALL_IMG = 'voidwall.png'
-FLOOR_IMG = 'dungeonfloor.png'
-ICON_IMG = 'voidbullet.png'
-
-THEME_1 = 'Leaving Home.mp3'
+GRID_SETTINGS = {
+    'GRIDWIDTH': GEN_SETTINGS['WIDTH'] / GEN_SETTINGS['TILESIZE'],
+    'GRIDHEIGHT': GEN_SETTINGS['HEIGHT'] / GEN_SETTINGS['TILESIZE'],
+}
 
 # player settings
-PLAYER_SPEED = 500
-PLAYER_ROT_SPEED = 250
-PLAYER_IMG = 'voidwalker.png'
-PLAYER_HIT_RECT = pg.Rect(0, 0, 35, 35)
+PLAYER_SETTINGS = {
+    'SPEED': 500,
+    'ROT_SPEED': 250,
+    'HIT_RECT': pg.Rect(0, 0, 35, 35)
+}
 
 # mob settings
-THRALL_IMG = 'thrall.png'
 
-# dictionaries
+# media
 IMAGES = {
     'TITLE_IMG': 'undervoidtitle.png',
     'PLAYER_IMG': 'voidwalker.png',
@@ -60,3 +61,5 @@ MUSIC = {
     'leavinghome': 'Leaving Home.mp3',
     'voidwalk': 'voidwalk.mp3'
 }
+
+SOUNDS = {}
