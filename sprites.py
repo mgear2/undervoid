@@ -115,7 +115,7 @@ class Wall(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.walls
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.image.load(path.join(self.game.img_folder, WALL_IMG))
+        self.image = pg.image.load(path.join(self.game.img_folder, IMAGES['WALL_IMG']))
         self.image = pg.transform.scale(self.image, (TILESIZE, TILESIZE))
         self.rect = self.image.get_rect()
         self.x = x
@@ -128,7 +128,7 @@ class Floor(pg.sprite.Sprite):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.image.load(path.join(self.game.img_folder, FLOOR_IMG))
+        self.image = pg.image.load(path.join(self.game.img_folder, IMAGES['FLOOR_IMG']))
         self.image = pg.transform.scale(self.image, (TILESIZE, TILESIZE))
         self.rect = self.image.get_rect()
         self.x = x

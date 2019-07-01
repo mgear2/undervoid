@@ -44,3 +44,19 @@ PLAYER_HIT_RECT = pg.Rect(0, 0, 35, 35)
 
 # mob settings
 THRALL_IMG = 'thrall.png'
+
+# dictionaries
+IMAGES = {
+    'TITLE_IMG': 'undervoidtitle.png',
+    'PLAYER_IMG': 'voidwalker.png',
+    'CURSOR_IMG': 'cursor.gif',
+    'WALL_IMG': 'voidwall.png',
+    'FLOOR_IMG': 'dungeonfloor.png',
+    'ICON_IMG': 'voidbullet.png',
+    'THRALL_IMG': 'thrall.png'
+}
+
+MUSIC = {
+    'leavinghome': 'Leaving Home.mp3',
+    'voidwalk': 'voidwalk.mp3'
+}
