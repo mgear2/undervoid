@@ -8,11 +8,12 @@ Copyright © 2019 Matthew Geary
 `python main.py`  
   
 ## Credits  
-Undervoid Title generated at https://fontmeme.com/pixel-fonts/  
+Undervoid Title Art generated at https://fontmeme.com/pixel-fonts/  
   
 The music for Undervoid is licensed under Creative Commons: By Attribution 4.0 License  
-Found in `\data\music\MUSIC_LICENSE` or at http://creativecommons.org/licenses/by/4.0/  
+See `\data\music\MUSIC_LICENSE` or http://creativecommons.org/licenses/by/4.0/  
   
+Songs:  
 "Leaving Home" Kevin MacLeod (incompetech.com)  
 "Half Mystery" Kevin MacLeod (incompetech.com)  
   

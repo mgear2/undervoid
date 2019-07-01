@@ -29,20 +29,24 @@ class Game:
         self.img_folder = path.join(self.data_folder, 'img')
         self.maps_folder = path.join(self.data_folder, 'maps')
         self.music_folder = path.join(self.data_folder, 'music')
-        self.undervoid_icon = pg.image.load(path.join(self.img_folder, 'voidbullet.png')).convert_alpha()
+        self.undervoid_icon = pg.image.load(path.join(self.img_folder, ICON_IMG)).convert_alpha()
         self.undervoid_icon = pg.transform.scale(self.undervoid_icon, (64, 64))
         self.player_img = pg.image.load(path.join(self.img_folder, PLAYER_IMG)).convert_alpha()
+        self.thrall_img = pg.image.load(path.join(self.img_folder, THRALL_IMG)).convert_alpha()
         #self.player_img = pg.transform.scale(self.player_img, (TILESIZE, TILESIZE))
-        pg.display.set_icon(self.undervoid_icon)
+        #self.cursor_img = pg.image.load(path.join(self.img_folder, CURSOR_IMG)).convert_alpha()
+        #pg.mouse.set_visible(False)
         # https://stackoverflow.com/questions/43845800/how-do-i-add-background-music-to-my-python-game#43845914
+        pg.display.set_icon(self.undervoid_icon)
         pg.mixer.init()
-        pg.mixer.music.load(path.join(self.music_folder, 'Leaving Home.mp3'))
+        pg.mixer.music.load(path.join(self.music_folder, THEME_1))
         pg.mixer.music.play(-1, 0.0)
         self.map = Map(path.join(self.maps_folder, 'map1.txt'))
 
     def new(self):
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
+        self.mobs = pg.sprite.Group()
         self.player_sprite = pg.sprite.Group()
         for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
@@ -53,6 +57,9 @@ class Game:
                 if tile == 'P':
                     #Floor(self, col, row)
                     self.player = Player(self, col, row)
+                if tile == 'M':
+                    Mob(self, col, row)
+        #self.cursor = Cursor(self)
         self.camera = Camera(self.map.width, self.map.height)
 
     def run(self):
@@ -80,7 +87,7 @@ class Game:
     def draw(self):
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
         self.screen.fill(BGCOLOR)
-        self.draw_grid()
+        #self.draw_grid()
         for sprite in self.all_sprites:
             self.screen.blit(sprite.image, self.camera.apply(sprite))
         pg.display.flip()

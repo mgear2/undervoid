@@ -12,6 +12,20 @@ from os import path
 from tilemap import collide_hit_rect
 vec = pg.math.Vector2
 
+class Cursor(pg.sprite.Sprite):
+    def __init__(self, game):
+        self.groups = game.all_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = game.cursor_img
+        self.rect = self.image.get_rect()
+        self.rect = self.image.get_rect()
+        self.pos = pg.mouse.get_pos()
+
+    def update(self):
+        self.rect.center = pg.mouse.get_pos()
+        self.pos = pg.mouse.get_pos()
+
 class Player(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.player_sprite
@@ -79,12 +93,29 @@ class Player(pg.sprite.Sprite):
         self.collide_with_walls('y')
         self.rect.center = self.hit_rect.center
 
+class Mob(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.mobs
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = game.thrall_img
+        self.rect = self.image.get_rect()
+        self.pos = vec(x, y) * TILESIZE
+        self.rect.center = self.pos
+        self.rot = 0
+
+    def update(self):
+        self.rot = (self.game.player.pos - self.pos).angle_to(vec(1,0))
+        self.image = pg.transform.rotate(self.game.thrall_img, self.rot)
+        self.rect = self.image.get_rect()
+        self.rect.center = self.pos
+
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.walls
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.image.load(path.join(self.game.img_folder, 'voidwall.png'))
+        self.image = pg.image.load(path.join(self.game.img_folder, WALL_IMG))
         self.image = pg.transform.scale(self.image, (TILESIZE, TILESIZE))
         self.rect = self.image.get_rect()
         self.x = x
@@ -97,7 +128,7 @@ class Floor(pg.sprite.Sprite):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.image.load(path.join(self.game.img_folder, 'dungeonfloor.png'))
+        self.image = pg.image.load(path.join(self.game.img_folder, FLOOR_IMG))
         self.image = pg.transform.scale(self.image, (TILESIZE, TILESIZE))
         self.rect = self.image.get_rect()
         self.x = x
