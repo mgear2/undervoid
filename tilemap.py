@@ -21,8 +21,8 @@ class Map:
 
         self.tilewidth = len(self.data[0])
         self.tileheight = len(self.data)
-        self.width = self.tilewidth * TILESIZE
-        self.height = self.tileheight * TILESIZE
+        self.width = self.tilewidth * GEN_SETTINGS['TILESIZE']
+        self.height = self.tileheight * GEN_SETTINGS['TILESIZE']
 
 class Camera:
     def __init__(self, width, height):
@@ -34,6 +34,6 @@ class Camera:
         return entity.rect.move(self.camera.topleft)
 
     def update(self, target):
-        x = -target.rect.centerx + int(WIDTH / 2)
-        y = -target.rect.centery + int(HEIGHT / 2)
+        x = -target.rect.centerx + int(GEN_SETTINGS['WIDTH'] / 2)
+        y = -target.rect.centery + int(GEN_SETTINGS['HEIGHT'] / 2)
         self.camera = pg.Rect(x, y, self.width, self.height)

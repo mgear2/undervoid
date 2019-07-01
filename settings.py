@@ -28,7 +28,7 @@ GEN_SETTINGS = {
     'HEIGHT': 768,  # 16 * 48 or 32 * 24 or 64 * 12
     'FPS': 120,
     'TITLE': 'Undervoid',
-    'BGCOLOR': DARKBLUE,
+    'BGCOLOR': COLORS['DARKBLUE'],
     'TILESIZE': 64,
 }
 
