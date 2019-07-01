@@ -1,15 +1,14 @@
-![alt text](https://github.com/mgear2/undervoid/tree/master/data/img/undervoidlogo.png)
-
+![undervoidtitle](https://user-images.githubusercontent.com/33133522/60404294-5c56ce00-9b5c-11e9-8a4c-71c485d154aa.png)
+  
 # Undervoid  
 Copyright © 2019 Matthew Geary  
-All artwork by Matthew Geary unless otherwise stated. 
   
 ## Usage  
   
 `python main.py`  
   
 ## Credits  
-Undervoid Title Logo generated at https://fontmeme.com/pixel-fonts/  
+Undervoid Title generated at https://fontmeme.com/pixel-fonts/  
   
 The music for Undervoid is licensed under Creative Commons: By Attribution 4.0 License  
 Found in `\data\music\MUSIC_LICENSE` or at http://creativecommons.org/licenses/by/4.0/  
