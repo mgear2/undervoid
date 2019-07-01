@@ -59,7 +59,7 @@ IMAGES = {
 
 MUSIC = {
     'leavinghome': 'Leaving Home.mp3',
-    'voidwalk': 'voidwalk.mp3'
+    'voidwalk': 'voidwalk.wav'
 }
 
 SOUNDS = {}
