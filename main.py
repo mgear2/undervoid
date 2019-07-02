@@ -14,6 +14,23 @@ from sprites import *
 from tilemap import Map
 from tilemap import Camera
 
+def draw_player_hp(surface, x, y, pct):
+    if pct < 0:
+        pct = 0
+    BAR_LENGTH = 200
+    BAR_HEIGHT = 15
+    fill = pct * BAR_LENGTH
+    outline_rect = pg.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
+    fill_rect = pg.Rect(x, y, fill, BAR_HEIGHT)
+    if pct > 0.6:
+        color = COLORS['GREEN']
+    elif pct > 0.3:
+        color = COLORS['YELLOW']
+    else:
+        color = COLORS['RED']
+    pg.draw.rect(surface, color, fill_rect)
+    pg.draw.rect(surface, COLORS['WHITE'], outline_rect, 2)
+
 class Game:
     def __init__(self):
         pg.init()
@@ -37,6 +54,7 @@ class Game:
         self.vbullet_img = pg.image.load(path.join(self.img_folder, IMAGES['VBULLET_IMG'])).convert_alpha()
         #self.vbullet_img = pg.transform.scale(self.vbullet_img, (GEN_SETTINGS['TILESIZE'], GEN_SETTINGS['TILESIZE']))
         self.thrall_img = pg.image.load(path.join(self.img_folder, IMAGES['THRALL_IMG'])).convert_alpha()
+        self.floor_img = pg.image.load(path.join(self.img_folder, IMAGES['FLOOR_IMG_6'])).convert_alpha()
         #self.player_img = pg.transform.scale(self.player_img, (TILESIZE, TILESIZE))
         #self.cursor_img = pg.image.load(path.join(self.img_folder, CURSOR_IMG)).convert_alpha()
         #pg.mouse.set_visible(False)
@@ -45,7 +63,9 @@ class Game:
         #pg.mixer.init()
         #pg.mixer.music.load(path.join(self.music_folder, MUSIC['leavinghome']))
         #pg.mixer.music.play(-1, 0.0)
-        self.map = Map(path.join(self.maps_folder, 'map1.txt'))
+        self.map = Map(self, path.join(self.maps_folder, 'map1.txt'))
+        self.map_img = self.map.make_map()
+        self.map_rect = self.map_img.get_rect()
 
     def new(self):
         self.all_sprites = pg.sprite.Group()
@@ -82,9 +102,18 @@ class Game:
     def update(self):
         self.all_sprites.update()
         self.camera.update(self.player)
+        hits = pg.sprite.spritecollide(self.player, self.mobs, False, collide_hit_rect)
+        for hit in hits:
+            self.player.hp -= MOB_SETTINGS['THRALL_DMG']
+            hit.vel = vec(0, 0)
+            if self.player.hp <= 0:
+                self.playing = False
+        if hits:
+            self.player.pos += vec(MOB_SETTINGS['THRALL_KB'], 0).rotate(-hits[0].rot)
         hits = pg.sprite.groupcollide(self.mobs, self.bullets, False, True)
         for hit in hits:
-            hit.kill()
+            hit.hp -= WEAPON_SETTINGS['VDMG']
+            hit.vel = vec(0, 0)
 
     def draw_grid(self):
         for x in range(0, GEN_SETTINGS['WIDTH'], GEN_SETTINGS['TILESIZE']):
@@ -95,9 +124,13 @@ class Game:
     def draw(self):
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
         self.screen.fill(GEN_SETTINGS['BGCOLOR'])
+        self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
         #self.draw_grid()
         for sprite in self.all_sprites:
+            if isinstance(sprite, Mob):
+                sprite.draw_hp()
             self.screen.blit(sprite.image, self.camera.apply(sprite))
+        draw_player_hp(self.screen, 10, GEN_SETTINGS['HEIGHT'] - 30, self.player.hp / PLAYER_SETTINGS['HP'])
         pg.display.flip()
 
     def events(self):

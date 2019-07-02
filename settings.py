@@ -42,19 +42,25 @@ PLAYER_SETTINGS = {
     'SPEED': 500,
     'ROT_SPEED': 250,
     'HIT_RECT': pg.Rect(0, 0, 35, 35),
-    'HAND_OFFSET': vec(35, 30)
+    'HAND_OFFSET': vec(35, 30),
+    'DMG_MULT': 1.0,
+    'HP': 100
 }
 
 WEAPON_SETTINGS = {
-    'VBULLET_SPEED': 1000,
+    'VBULLET_SPEED': 500+ PLAYER_SETTINGS['SPEED'],
     'VBULLET_LIFETIME': 1000,
     'VBULLET_RATE': 150,
-    'VSPREAD': 5
+    'VSPREAD': 5,
+    'VDMG': 10 * PLAYER_SETTINGS['DMG_MULT']
 }
 
 MOB_SETTINGS = {
-    'THRALL_SPEED': 250,
-    'THRALL_HIT_RECT': pg.Rect(0, 0, 35, 35)
+    'THRALL_SPEED': 150,
+    'THRALL_HIT_RECT': pg.Rect(0, 0, 35, 35),
+    'THRALL_HP': 75,
+    'THRALL_DMG': 10,
+    'THRALL_KB': 20 # knockback
 }
 
 """ Media: IMAGES, MUSIC, SOUND
@@ -64,7 +70,12 @@ IMAGES = {
     'PLAYER_IMG': 'voidwalker.png',
     'CURSOR_IMG': 'cursor.gif',
     'WALL_IMG': 'voidwall.png',
-    'FLOOR_IMG': 'dungeonfloor.png',
+    'FLOOR_IMG_1': 'dungeonfloor01.png',
+    'FLOOR_IMG_2': 'dungeonfloor02.png',
+    'FLOOR_IMG_3': 'dungeonfloor03.png',
+    'FLOOR_IMG_4': 'dungeonfloor04.png',
+    'FLOOR_IMG_5': 'dungeonfloor05.png',
+    'FLOOR_IMG_6': 'dungeonfloor06.png',
     'ICON_IMG': 'voidbullet.png',
     'THRALL_IMG': 'thrall.png',
     'VBULLET_IMG': 'voidbullet.png'
