@@ -54,13 +54,13 @@ class Player(pg.sprite.Sprite):
         self.game = game
         self.image = game.player_img
         self.rect = self.image.get_rect()
-        self.hit_rect = PLAYER_SETTINGS['HIT_RECT']
+        self.hit_rect = PLAYER['HIT_RECT']
         self.hit_rect.center = self.rect.center
         self.vel = vec(0, 0)
-        self.pos = vec(x, y) * GEN_SETTINGS['TILESIZE']
+        self.pos = vec(x, y) * GEN['TILESIZE']
         self.rot = 0
         self.last_shot = 0
-        self.hp = PLAYER_SETTINGS['HP']
+        self.hp = PLAYER['HP']
 
     def get_keys(self):
         self.rot_speed = 0
@@ -68,23 +68,23 @@ class Player(pg.sprite.Sprite):
         keys = pg.key.get_pressed()
         mouse = pg.mouse.get_pressed()
         if keys[pg.K_LEFT] or keys[pg.K_a]:
-            self.vel.x = -PLAYER_SETTINGS['SPEED']
+            self.vel.x = -PLAYER['SPEED']
             #self.rot_speed = PLAYER_SETTINGS['ROT_SPEED']
         if keys[pg.K_RIGHT] or keys[pg.K_d]:
-            self.vel.x = PLAYER_SETTINGS['SPEED']
+            self.vel.x = PLAYER['SPEED']
             #self.rot_speed = -PLAYER_SETTINGS['ROT_SPEED']
         if keys[pg.K_UP] or keys[pg.K_w]:
-            self.vel.y = -PLAYER_SETTINGS['SPEED']
+            self.vel.y = -PLAYER['SPEED']
             #self.vel = vec(PLAYER_SETTINGS['SPEED'], 0).rotate(-self.rot)
         if keys[pg.K_DOWN] or keys[pg.K_s]:
-            self.vel.y = PLAYER_SETTINGS['SPEED']
+            self.vel.y = PLAYER['SPEED']
             #self.vel = vec(-PLAYER_SETTINGS['SPEED'], 0).rotate(-self.rot)
         if keys[pg.K_SPACE] or mouse[0]:
             now = pg.time.get_ticks()
-            if now - self.last_shot > WEAPON_SETTINGS['VBULLET_RATE']:
+            if now - self.last_shot > WEAPON['VBULLET_RATE']:
                 self.last_shot = now
                 dir = vec(1, 0).rotate(-self.rot)
-                pos = self.pos + PLAYER_SETTINGS['HAND_OFFSET'].rotate(-self.rot)
+                pos = self.pos + PLAYER['HAND_OFFSET'].rotate(-self.rot)
                 Bullet(self.game, pos, dir)
 
         #if self.vel.x != 0 and self.vel.y != 0:
@@ -116,15 +116,15 @@ class Bullet(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.pos = vec(pos)
         self.rect.center = pos
-        spread = uniform(-WEAPON_SETTINGS['VSPREAD'], WEAPON_SETTINGS['VSPREAD'])
-        self.vel = dir.rotate(spread) * WEAPON_SETTINGS['VBULLET_SPEED']
+        spread = uniform(-WEAPON['VSPREAD'], WEAPON['VSPREAD'])
+        self.vel = dir.rotate(spread) * WEAPON['VBULLET_SPEED']
         self.spawn_time = pg.time.get_ticks()
 
     def update(self):
         self.pos += self.vel * self.game.dt
         self.rect.center = self.pos
         if (pg.sprite.spritecollideany(self, self.game.walls)
-                or pg.time.get_ticks() - self.spawn_time > WEAPON_SETTINGS['VBULLET_LIFETIME']):
+                or pg.time.get_ticks() - self.spawn_time > WEAPON['VBULLET_LIFETIME']):
             self.kill()
 
 class Mob(pg.sprite.Sprite):
@@ -134,21 +134,21 @@ class Mob(pg.sprite.Sprite):
         self.game = game
         self.image = game.thrall_img
         self.rect = self.image.get_rect()
-        self.hit_rect = MOB_SETTINGS['THRALL_HIT_RECT'].copy()
+        self.hit_rect = MOB['THRALL_HIT_RECT'].copy()
         self.hit_rect.center = self.rect.center
-        self.pos = vec(x, y) * GEN_SETTINGS['TILESIZE']
+        self.pos = vec(x, y) * GEN['TILESIZE']
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
         self.rect.center = self.pos
         self.rot = 0
-        self.hp = MOB_SETTINGS['THRALL_HP']
+        self.hp = MOB['THRALL_HP']
 
     def update(self):
         self.rot = (self.game.player.pos - self.pos).angle_to(vec(1,0))
         self.image = pg.transform.rotate(self.game.thrall_img, self.rot)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
-        self.acc = vec(MOB_SETTINGS['THRALL_SPEED'],0).rotate(-self.rot)
+        self.acc = vec(MOB['THRALL_SPEED'],0).rotate(-self.rot)
         self.acc += self.vel * -1
         self.vel += self.acc * self.game.dt
         # Equations of motion
@@ -159,6 +159,7 @@ class Mob(pg.sprite.Sprite):
         collide_with_walls(self, self.game.walls, 'y')
         self.rect.center = self.hit_rect.center
         if self.hp <= 0: 
+            Grave(self.game, self.pos)
             self.kill()
         
     def draw_hp(self):
@@ -168,9 +169,9 @@ class Mob(pg.sprite.Sprite):
             bar_color = COLORS['YELLOW']
         else:
             bar_color = COLORS['RED']
-        width = int(self.rect.width * self.hp / MOB_SETTINGS['THRALL_HP'])
+        width = int(self.rect.width * self.hp / MOB['THRALL_HP'])
         self.hp_bar = pg.Rect(0, 0, width, 7)
-        if self.hp < MOB_SETTINGS['THRALL_HP']:
+        if self.hp < MOB['THRALL_HP']:
             pg.draw.rect(self.image, bar_color, self.hp_bar)
 
 class Wall(pg.sprite.Sprite):
@@ -178,23 +179,34 @@ class Wall(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.walls
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.image.load(path.join(self.game.img_folder, IMAGES['WALL_IMG']))
-        self.image = pg.transform.scale(self.image, (GEN_SETTINGS['TILESIZE'], GEN_SETTINGS['TILESIZE']))
+        self.image = pg.image.load(path.join(self.game.img_folder, IMG['WALL_IMG']))
+        self.image = pg.transform.scale(self.image, (GEN['TILESIZE'], GEN['TILESIZE']))
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
-        self.rect.x = x * GEN_SETTINGS['TILESIZE']
-        self.rect.y = y * GEN_SETTINGS['TILESIZE']
+        self.rect.x = x * GEN['TILESIZE']
+        self.rect.y = y * GEN['TILESIZE']
 
 class Floor(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.image.load(path.join(self.game.img_folder, IMAGES['FLOOR_IMG']))
-        self.image = pg.transform.scale(self.image, (GEN_SETTINGS['TILESIZE'], GEN_SETTINGS['TILESIZE']))
+        self.image = pg.image.load(path.join(self.game.img_folder, IMG['FLOOR_IMG']))
+        self.image = pg.transform.scale(self.image, (GEN['TILESIZE'], GEN['TILESIZE']))
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
-        self.rect.x = x * GEN_SETTINGS['TILESIZE']
-        self.rect.y = y * GEN_SETTINGS['TILESIZE']
+        self.rect.x = x * GEN['TILESIZE']
+        self.rect.y = y * GEN['TILESIZE']
+
+class Grave(pg.sprite.Sprite):
+    def __init__(self, game, pos):
+        self.groups = game.all_sprites, game.graves
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.image.load(path.join(self.game.img_folder, IMG['SKULL']))
+        #self.image = pg.transform.scale(self.image, (GEN['TILESIZE'], GEN['TILESIZE']))
+        self.rect = self.image.get_rect()
+        self.pos = pos
+        self.rect.center = pos

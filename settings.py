@@ -9,7 +9,7 @@
 import pygame as pg
 vec = pg.math.Vector2
 
-""" General Settings: COLORS, GEN_SETTINGS, GRID_SETTINGS
+""" General Settings: COLORS, GEN, GRID
 """
 COLORS = {
     'WHITE': (255, 255, 255), # (R, G, B)
@@ -22,7 +22,7 @@ COLORS = {
     'DARKBLUE':  (0, 0, 50)
 }
 
-GEN_SETTINGS = {
+GEN = {
     'WIDTH': 1024,   # 16 * 64 or 32 * 32 or 64 * 16
     'HEIGHT': 768,  # 16 * 48 or 32 * 24 or 64 * 12
     'FPS': 120,
@@ -31,15 +31,15 @@ GEN_SETTINGS = {
     'TILESIZE': 64,
 }
 
-GRID_SETTINGS = {
-    'GRIDWIDTH': GEN_SETTINGS['WIDTH'] / GEN_SETTINGS['TILESIZE'],
-    'GRIDHEIGHT': GEN_SETTINGS['HEIGHT'] / GEN_SETTINGS['TILESIZE'],
+GRID = {
+    'GRIDWIDTH': GEN['WIDTH'] / GEN['TILESIZE'],
+    'GRIDHEIGHT': GEN['HEIGHT'] / GEN['TILESIZE'],
 }
 
-""" Entity Settings: PLAYER_SETTINGS, WEAPON_SETTINGS, MOB_SETTINGS
+""" Entity Settings: PLAYER, WEAPON, MOB
 """
-PLAYER_SETTINGS = {
-    'SPEED': 500,
+PLAYER = {
+    'SPEED': 600,
     'ROT_SPEED': 250,
     'HIT_RECT': pg.Rect(0, 0, 35, 35),
     'HAND_OFFSET': vec(35, 30),
@@ -47,25 +47,25 @@ PLAYER_SETTINGS = {
     'HP': 100
 }
 
-WEAPON_SETTINGS = {
-    'VBULLET_SPEED': 1500 + PLAYER_SETTINGS['SPEED'],
+WEAPON = {
+    'VBULLET_SPEED': 1500 + PLAYER['SPEED'],
     'VBULLET_LIFETIME': 1000,
     'VBULLET_RATE': 150,
     'VSPREAD': 5,
-    'VDMG': 10 * PLAYER_SETTINGS['DMG_MULT']
+    'VDMG': 10 * PLAYER['DMG_MULT']
 }
 
-MOB_SETTINGS = {
-    'THRALL_SPEED': 500,
+MOB = {
+    'THRALL_SPEED': 750,
     'THRALL_HIT_RECT': pg.Rect(0, 0, 35, 35),
-    'THRALL_HP': 75,
+    'THRALL_HP': 1,
     'THRALL_DMG': 10,
     'THRALL_KB': 20 # knockback
 }
 
-""" Media: IMAGES, MUSIC, SOUND
+""" Media: IMG, MUSIC, SOUND
 """
-IMAGES = {
+IMG = {
     'TITLE_IMG': 'undervoidtitle.png',
     'PLAYER_IMG': 'voidwalker.png',
     'CURSOR_IMG': 'cursor.gif',
@@ -78,7 +78,8 @@ IMAGES = {
     'FLOOR_IMG_6': 'dungeonfloor06.png',
     'ICON_IMG': 'voidbullet.png',
     'THRALL_IMG': 'thrall.png',
-    'VBULLET_IMG': 'voidbullet.png'
+    'VBULLET_IMG': 'voidbullet.png',
+    'SKULL': 'skull01.png'
 }
 
 MUSIC = {
