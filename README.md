@@ -1,5 +1,6 @@
-![undervoidtitle](https://user-images.githubusercontent.com/33133522/60404294-5c56ce00-9b5c-11e9-8a4c-71c485d154aa.png)  
-  
+![undervoidtitle2](https://user-images.githubusercontent.com/33133522/60471453-9d60e800-9c19-11e9-840b-2afc1f921dd6.png)  
+<sub><sub><sub>Title Art generated at https://fontmeme.com/pixel-fonts/</sub></sub></sub>  
+
 # Undervoid  
 Copyright © 2019 Matthew Geary  
   
@@ -8,9 +9,7 @@ Copyright © 2019 Matthew Geary
 `python main.py`  
   
 ## Credits  
-  
-Undervoid Title Art generated at https://fontmeme.com/pixel-fonts/  
-  
+
  Music:  
 "Leaving Home" Kevin MacLeod (incompetech.com)  
 "voidwalk" Matthew Geary  
