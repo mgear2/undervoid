@@ -3,15 +3,16 @@
 # Please see the file LICENSE in the source
 # distribution of this software for license terms.
 
-# Example code, drawn from
+# Building off example code from
 # https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap
 
 import pygame as pg
+vec = pg.math.Vector2
 
-# define some colors (R, G, B)
-
+""" General Settings: COLORS, GEN_SETTINGS, GRID_SETTINGS
+"""
 COLORS = {
-    'WHITE': (255, 255, 255),
+    'WHITE': (255, 255, 255), # (R, G, B)
     'BLACK': (0, 0, 0),
     'DARKGREY': (40, 40, 40),
     'LIGHTGREY': (100, 100, 100),
@@ -20,8 +21,6 @@ COLORS = {
     'YELLOW': (255, 255, 0),
     'DARKBLUE':  (0, 0, 50)
 }
-
-# game settings
 
 GEN_SETTINGS = {
     'WIDTH': 1024,   # 16 * 64 or 32 * 32 or 64 * 16
@@ -37,16 +36,29 @@ GRID_SETTINGS = {
     'GRIDHEIGHT': GEN_SETTINGS['HEIGHT'] / GEN_SETTINGS['TILESIZE'],
 }
 
-# player settings
+""" Entity Settings: PLAYER_SETTINGS, WEAPON_SETTINGS, MOB_SETTINGS
+"""
 PLAYER_SETTINGS = {
     'SPEED': 500,
     'ROT_SPEED': 250,
-    'HIT_RECT': pg.Rect(0, 0, 35, 35)
+    'HIT_RECT': pg.Rect(0, 0, 35, 35),
+    'HAND_OFFSET': vec(35, 30)
 }
 
-# mob settings
+WEAPON_SETTINGS = {
+    'VBULLET_SPEED': 1000,
+    'VBULLET_LIFETIME': 1000,
+    'VBULLET_RATE': 150,
+    'VSPREAD': 5
+}
 
-# media
+MOB_SETTINGS = {
+    'THRALL_SPEED': 250,
+    'THRALL_HIT_RECT': pg.Rect(0, 0, 35, 35)
+}
+
+""" Media: IMAGES, MUSIC, SOUND
+"""
 IMAGES = {
     'TITLE_IMG': 'undervoidtitle.png',
     'PLAYER_IMG': 'voidwalker.png',
@@ -54,7 +66,8 @@ IMAGES = {
     'WALL_IMG': 'voidwall.png',
     'FLOOR_IMG': 'dungeonfloor.png',
     'ICON_IMG': 'voidbullet.png',
-    'THRALL_IMG': 'thrall.png'
+    'THRALL_IMG': 'thrall.png',
+    'VBULLET_IMG': 'voidbullet.png'
 }
 
 MUSIC = {

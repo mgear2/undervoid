@@ -3,7 +3,7 @@
 # Please see the file LICENSE in the source
 # distribution of this software for license terms.
 
-# Example code drawn from
+# Building off example code from
 # https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap
 
 import pygame as pg

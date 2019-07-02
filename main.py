@@ -3,7 +3,7 @@
 # Please see the file LICENSE in the source
 # distribution of this software for license terms.
 
-# Example code drawn from
+# Building off example code from
 # https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap
 
 import pygame as pg
@@ -34,21 +34,24 @@ class Game:
         self.undervoid_icon = pg.image.load(path.join(self.img_folder, IMAGES['ICON_IMG'])).convert_alpha()
         self.undervoid_icon = pg.transform.scale(self.undervoid_icon, (64, 64))
         self.player_img = pg.image.load(path.join(self.img_folder, IMAGES['PLAYER_IMG'])).convert_alpha()
+        self.vbullet_img = pg.image.load(path.join(self.img_folder, IMAGES['VBULLET_IMG'])).convert_alpha()
+        #self.vbullet_img = pg.transform.scale(self.vbullet_img, (GEN_SETTINGS['TILESIZE'], GEN_SETTINGS['TILESIZE']))
         self.thrall_img = pg.image.load(path.join(self.img_folder, IMAGES['THRALL_IMG'])).convert_alpha()
         #self.player_img = pg.transform.scale(self.player_img, (TILESIZE, TILESIZE))
         #self.cursor_img = pg.image.load(path.join(self.img_folder, CURSOR_IMG)).convert_alpha()
         #pg.mouse.set_visible(False)
         # https://stackoverflow.com/questions/43845800/how-do-i-add-background-music-to-my-python-game#43845914
         pg.display.set_icon(self.undervoid_icon)
-        pg.mixer.init()
-        pg.mixer.music.load(path.join(self.music_folder, MUSIC['leavinghome']))
-        pg.mixer.music.play(-1, 0.0)
+        #pg.mixer.init()
+        #pg.mixer.music.load(path.join(self.music_folder, MUSIC['leavinghome']))
+        #pg.mixer.music.play(-1, 0.0)
         self.map = Map(path.join(self.maps_folder, 'map1.txt'))
 
     def new(self):
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
+        self.bullets = pg.sprite.Group()
         self.player_sprite = pg.sprite.Group()
         for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
@@ -79,6 +82,9 @@ class Game:
     def update(self):
         self.all_sprites.update()
         self.camera.update(self.player)
+        hits = pg.sprite.groupcollide(self.mobs, self.bullets, False, True)
+        for hit in hits:
+            hit.kill()
 
     def draw_grid(self):
         for x in range(0, GEN_SETTINGS['WIDTH'], GEN_SETTINGS['TILESIZE']):
