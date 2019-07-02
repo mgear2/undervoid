@@ -43,24 +43,25 @@ PLAYER = {
     'ROT_SPEED': 250,
     'HIT_RECT': pg.Rect(0, 0, 35, 35),
     'HAND_OFFSET': vec(35, 30),
-    'DMG_MULT': 1.0,
+    'DMG_MULT': 2.5,
     'HP': 100
 }
 
 WEAPON = {
     'VBULLET_SPEED': 1500 + PLAYER['SPEED'],
     'VBULLET_LIFETIME': 1000,
-    'VBULLET_RATE': 150,
+    'VBULLET_RATE': 100,
     'VSPREAD': 5,
-    'VDMG': 10 * PLAYER['DMG_MULT']
+    'VDMG': 5 * PLAYER['DMG_MULT']
 }
 
 MOB = {
-    'THRALL_SPEED': 750,
+    'THRALL_SPEED': [600, 650, 700, 750],
     'THRALL_HIT_RECT': pg.Rect(0, 0, 35, 35),
-    'THRALL_HP': 1,
+    'THRALL_HP': 75,
     'THRALL_DMG': 10,
-    'THRALL_KB': 20 # knockback
+    'THRALL_KB': 20, # knockback
+    'THRALL_RADIUS': 50
 }
 
 """ Media: IMG, MUSIC, SOUND

@@ -9,7 +9,7 @@
 import pygame as pg
 from settings import *
 from os import path
-from random import uniform
+from random import uniform, choice
 from tilemap import collide_hit_rect
 vec = pg.math.Vector2
 
@@ -142,13 +142,27 @@ class Mob(pg.sprite.Sprite):
         self.rect.center = self.pos
         self.rot = 0
         self.hp = MOB['THRALL_HP']
+        self.speed = choice(MOB['THRALL_SPEED'])
+
+    def avoid_mobs(self):
+        for mob in self.game.mobs:
+            if mob != self:
+                dist = self.pos - mob.pos
+                if 0 < dist.length() < MOB['THRALL_RADIUS']:
+                    self.acc += dist.normalize()
 
     def update(self):
         self.rot = (self.game.player.pos - self.pos).angle_to(vec(1,0))
         self.image = pg.transform.rotate(self.game.thrall_img, self.rot)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
-        self.acc = vec(MOB['THRALL_SPEED'],0).rotate(-self.rot)
+        #self.acc = vec(MOB['THRALL_SPEED'],0).rotate(-self.rot)
+        self.acc = vec(1, 0).rotate(-self.rot)
+        self.avoid_mobs()
+        try:
+            self.acc.scale_to_length(self.speed)
+        except Exception as e:
+            print("{}".format(e))
         self.acc += self.vel * -1
         self.vel += self.acc * self.game.dt
         # Equations of motion
