@@ -56,8 +56,9 @@ class Game:
         self.thrall_img = pg.image.load(path.join(self.img_folder, IMAGES['THRALL_IMG'])).convert_alpha()
         self.floor_img = pg.image.load(path.join(self.img_folder, IMAGES['FLOOR_IMG_6'])).convert_alpha()
         #self.player_img = pg.transform.scale(self.player_img, (TILESIZE, TILESIZE))
-        #self.cursor_img = pg.image.load(path.join(self.img_folder, CURSOR_IMG)).convert_alpha()
-        #pg.mouse.set_visible(False)
+        self.cursor_img = pg.image.load(path.join(self.img_folder, IMAGES['CURSOR_IMG'])).convert_alpha()
+        self.cursor_img = pg.transform.scale(self.cursor_img, (GEN_SETTINGS['TILESIZE'], GEN_SETTINGS['TILESIZE']))
+        pg.mouse.set_visible(False)
         # https://stackoverflow.com/questions/43845800/how-do-i-add-background-music-to-my-python-game#43845914
         pg.display.set_icon(self.undervoid_icon)
         #pg.mixer.init()
@@ -73,19 +74,17 @@ class Game:
         self.mobs = pg.sprite.Group()
         self.bullets = pg.sprite.Group()
         self.player_sprite = pg.sprite.Group()
+        self.cursor_sprite = pg.sprite.Group()
         for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
-                #if tile == '.' or tile == 'P':
-                #    Floor(self, col, row)
                 if tile == '1':
                     Wall(self, col, row)
                 if tile == 'P':
-                    #Floor(self, col, row)
                     self.player = Player(self, col, row)
                 if tile == 'M':
                     Mob(self, col, row)
-        #self.cursor = Cursor(self)
-        self.camera = Camera(self.map.width, self.map.height)
+        self.cursor = Cursor(self)
+        self.camera = Camera(self.map.width, self.map.height, self.cursor)
 
     def run(self):
         self.playing = True
@@ -147,10 +146,10 @@ class Game:
     def show_go_screen(self):
         pass
 
-# create the game object
-g = Game()
-g.show_start_screen()
-while True:
-    g.new()
-    g.run()
-    g.show_go_screen()
+if __name__ == '__main__':
+    g = Game()
+    g.show_start_screen()
+    while True:
+        g.new()
+        g.run()
+        g.show_go_screen()

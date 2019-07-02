@@ -46,10 +46,11 @@ class Map:
         return temp_surface
 
 class Camera:
-    def __init__(self, width, height):
+    def __init__(self, width, height, cursor):
         self.camera = pg.Rect(0, 0, width, height)
         self.width = width
         self.height = height
+        self.cursor = cursor
 
     def apply(self, entity):
         return entity.rect.move(self.camera.topleft)
@@ -61,3 +62,6 @@ class Camera:
         x = -target.rect.centerx + int(GEN_SETTINGS['WIDTH'] / 2)
         y = -target.rect.centery + int(GEN_SETTINGS['HEIGHT'] / 2)
         self.camera = pg.Rect(x, y, self.width, self.height)
+        self.cursor.rect.centerx -= x
+        self.cursor.rect.centery -= y
+        self.cursor.pos = self.cursor.rect.center

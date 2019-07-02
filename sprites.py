@@ -40,6 +40,7 @@ class Cursor(pg.sprite.Sprite):
         self.image = game.cursor_img
         self.rect = self.image.get_rect()
         self.rect = self.image.get_rect()
+        self.rect.center = pg.mouse.get_pos()
         self.pos = pg.mouse.get_pos()
 
     def update(self):
@@ -65,19 +66,20 @@ class Player(pg.sprite.Sprite):
         self.rot_speed = 0
         self.vel = vec(0, 0)
         keys = pg.key.get_pressed()
+        mouse = pg.mouse.get_pressed()
         if keys[pg.K_LEFT] or keys[pg.K_a]:
-            #self.vel.x = -PLAYER_SPEED
-            self.rot_speed = PLAYER_SETTINGS['ROT_SPEED']
+            self.vel.x = -PLAYER_SETTINGS['SPEED']
+            #self.rot_speed = PLAYER_SETTINGS['ROT_SPEED']
         if keys[pg.K_RIGHT] or keys[pg.K_d]:
-            #self.vel.x = PLAYER_SPEED
-            self.rot_speed = -PLAYER_SETTINGS['ROT_SPEED']
+            self.vel.x = PLAYER_SETTINGS['SPEED']
+            #self.rot_speed = -PLAYER_SETTINGS['ROT_SPEED']
         if keys[pg.K_UP] or keys[pg.K_w]:
-            #self.vel.y = -PLAYER_SPEED
-            self.vel = vec(PLAYER_SETTINGS['SPEED'], 0).rotate(-self.rot)
+            self.vel.y = -PLAYER_SETTINGS['SPEED']
+            #self.vel = vec(PLAYER_SETTINGS['SPEED'], 0).rotate(-self.rot)
         if keys[pg.K_DOWN] or keys[pg.K_s]:
-            #self.vel.y = PLAYER_SPEED
-            self.vel = vec(-PLAYER_SETTINGS['SPEED'], 0).rotate(-self.rot)
-        if keys[pg.K_SPACE]:
+            self.vel.y = PLAYER_SETTINGS['SPEED']
+            #self.vel = vec(-PLAYER_SETTINGS['SPEED'], 0).rotate(-self.rot)
+        if keys[pg.K_SPACE] or mouse[0]:
             now = pg.time.get_ticks()
             if now - self.last_shot > WEAPON_SETTINGS['VBULLET_RATE']:
                 self.last_shot = now
@@ -93,7 +95,8 @@ class Player(pg.sprite.Sprite):
 
     def update(self):
         self.get_keys()
-        self.rot = (self.rot + self.rot_speed * self.game.dt) % 360
+        self.rot = (self.game.cursor.pos - self.pos).angle_to(vec(1,0))
+        # self.rot = (self.rot + self.rot_speed * self.game.dt) % 360
         self.image = pg.transform.rotate(self.game.player_img, self.rot)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
