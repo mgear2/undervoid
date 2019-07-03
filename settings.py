@@ -44,7 +44,8 @@ LAYER = {
     'WALL': 1,
     'FLOOR': 0,
     'GRAVE': 0,
-    'VFX': 5
+    'VFX': 5,
+    'ITEM': 1
 }
 
 """ Entity Settings: PLAYER, WEAPON, MOB
@@ -78,6 +79,10 @@ MOB = {
     'THRALL_RADIUS': 50
 }
 
+ITEMS = {
+    'POTION_1_HP': 20
+}
+
 """ Media: IMG, MUSIC, SOUND
 """
 IMG = {
@@ -88,6 +93,10 @@ IMG = {
         'cursor03.png', 'cursor02.png', 'cursor01.png'
         ],
     'WALL_IMG': 'voidwall.png',
+    'D_FLOOR': [
+        'dungeonfloor01.png', 'dungeonfloor02.png', 'dungeonfloor03.png', 
+        'dungeonfloor04.png', 'dungeonfloor05.png'
+        ],
     'FLOOR_IMG_1': 'dungeonfloor01.png',
     'FLOOR_IMG_2': 'dungeonfloor02.png',
     'FLOOR_IMG_3': 'dungeonfloor03.png',
@@ -97,7 +106,9 @@ IMG = {
     'ICON_IMG': 'undervoidicon.png',
     'THRALL_IMG': 'thrall.png',
     'VBULLET_IMG': 'voidbullet02.png',
-    'SKULL': 'skull01.png'
+    'SKULL': 'skull01.png',
+    'THRALL_GRAVE_1': 'thrallgrave01.png',
+    'POTION_1': 'potion01.png'
 }
 
 MUSIC = {

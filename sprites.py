@@ -101,11 +101,11 @@ class Player(pg.sprite.Sprite):
                 Bullet(self.game, pos, dir, self.rot)
                 Weapon_VFX(self.game, self.pos + PLAYER['HAND_OFFSET'].rotate(-self.rot))
 
-        #if self.vel.x != 0 and self.vel.y != 0:
+        if self.vel.x != 0 and self.vel.y != 0:
             # correct diagonal movement to be same speed
             # multiply by 1/sqrt(2)
             # need to revisit this
-        #    self.vel *= 0.70701
+            self.vel *= 0.70701
 
     def update(self):
         self.get_keys()
@@ -120,6 +120,11 @@ class Player(pg.sprite.Sprite):
         self.hit_rect.centery = self.pos.y
         collide_with_walls(self, self.game.walls, 'y')
         self.rect.center = self.hit_rect.center
+
+    def add_hp(self, amount):
+        self.hp += amount
+        if self.hp > PLAYER['HP']:
+            self.hp = PLAYER['HP']
 
 class Bullet(pg.sprite.Sprite):
     def __init__(self, game, pos, dir, rot):
@@ -227,7 +232,7 @@ class Floor(pg.sprite.Sprite):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.image.load(path.join(self.game.img_folder, IMG['FLOOR_IMG']))
+        self.image = pg.image.load(path.join(self.game.img_folder, IMG['FLOOR_IMG_6']))
         self.image = pg.transform.scale(self.image, (GEN['TILESIZE'], GEN['TILESIZE']))
         self.rect = self.image.get_rect()
         self.x = x
@@ -241,7 +246,7 @@ class Grave(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.graves
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.image.load(path.join(self.game.img_folder, IMG['SKULL']))
+        self.image = pg.image.load(path.join(self.game.img_folder, IMG['THRALL_GRAVE_1']))
         #self.image = pg.transform.scale(self.image, (GEN['TILESIZE'], GEN['TILESIZE']))
         self.rect = self.image.get_rect()
         self.pos = pos
@@ -262,3 +267,17 @@ class Weapon_VFX(pg.sprite.Sprite):
     def update(self):
         if pg.time.get_ticks() - self.spawn_time > WEAPON['VDUST_LIFETIME']:
             self.kill()
+
+class Item(pg.sprite.Sprite):
+    def __init__(self, game, x, y, img, kind):
+        self._layer = LAYER['ITEM']
+        self.groups = game.all_sprites, game.items
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = game.item_img[img]
+        self.rect = self.image.get_rect()
+        self.kind = kind
+        self.x = x
+        self.y = y
+        self.rect.x = x * GEN['TILESIZE']
+        self.rect.y = y * GEN['TILESIZE']

@@ -8,6 +8,7 @@
 
 import pygame as pg
 from settings import *
+from random import choice
 from os import sys
 
 def collide_hit_rect(one, two):
@@ -24,9 +25,18 @@ class Map:
         self.tileheight = len(self.data)
         self.width = self.tilewidth * GEN['TILESIZE']
         self.height = self.tileheight * GEN['TILESIZE']
-        self.floor_img = game.floor_img
+        #self.floor_img = game.floor_img
 
     def render(self, surface):
+        for row, tiles in enumerate(self.data):
+            row *= GEN['TILESIZE']
+            for col, tile in enumerate(tiles):
+                col *= GEN['TILESIZE']
+                if tile == '1' or tile == 'P' or tile == 'M' or tile == 'p' or tile == '.':
+                    self.floor_img = choice(self.game.floor_img)
+                    surface.blit(self.floor_img, (col, row))
+
+    """def render(self, surface):
         x = 0
         while x < self.width:
             y = 0
@@ -35,7 +45,7 @@ class Map:
                 y += GEN['TILESIZE']
             x += GEN['TILESIZE']
 
-        """for x in range(0, self.width):
+        for x in range(0, self.width):
             for y in range(0, self.height):
                 surface.blit(self.floor_img, (x * GEN_SETTINGS['TILESIZE'],
                                      y * GEN_SETTINGS['TILESIZE']))"""

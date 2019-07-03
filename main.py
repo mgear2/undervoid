@@ -55,21 +55,27 @@ class Game:
         self.vbullet_img = pg.transform.scale(self.vbullet_img, (64, 64))
         self.thrall_img = pg.image.load(path.join(self.img_folder, IMG['THRALL_IMG'])).convert_alpha()
         self.thrall_img = pg.transform.scale(self.thrall_img, (GEN['TILESIZE'], GEN['TILESIZE']))
-        self.floor_img = pg.image.load(path.join(self.img_folder, IMG['FLOOR_IMG_6'])).convert_alpha()
         self.player_img = pg.transform.scale(self.player_img, (GEN['TILESIZE'], GEN['TILESIZE']))
         self.cursor_img = []
         self.weapon_vfx = []
+        self.item_img = {}
+        self.floor_img = []
+        for img in IMG['D_FLOOR']:
+            self.floor_img.append(pg.image.load(path.join(self.img_folder, img)).convert_alpha())
         for img in IMG['CURSOR_IMG']:
             self.cursor_img.append(pg.image.load(path.join(self.img_folder, img)).convert_alpha())
         for img in WEAPON['VBULLET_VFX']:
             self.weapon_vfx.append(pg.image.load(path.join(self.img_folder, img)).convert_alpha())
+        potion_img = (pg.image.load(path.join(self.img_folder, IMG['POTION_1'])).convert_alpha())
+        self.item_img['POTION_1'] = pg.transform.scale(potion_img, (48, 48))
+        
         pg.mouse.set_visible(False)
         # https://stackoverflow.com/questions/43845800/how-do-i-add-background-music-to-my-python-game#43845914
         pg.display.set_icon(self.undervoid_icon)
-        pg.mixer.init()
-        pg.mixer.music.load(path.join(self.music_folder, MUSIC['leavinghome']))
-        pg.mixer.music.play(-1, 0.0)
-        self.map = Map(self, path.join(self.maps_folder, 'map1.txt'))
+        #pg.mixer.init()
+        #pg.mixer.music.load(path.join(self.music_folder, MUSIC['leavinghome']))
+        #pg.mixer.music.play(-1, 0.0)
+        self.map = Map(self, path.join(self.maps_folder, 'map3.txt'))
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
 
@@ -79,6 +85,7 @@ class Game:
         self.mobs = pg.sprite.Group()
         self.bullets = pg.sprite.Group()
         self.graves = pg.sprite.Group()
+        self.items = pg.sprite.Group()
         self.player_sprite = pg.sprite.Group()
         self.cursor_sprite = pg.sprite.Group()
         for row, tiles in enumerate(self.map.data):
@@ -89,6 +96,10 @@ class Game:
                     self.player = Player(self, col, row)
                 if tile == 'M':
                     Mob(self, col, row)
+                if tile == 'p':
+                    Item(self, col, row, 'POTION_1', 'hp')
+                #if tile == '.':
+                #    Floor(self, col, row)
         self.cursor = Cursor(self)
         self.camera = Camera(self.map.width, self.map.height, self.cursor)
 
@@ -107,6 +118,13 @@ class Game:
     def update(self):
         self.all_sprites.update()
         self.camera.update(self.player)
+        # player hits items
+        hits = pg.sprite.spritecollide(self.player, self.items, False, collide_hit_rect)
+        for hit in hits:
+            if hit.kind == 'hp' and self.player.hp < PLAYER['HP']:
+                hit.kill()
+                self.player.add_hp(ITEMS['POTION_1_HP'])
+        # mobs hitting player
         hits = pg.sprite.spritecollide(self.player, self.mobs, False, collide_hit_rect)
         for hit in hits:
             self.player.hp -= MOB['THRALL_DMG']
@@ -115,10 +133,11 @@ class Game:
                 self.playing = False
         if hits:
             self.player.pos += vec(MOB['THRALL_KB'], 0).rotate(-hits[0].rot)
+        # bullets hitting mobs
         hits = pg.sprite.groupcollide(self.mobs, self.bullets, False, True)
         for hit in hits:
             hit.hp -= WEAPON['VDMG']
-            hit.vel = vec(0, 0)
+            #hit.vel = vec(0, 0)
 
     def draw_grid(self):
         for x in range(0, GEN['WIDTH'], GEN['TILESIZE']):
