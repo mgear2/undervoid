@@ -34,26 +34,38 @@ def collide_with_walls(sprite, group, dir):
 
 class Cursor(pg.sprite.Sprite):
     def __init__(self, game):
+        self._layer = LAYER['CURSOR']
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = game.cursor_img
+        self.image = game.cursor_img[0]
         self.rect = self.image.get_rect()
         self.rect = self.image.get_rect()
         self.rect.center = pg.mouse.get_pos()
         self.pos = pg.mouse.get_pos()
+        self.counter = 0
+        self.last = 0
 
     def update(self):
+        now = pg.time.get_ticks()
+        if now > self.last + 100:
+            self.counter += 1
+            self.last = now
+        if self.counter > 5:
+            self.counter = 0
+        self.image = self.game.cursor_img[self.counter]
         self.rect.center = pg.mouse.get_pos()
         self.pos = pg.mouse.get_pos()
 
 class Player(pg.sprite.Sprite):
     def __init__(self, game, x, y):
+        self._layer = LAYER['PLAYER']
         self.groups = game.all_sprites, game.player_sprite
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = game.player_img
         self.rect = self.image.get_rect()
+        self.rect.center = x, y
         self.hit_rect = PLAYER['HIT_RECT']
         self.hit_rect.center = self.rect.center
         self.vel = vec(0, 0)
@@ -83,9 +95,11 @@ class Player(pg.sprite.Sprite):
             now = pg.time.get_ticks()
             if now - self.last_shot > WEAPON['VBULLET_RATE']:
                 self.last_shot = now
-                dir = vec(1, 0).rotate(-self.rot)
+                test = (self.game.cursor.pos - self.pos).angle_to(vec(1, 0))
+                dir = vec(1, 0).rotate(-test)
                 pos = self.pos + PLAYER['HAND_OFFSET'].rotate(-self.rot)
-                Bullet(self.game, pos, dir)
+                Bullet(self.game, pos, dir, self.rot)
+                Weapon_VFX(self.game, self.pos + PLAYER['HAND_OFFSET'].rotate(-self.rot))
 
         #if self.vel.x != 0 and self.vel.y != 0:
             # correct diagonal movement to be same speed
@@ -108,13 +122,16 @@ class Player(pg.sprite.Sprite):
         self.rect.center = self.hit_rect.center
 
 class Bullet(pg.sprite.Sprite):
-    def __init__(self, game, pos, dir):
+    def __init__(self, game, pos, dir, rot):
+        self._layer = LAYER['BULLET']
         self.groups = game.all_sprites, game.bullets
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = game.vbullet_img
+        self.rot = rot
+        self.image = pg.transform.rotate(game.vbullet_img, self.rot + 90)
         self.rect = self.image.get_rect()
         self.pos = vec(pos)
+        #self.pos = vec(pos + self.game.cursor.pos)
         self.rect.center = pos
         spread = uniform(-WEAPON['VSPREAD'], WEAPON['VSPREAD'])
         self.vel = dir.rotate(spread) * WEAPON['VBULLET_SPEED']
@@ -129,11 +146,13 @@ class Bullet(pg.sprite.Sprite):
 
 class Mob(pg.sprite.Sprite):
     def __init__(self, game, x, y):
+        self._layer = LAYER['MOB']
         self.groups = game.all_sprites, game.mobs
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = game.thrall_img
         self.rect = self.image.get_rect()
+        self.rect.center = x, y
         self.hit_rect = MOB['THRALL_HIT_RECT'].copy()
         self.hit_rect.center = self.rect.center
         self.pos = vec(x, y) * GEN['TILESIZE']
@@ -190,6 +209,7 @@ class Mob(pg.sprite.Sprite):
 
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):
+        self._layer = LAYER['WALL']
         self.groups = game.all_sprites, game.walls
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
@@ -203,6 +223,7 @@ class Wall(pg.sprite.Sprite):
 
 class Floor(pg.sprite.Sprite):
     def __init__(self, game, x, y):
+        self._layer = LAYER['FLOOR']
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
@@ -216,6 +237,7 @@ class Floor(pg.sprite.Sprite):
 
 class Grave(pg.sprite.Sprite):
     def __init__(self, game, pos):
+        self._layer = LAYER['GRAVE']
         self.groups = game.all_sprites, game.graves
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
@@ -224,3 +246,19 @@ class Grave(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.pos = pos
         self.rect.center = pos
+
+class Weapon_VFX(pg.sprite.Sprite):
+    def __init__(self, game, pos):
+        self._layer = LAYER['VFX']
+        self.groups = game.all_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.transform.scale(choice(game.weapon_vfx), (WEAPON['VDUST_SIZE'], WEAPON['VDUST_SIZE']))
+        self.rect = self.image.get_rect()
+        self.pos = pos
+        self.rect.center = pos
+        self.spawn_time = pg.time.get_ticks()
+
+    def update(self):
+        if pg.time.get_ticks() - self.spawn_time > WEAPON['VDUST_LIFETIME']:
+            self.kill()

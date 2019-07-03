@@ -23,8 +23,8 @@ COLORS = {
 }
 
 GEN = {
-    'WIDTH': 1024,   # 16 * 64 or 32 * 32 or 64 * 16
-    'HEIGHT': 768,  # 16 * 48 or 32 * 24 or 64 * 12
+    'WIDTH': 1440,   # 16 * 64 or 32 * 32 or 64 * 16
+    'HEIGHT': 900,  # 16 * 48 or 32 * 24 or 64 * 12
     'FPS': 120,
     'TITLE': 'Undervoid',
     'BGCOLOR': COLORS['BLACK'],
@@ -36,13 +36,24 @@ GRID = {
     'GRIDHEIGHT': GEN['HEIGHT'] / GEN['TILESIZE'],
 }
 
+LAYER = {
+    'CURSOR': 6,
+    'PLAYER': 2,
+    'BULLET': 3,
+    'MOB': 2,
+    'WALL': 1,
+    'FLOOR': 0,
+    'GRAVE': 0,
+    'VFX': 5
+}
+
 """ Entity Settings: PLAYER, WEAPON, MOB
 """
 PLAYER = {
-    'SPEED': 600,
+    'SPEED': 1000,
     'ROT_SPEED': 250,
     'HIT_RECT': pg.Rect(0, 0, 35, 35),
-    'HAND_OFFSET': vec(35, 30),
+    'HAND_OFFSET': vec(65, 25),
     'DMG_MULT': 2.5,
     'HP': 100
 }
@@ -50,9 +61,12 @@ PLAYER = {
 WEAPON = {
     'VBULLET_SPEED': 1500 + PLAYER['SPEED'],
     'VBULLET_LIFETIME': 1000,
-    'VBULLET_RATE': 100,
+    'VBULLET_RATE': 150,
     'VSPREAD': 5,
-    'VDMG': 5 * PLAYER['DMG_MULT']
+    'VDMG': 10 * PLAYER['DMG_MULT'],
+    'VBULLET_VFX': ['voiddust01.png', 'voiddust02.png', 'voiddust03.png', 'voiddust04.png'],
+    'VDUST_SIZE': 32,
+    'VDUST_LIFETIME': 40
 }
 
 MOB = {
@@ -69,7 +83,10 @@ MOB = {
 IMG = {
     'TITLE_IMG': 'undervoidtitle.png',
     'PLAYER_IMG': 'voidwalker.png',
-    'CURSOR_IMG': 'cursor.gif',
+    'CURSOR_IMG': [
+        'cursor01.png', 'cursor02.png', 'cursor03.png', 
+        'cursor03.png', 'cursor02.png', 'cursor01.png'
+        ],
     'WALL_IMG': 'voidwall.png',
     'FLOOR_IMG_1': 'dungeonfloor01.png',
     'FLOOR_IMG_2': 'dungeonfloor02.png',
@@ -77,9 +94,9 @@ IMG = {
     'FLOOR_IMG_4': 'dungeonfloor04.png',
     'FLOOR_IMG_5': 'dungeonfloor05.png',
     'FLOOR_IMG_6': 'dungeonfloor06.png',
-    'ICON_IMG': 'voidbullet.png',
+    'ICON_IMG': 'undervoidicon.png',
     'THRALL_IMG': 'thrall.png',
-    'VBULLET_IMG': 'voidbullet.png',
+    'VBULLET_IMG': 'voidbullet02.png',
     'SKULL': 'skull01.png'
 }
 

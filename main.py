@@ -52,24 +52,29 @@ class Game:
         self.undervoid_icon = pg.transform.scale(self.undervoid_icon, (64, 64))
         self.player_img = pg.image.load(path.join(self.img_folder, IMG['PLAYER_IMG'])).convert_alpha()
         self.vbullet_img = pg.image.load(path.join(self.img_folder, IMG['VBULLET_IMG'])).convert_alpha()
-        #self.vbullet_img = pg.transform.scale(self.vbullet_img, (GEN_SETTINGS['TILESIZE'], GEN_SETTINGS['TILESIZE']))
+        self.vbullet_img = pg.transform.scale(self.vbullet_img, (64, 64))
         self.thrall_img = pg.image.load(path.join(self.img_folder, IMG['THRALL_IMG'])).convert_alpha()
+        self.thrall_img = pg.transform.scale(self.thrall_img, (GEN['TILESIZE'], GEN['TILESIZE']))
         self.floor_img = pg.image.load(path.join(self.img_folder, IMG['FLOOR_IMG_6'])).convert_alpha()
-        #self.player_img = pg.transform.scale(self.player_img, (TILESIZE, TILESIZE))
-        self.cursor_img = pg.image.load(path.join(self.img_folder, IMG['CURSOR_IMG'])).convert_alpha()
-        self.cursor_img = pg.transform.scale(self.cursor_img, (GEN['TILESIZE'], GEN['TILESIZE']))
+        self.player_img = pg.transform.scale(self.player_img, (GEN['TILESIZE'], GEN['TILESIZE']))
+        self.cursor_img = []
+        self.weapon_vfx = []
+        for img in IMG['CURSOR_IMG']:
+            self.cursor_img.append(pg.image.load(path.join(self.img_folder, img)).convert_alpha())
+        for img in WEAPON['VBULLET_VFX']:
+            self.weapon_vfx.append(pg.image.load(path.join(self.img_folder, img)).convert_alpha())
         pg.mouse.set_visible(False)
         # https://stackoverflow.com/questions/43845800/how-do-i-add-background-music-to-my-python-game#43845914
         pg.display.set_icon(self.undervoid_icon)
-        #pg.mixer.init()
-        #pg.mixer.music.load(path.join(self.music_folder, MUSIC['leavinghome']))
-        #pg.mixer.music.play(-1, 0.0)
+        pg.mixer.init()
+        pg.mixer.music.load(path.join(self.music_folder, MUSIC['leavinghome']))
+        pg.mixer.music.play(-1, 0.0)
         self.map = Map(self, path.join(self.maps_folder, 'map1.txt'))
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
 
     def new(self):
-        self.all_sprites = pg.sprite.Group()
+        self.all_sprites = pg.sprite.LayeredUpdates()
         self.walls = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
         self.bullets = pg.sprite.Group()
