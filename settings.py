@@ -25,7 +25,7 @@ COLORS = {
 GEN = {
     'WIDTH': 1440,   # 16 * 64 or 32 * 32 or 64 * 16
     'HEIGHT': 900,  # 16 * 48 or 32 * 24 or 64 * 12
-    'FPS': 120,
+    'FPS': 60,
     'TITLE': 'Undervoid',
     'BGCOLOR': COLORS['BLACK'],
     'TILESIZE': 64,
@@ -51,7 +51,7 @@ LAYER = {
 """ Entity Settings: PLAYER, WEAPON, MOB
 """
 PLAYER = {
-    'SPEED': 1000,
+    'SPEED': 400,
     'ROT_SPEED': 250,
     'HIT_RECT': pg.Rect(0, 0, 35, 35),
     'HAND_OFFSET': vec(65, 25),
@@ -80,7 +80,9 @@ MOB = {
 }
 
 ITEMS = {
-    'POTION_1_HP': 20
+    'POTION_1_HP': .20 * PLAYER['HP'],
+    'BOB_RANGE': 15,
+    'BOB_SPEED': 0.4
 }
 
 """ Media: IMG, MUSIC, SOUND

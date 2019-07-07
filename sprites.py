@@ -11,6 +11,7 @@ from settings import *
 from os import path
 from random import uniform, choice
 from tilemap import collide_hit_rect
+import pytweening as tween
 vec = pg.math.Vector2
 
 def collide_with_walls(sprite, group, dir):
@@ -226,7 +227,7 @@ class Wall(pg.sprite.Sprite):
         self.rect.x = x * GEN['TILESIZE']
         self.rect.y = y * GEN['TILESIZE']
 
-class Floor(pg.sprite.Sprite):
+"""class Floor(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self._layer = LAYER['FLOOR']
         self.groups = game.all_sprites
@@ -238,7 +239,7 @@ class Floor(pg.sprite.Sprite):
         self.x = x
         self.y = y
         self.rect.x = x * GEN['TILESIZE']
-        self.rect.y = y * GEN['TILESIZE']
+        self.rect.y = y * GEN['TILESIZE']"""
 
 class Grave(pg.sprite.Sprite):
     def __init__(self, game, pos):
@@ -275,9 +276,19 @@ class Item(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = game.item_img[img]
-        self.rect = self.image.get_rect()
         self.kind = kind
-        self.x = x
-        self.y = y
-        self.rect.x = x * GEN['TILESIZE']
-        self.rect.y = y * GEN['TILESIZE']
+        self.rect = self.image.get_rect()
+        self.rect.x, self.rect.y = x * GEN['TILESIZE'], y * GEN['TILESIZE']
+        self.pos = self.rect.center
+        self.tween = tween.easeInOutSine
+        self.step = 0
+        self.dir = 1
+
+    def update(self):
+        # item bobbing motion
+        offset = ITEMS['BOB_RANGE'] * (self.tween(self.step / ITEMS['BOB_RANGE']) - 0.5) 
+        self.rect.centery = self.pos[1] + offset * self.dir
+        self.step += ITEMS['BOB_SPEED']
+        if self.step > ITEMS['BOB_RANGE']:
+            self.step = 0
+            self.dir *= -1
