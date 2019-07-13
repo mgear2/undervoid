@@ -9,7 +9,7 @@
 import pygame as pg
 from settings import *
 from os import path
-from random import uniform, choice
+from random import uniform, choice, random
 from tilemap import collide_hit_rect
 import pytweening as tween
 vec = pg.math.Vector2
@@ -100,6 +100,8 @@ class Player(pg.sprite.Sprite):
                 dir = vec(1, 0).rotate(-test)
                 pos = self.pos + PLAYER['HAND_OFFSET'].rotate(-self.rot)
                 Bullet(self.game, pos, dir, self.rot)
+                if random() < 0.75:
+                    self.game.sounds['wave01'].play()
                 Weapon_VFX(self.game, self.pos + PLAYER['HAND_OFFSET'].rotate(-self.rot))
 
         if self.vel.x != 0 and self.vel.y != 0:
@@ -167,7 +169,9 @@ class Mob(pg.sprite.Sprite):
         self.rect.center = self.pos
         self.rot = 0
         self.hp = MOB['THRALL_HP']
+        self.max_hp = MOB['THRALL_HP']
         self.speed = choice(MOB['THRALL_SPEED'])
+        self.triggered = False
 
     def avoid_mobs(self):
         for mob in self.game.mobs:
@@ -177,26 +181,32 @@ class Mob(pg.sprite.Sprite):
                     self.acc += dist.normalize()
 
     def update(self):
-        self.rot = (self.game.player.pos - self.pos).angle_to(vec(1,0))
+        self.target_dist = self.game.player.pos - self.pos
+        self.rot = self.target_dist.angle_to(vec(1,0))
         self.image = pg.transform.rotate(self.game.thrall_img, self.rot)
         self.rect = self.image.get_rect()
-        self.rect.center = self.pos
-        #self.acc = vec(MOB['THRALL_SPEED'],0).rotate(-self.rot)
-        self.acc = vec(1, 0).rotate(-self.rot)
-        self.avoid_mobs()
-        try:
-            self.acc.scale_to_length(self.speed)
-        except Exception as e:
-            print("{}".format(e))
-        self.acc += self.vel * -1
-        self.vel += self.acc * self.game.dt
-        # Equations of motion
-        self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 2
-        self.hit_rect.centerx = self.pos.x
-        collide_with_walls(self, self.game.walls, 'x')
-        self.hit_rect.centery = self.pos.y
-        collide_with_walls(self, self.game.walls, 'y')
-        self.rect.center = self.hit_rect.center
+        if self.triggered == False and self.target_dist.length_squared() < MOB['DETECT_RADIUS'] ** 2:    
+            self.triggered = True
+        if self.triggered:
+            #self.acc = vec(MOB['THRALL_SPEED'][0],0).rotate(-self.rot)
+            if random() < 0.002:
+                self.game.sounds['growl01'].play()
+            self.rect.center = self.pos
+            self.acc = vec(1, 0).rotate(-self.rot)
+            self.avoid_mobs()
+            try:
+                self.acc.scale_to_length(self.speed)
+            except Exception as e:
+                print("{}".format(e))
+            self.acc += self.vel * -1
+            self.vel += self.acc * self.game.dt
+            # Equations of motion
+            self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 2
+            self.hit_rect.centerx = self.pos.x
+            collide_with_walls(self, self.game.walls, 'x')
+            self.hit_rect.centery = self.pos.y
+            collide_with_walls(self, self.game.walls, 'y')
+            self.rect.center = self.hit_rect.center
         if self.hp <= 0: 
             Grave(self.game, self.pos)
             self.kill()
@@ -210,8 +220,7 @@ class Mob(pg.sprite.Sprite):
             bar_color = COLORS['RED']
         width = int(self.rect.width * self.hp / MOB['THRALL_HP'])
         self.hp_bar = pg.Rect(0, 0, width, 7)
-        if self.hp < MOB['THRALL_HP']:
-            pg.draw.rect(self.image, bar_color, self.hp_bar)
+        pg.draw.rect(self.image, bar_color, self.hp_bar)
 
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -227,28 +236,13 @@ class Wall(pg.sprite.Sprite):
         self.rect.x = x * GEN['TILESIZE']
         self.rect.y = y * GEN['TILESIZE']
 
-"""class Floor(pg.sprite.Sprite):
-    def __init__(self, game, x, y):
-        self._layer = LAYER['FLOOR']
-        self.groups = game.all_sprites
-        pg.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
-        self.image = pg.image.load(path.join(self.game.img_folder, IMG['FLOOR_IMG_6']))
-        self.image = pg.transform.scale(self.image, (GEN['TILESIZE'], GEN['TILESIZE']))
-        self.rect = self.image.get_rect()
-        self.x = x
-        self.y = y
-        self.rect.x = x * GEN['TILESIZE']
-        self.rect.y = y * GEN['TILESIZE']"""
-
 class Grave(pg.sprite.Sprite):
     def __init__(self, game, pos):
         self._layer = LAYER['GRAVE']
         self.groups = game.all_sprites, game.graves
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.image.load(path.join(self.game.img_folder, IMG['THRALL_GRAVE_1']))
-        #self.image = pg.transform.scale(self.image, (GEN['TILESIZE'], GEN['TILESIZE']))
+        self.image = pg.transform.scale(choice(game.thrall_grave), (GEN['TILESIZE'], GEN['TILESIZE']))
         self.rect = self.image.get_rect()
         self.pos = pos
         self.rect.center = pos

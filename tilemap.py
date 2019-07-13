@@ -36,20 +36,6 @@ class Map:
                     self.floor_img = choice(self.game.floor_img)
                     surface.blit(self.floor_img, (col, row))
 
-    """def render(self, surface):
-        x = 0
-        while x < self.width:
-            y = 0
-            while y < self.height:
-                surface.blit(self.floor_img, (x, y))
-                y += GEN['TILESIZE']
-            x += GEN['TILESIZE']
-
-        for x in range(0, self.width):
-            for y in range(0, self.height):
-                surface.blit(self.floor_img, (x * GEN_SETTINGS['TILESIZE'],
-                                     y * GEN_SETTINGS['TILESIZE']))"""
-
     def make_map(self):
         temp_surface = pg.Surface((self.width, self.height))
         self.render(temp_surface)

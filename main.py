@@ -47,6 +47,7 @@ class Game:
         self.img_folder = path.join(self.data_folder, 'img')
         self.maps_folder = path.join(self.data_folder, 'maps')
         self.music_folder = path.join(self.data_folder, 'music')
+        self.sound_folder = path.join(self.data_folder, 'sounds')
 
         self.undervoid_icon = pg.image.load(path.join(self.img_folder, IMG['ICON_IMG'])).convert_alpha()
         self.undervoid_icon = pg.transform.scale(self.undervoid_icon, (64, 64))
@@ -60,21 +61,27 @@ class Game:
         self.weapon_vfx = []
         self.item_img = {}
         self.floor_img = []
+        self.thrall_grave = []
         for img in IMG['D_FLOOR']:
             self.floor_img.append(pg.image.load(path.join(self.img_folder, img)).convert_alpha())
         for img in IMG['CURSOR_IMG']:
             self.cursor_img.append(pg.image.load(path.join(self.img_folder, img)).convert_alpha())
         for img in WEAPON['VBULLET_VFX']:
             self.weapon_vfx.append(pg.image.load(path.join(self.img_folder, img)).convert_alpha())
+        for img in IMG['THRALL_GRAVE']:
+            self.thrall_grave.append(pg.image.load(path.join(self.img_folder, img)).convert_alpha())
         potion_img = (pg.image.load(path.join(self.img_folder, IMG['POTION_1'])).convert_alpha())
         self.item_img['POTION_1'] = pg.transform.scale(potion_img, (48, 48))
+        self.sounds = {}
+        for sound in SOUNDS:
+            self.sounds[sound] = pg.mixer.Sound(path.join(self.sound_folder, SOUNDS[sound]))
         
         pg.mouse.set_visible(False)
         # https://stackoverflow.com/questions/43845800/how-do-i-add-background-music-to-my-python-game#43845914
         pg.display.set_icon(self.undervoid_icon)
-        #pg.mixer.init()
-        #pg.mixer.music.load(path.join(self.music_folder, MUSIC['leavinghome']))
-        #pg.mixer.music.play(-1, 0.0)
+        pg.mixer.init()
+        pg.mixer.music.load(path.join(self.music_folder, MUSIC['leavinghome']))
+        pg.mixer.music.play(-1, 0.0)
         self.map = Map(self, path.join(self.maps_folder, 'map3.txt'))
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
@@ -123,6 +130,7 @@ class Game:
         for hit in hits:
             if hit.kind == 'hp' and self.player.hp < PLAYER['HP']:
                 hit.kill()
+                self.sounds['treasure02'].play()
                 self.player.add_hp(ITEMS['POTION_1_HP'])
         # mobs hitting player
         hits = pg.sprite.spritecollide(self.player, self.mobs, False, collide_hit_rect)
@@ -151,7 +159,7 @@ class Game:
         self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
         #self.draw_grid()
         for sprite in self.all_sprites:
-            if isinstance(sprite, Mob):
+            if isinstance(sprite, Mob) and sprite.hp < sprite.max_hp:
                 sprite.draw_hp()
             self.screen.blit(sprite.image, self.camera.apply(sprite))
         draw_player_hp(self.screen, 10, GEN['HEIGHT'] - 30, self.player.hp / PLAYER['HP'])

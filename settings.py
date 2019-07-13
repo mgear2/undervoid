@@ -25,7 +25,7 @@ COLORS = {
 GEN = {
     'WIDTH': 1440,   # 16 * 64 or 32 * 32 or 64 * 16
     'HEIGHT': 900,  # 16 * 48 or 32 * 24 or 64 * 12
-    'FPS': 60,
+    'FPS': 120,
     'TITLE': 'Undervoid',
     'BGCOLOR': COLORS['BLACK'],
     'TILESIZE': 64,
@@ -76,7 +76,8 @@ MOB = {
     'THRALL_HP': 75,
     'THRALL_DMG': 10,
     'THRALL_KB': 20, # knockback
-    'THRALL_RADIUS': 50
+    'THRALL_RADIUS': 75,
+    'DETECT_RADIUS': 800
 }
 
 ITEMS = {
@@ -109,7 +110,7 @@ IMG = {
     'THRALL_IMG': 'thrall.png',
     'VBULLET_IMG': 'voidbullet02.png',
     'SKULL': 'skull01.png',
-    'THRALL_GRAVE_1': 'thrallgrave01.png',
+    'THRALL_GRAVE': ['thrallgrave01.png', 'thrallgrave02.png', 'thrallgrave03.png'],
     'POTION_1': 'potion01.png'
 }
 
@@ -118,4 +119,10 @@ MUSIC = {
     'voidwalk': 'voidwalk.wav'
 }
 
-SOUNDS = {}
+SOUNDS = {
+    'growl01': 'growl01.wav',
+    'treasure01': 'treasure01.wav',
+    'treasure02': 'treasure02.wav',
+    'woadbear01': 'woadbear01.wav',
+    'wave01': 'wave01.wav'
+}
