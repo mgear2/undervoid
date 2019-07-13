@@ -9,7 +9,7 @@
 import pygame as pg
 vec = pg.math.Vector2
 
-""" General Settings: COLORS, GEN, GRID
+""" General Settings: COLORS, GEN, GRID, LAYER
 """
 COLORS = {
     'WHITE': (255, 255, 255), # (R, G, B)
@@ -37,21 +37,21 @@ GRID = {
 }
 
 LAYER = {
-    'CURSOR': 6,
-    'PLAYER': 2,
-    'BULLET': 3,
-    'MOB': 2,
-    'WALL': 1,
     'FLOOR': 0,
     'GRAVE': 0,
-    'VFX': 5,
-    'ITEM': 1
+    'WALL': 1,
+    'ITEM': 1,
+    'PLAYER': 2,
+    'MOB': 2,   
+    'BULLET': 3,
+    'VFX': 4,
+    'CURSOR': 5,
 }
 
-""" Entity Settings: PLAYER, WEAPON, MOB
+""" Entity Settings: PLAYER, WEAPON, MOB, ITEMS
 """
 PLAYER = {
-    'SPEED': 400,
+    'SPEED': 500,
     'ROT_SPEED': 250,
     'HIT_RECT': pg.Rect(0, 0, 35, 35),
     'HAND_OFFSET': vec(65, 25),
@@ -86,7 +86,7 @@ ITEMS = {
     'BOB_SPEED': 0.4
 }
 
-""" Media: IMG, MUSIC, SOUND
+""" Media: IMG, MUSIC, SOUNDS
 """
 IMG = {
     'TITLE_IMG': 'undervoidtitle.png',
@@ -100,12 +100,6 @@ IMG = {
         'dungeonfloor01.png', 'dungeonfloor02.png', 'dungeonfloor03.png', 
         'dungeonfloor04.png', 'dungeonfloor05.png'
         ],
-    'FLOOR_IMG_1': 'dungeonfloor01.png',
-    'FLOOR_IMG_2': 'dungeonfloor02.png',
-    'FLOOR_IMG_3': 'dungeonfloor03.png',
-    'FLOOR_IMG_4': 'dungeonfloor04.png',
-    'FLOOR_IMG_5': 'dungeonfloor05.png',
-    'FLOOR_IMG_6': 'dungeonfloor06.png',
     'ICON_IMG': 'undervoidicon.png',
     'THRALL_IMG': 'thrall.png',
     'VBULLET_IMG': 'voidbullet02.png',

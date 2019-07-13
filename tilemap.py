@@ -32,9 +32,11 @@ class Map:
             row *= GEN['TILESIZE']
             for col, tile in enumerate(tiles):
                 col *= GEN['TILESIZE']
-                if tile == '1' or tile == 'P' or tile == 'M' or tile == 'p' or tile == '.':
+                if tile != ' ' and tile != '0':
                     self.floor_img = choice(self.game.floor_img)
                     surface.blit(self.floor_img, (col, row))
+                if tile == '1':
+                    surface.blit(self.game.wall_img, (col, row))
 
     def make_map(self):
         temp_surface = pg.Surface((self.width, self.height))

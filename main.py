@@ -14,23 +14,6 @@ from sprites import *
 from tilemap import Map
 from tilemap import Camera
 
-def draw_player_hp(surface, x, y, pct):
-    if pct < 0:
-        pct = 0
-    BAR_LENGTH = 200
-    BAR_HEIGHT = 15
-    fill = pct * BAR_LENGTH
-    outline_rect = pg.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
-    fill_rect = pg.Rect(x, y, fill, BAR_HEIGHT)
-    if pct > 0.6:
-        color = COLORS['GREEN']
-    elif pct > 0.3:
-        color = COLORS['YELLOW']
-    else:
-        color = COLORS['RED']
-    pg.draw.rect(surface, color, fill_rect)
-    pg.draw.rect(surface, COLORS['WHITE'], outline_rect, 2)
-
 class Game:
     def __init__(self):
         pg.init()
@@ -57,6 +40,8 @@ class Game:
         self.thrall_img = pg.image.load(path.join(self.img_folder, IMG['THRALL_IMG'])).convert_alpha()
         self.thrall_img = pg.transform.scale(self.thrall_img, (GEN['TILESIZE'], GEN['TILESIZE']))
         self.player_img = pg.transform.scale(self.player_img, (GEN['TILESIZE'], GEN['TILESIZE']))
+        self.wall_img = pg.image.load(path.join(self.img_folder, IMG['WALL_IMG']))
+        self.wall_img = pg.transform.scale(self.wall_img, (GEN['TILESIZE'], GEN['TILESIZE']))
         self.cursor_img = []
         self.weapon_vfx = []
         self.item_img = {}
@@ -95,9 +80,10 @@ class Game:
         self.items = pg.sprite.Group()
         self.player_sprite = pg.sprite.Group()
         self.cursor_sprite = pg.sprite.Group()
+        self.cursor = Cursor(self)
         for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
-                if tile == '1':
+                if tile == '1' or tile == '0':
                     Wall(self, col, row)
                 if tile == 'P':
                     self.player = Player(self, col, row)
@@ -105,9 +91,6 @@ class Game:
                     Mob(self, col, row)
                 if tile == 'p':
                     Item(self, col, row, 'POTION_1', 'hp')
-                #if tile == '.':
-                #    Floor(self, col, row)
-        self.cursor = Cursor(self)
         self.camera = Camera(self.map.width, self.map.height, self.cursor)
 
     def run(self):
@@ -160,9 +143,11 @@ class Game:
         #self.draw_grid()
         for sprite in self.all_sprites:
             if isinstance(sprite, Mob) and sprite.hp < sprite.max_hp:
-                sprite.draw_hp()
+                #sprite.draw_hp()
+                draw_hp(sprite.image, 0, 0, sprite.hp / sprite.max_hp, GEN['TILESIZE'], 7, False)
             self.screen.blit(sprite.image, self.camera.apply(sprite))
-        draw_player_hp(self.screen, 10, GEN['HEIGHT'] - 30, self.player.hp / PLAYER['HP'])
+        #draw_player_hp(self.screen, 10, GEN['HEIGHT'] - 30, self.player.hp / PLAYER['HP'])
+        draw_hp(self.screen, 10, GEN['HEIGHT'] - 30, self.player.hp / PLAYER['HP'], 200, 15, True)
         pg.display.flip()
 
     def events(self):

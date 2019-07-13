@@ -14,6 +14,22 @@ from tilemap import collide_hit_rect
 import pytweening as tween
 vec = pg.math.Vector2
 
+def draw_hp(surface, x, y, pct, b_len, b_height, player):
+    if pct < 0:
+        pct = 0
+    if pct > 0.6:
+        color = COLORS['GREEN']
+    elif pct > 0.3:
+        color = COLORS['YELLOW']
+    else:
+        color = COLORS['RED']
+    fill = pct * b_len
+    hp_bar = pg.Rect(x, y, fill, b_height)
+    pg.draw.rect(surface, color, hp_bar)
+    if player == True:
+        outline_rect = pg.Rect(x, y, b_len, b_height)
+        pg.draw.rect(surface, COLORS['WHITE'], outline_rect, 2)
+
 def collide_with_walls(sprite, group, dir):
         hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
         if dir == 'x':
@@ -189,7 +205,7 @@ class Mob(pg.sprite.Sprite):
             self.triggered = True
         if self.triggered:
             #self.acc = vec(MOB['THRALL_SPEED'][0],0).rotate(-self.rot)
-            if random() < 0.002:
+            if random() < 0.0015:
                 self.game.sounds['growl01'].play()
             self.rect.center = self.pos
             self.acc = vec(1, 0).rotate(-self.rot)
@@ -210,27 +226,14 @@ class Mob(pg.sprite.Sprite):
         if self.hp <= 0: 
             Grave(self.game, self.pos)
             self.kill()
-        
-    def draw_hp(self):
-        if self.hp > 60:
-            bar_color = COLORS['GREEN']
-        elif self.hp > 30:
-            bar_color = COLORS['YELLOW']
-        else:
-            bar_color = COLORS['RED']
-        width = int(self.rect.width * self.hp / MOB['THRALL_HP'])
-        self.hp_bar = pg.Rect(0, 0, width, 7)
-        pg.draw.rect(self.image, bar_color, self.hp_bar)
 
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self._layer = LAYER['WALL']
-        self.groups = game.all_sprites, game.walls
+        self.groups = game.walls
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.image.load(path.join(self.game.img_folder, IMG['WALL_IMG']))
-        self.image = pg.transform.scale(self.image, (GEN['TILESIZE'], GEN['TILESIZE']))
-        self.rect = self.image.get_rect()
+        self.rect = pg.Rect(0, 0, GEN['TILESIZE'], GEN['TILESIZE'])
         self.x = x
         self.y = y
         self.rect.x = x * GEN['TILESIZE']
