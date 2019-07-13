@@ -25,7 +25,6 @@ class Game:
 
     def load_data(self):
         self.game_folder = path.dirname(__file__)
-
         self.data_folder = path.join(self.game_folder, 'data')
         self.img_folder = path.join(self.data_folder, 'img')
         self.maps_folder = path.join(self.data_folder, 'maps')
@@ -42,11 +41,15 @@ class Game:
         self.player_img = pg.transform.scale(self.player_img, (GEN['TILESIZE'], GEN['TILESIZE']))
         self.wall_img = pg.image.load(path.join(self.img_folder, IMG['WALL_IMG']))
         self.wall_img = pg.transform.scale(self.wall_img, (GEN['TILESIZE'], GEN['TILESIZE']))
+
         self.cursor_img = []
         self.weapon_vfx = []
         self.item_img = {}
         self.floor_img = []
         self.thrall_grave = []
+
+        self.item_img['POTION_1'] = pg.transform.scale(pg.image.load(path.join(self.img_folder, IMG['POTION_1'])).convert_alpha(), (48, 48))
+
         for img in IMG['D_FLOOR']:
             self.floor_img.append(pg.image.load(path.join(self.img_folder, img)).convert_alpha())
         for img in IMG['CURSOR_IMG']:
@@ -55,18 +58,17 @@ class Game:
             self.weapon_vfx.append(pg.image.load(path.join(self.img_folder, img)).convert_alpha())
         for img in IMG['THRALL_GRAVE']:
             self.thrall_grave.append(pg.image.load(path.join(self.img_folder, img)).convert_alpha())
-        potion_img = (pg.image.load(path.join(self.img_folder, IMG['POTION_1'])).convert_alpha())
-        self.item_img['POTION_1'] = pg.transform.scale(potion_img, (48, 48))
+
         self.sounds = {}
         for sound in SOUNDS:
             self.sounds[sound] = pg.mixer.Sound(path.join(self.sound_folder, SOUNDS[sound]))
-        
-        pg.mouse.set_visible(False)
-        # https://stackoverflow.com/questions/43845800/how-do-i-add-background-music-to-my-python-game#43845914
-        pg.display.set_icon(self.undervoid_icon)
         pg.mixer.init()
         pg.mixer.music.load(path.join(self.music_folder, MUSIC['leavinghome']))
         pg.mixer.music.play(-1, 0.0)
+
+        pg.mouse.set_visible(False)
+        pg.display.set_icon(self.undervoid_icon)
+
         self.map = Map(self, path.join(self.maps_folder, 'map3.txt'))
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
@@ -81,6 +83,7 @@ class Game:
         self.player_sprite = pg.sprite.Group()
         self.cursor_sprite = pg.sprite.Group()
         self.cursor = Cursor(self)
+
         for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
                 if tile == '1' or tile == '0':
@@ -91,6 +94,7 @@ class Game:
                     Mob(self, col, row)
                 if tile == 'p':
                     Item(self, col, row, 'POTION_1', 'hp')
+                    
         self.camera = Camera(self.map.width, self.map.height, self.cursor)
 
     def run(self):
@@ -143,10 +147,8 @@ class Game:
         #self.draw_grid()
         for sprite in self.all_sprites:
             if isinstance(sprite, Mob) and sprite.hp < sprite.max_hp:
-                #sprite.draw_hp()
                 draw_hp(sprite.image, 0, 0, sprite.hp / sprite.max_hp, GEN['TILESIZE'], 7, False)
             self.screen.blit(sprite.image, self.camera.apply(sprite))
-        #draw_player_hp(self.screen, 10, GEN['HEIGHT'] - 30, self.player.hp / PLAYER['HP'])
         draw_hp(self.screen, 10, GEN['HEIGHT'] - 30, self.player.hp / PLAYER['HP'], 200, 15, True)
         pg.display.flip()
 

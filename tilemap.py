@@ -25,7 +25,6 @@ class Map:
         self.tileheight = len(self.data)
         self.width = self.tilewidth * GEN['TILESIZE']
         self.height = self.tileheight * GEN['TILESIZE']
-        #self.floor_img = game.floor_img
 
     def render(self, surface):
         for row, tiles in enumerate(self.data):

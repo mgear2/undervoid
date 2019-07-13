@@ -55,7 +55,7 @@ PLAYER = {
     'ROT_SPEED': 250,
     'HIT_RECT': pg.Rect(0, 0, 35, 35),
     'HAND_OFFSET': vec(65, 25),
-    'DMG_MULT': 2.5,
+    'DMG_MULT': 1.5,
     'HP': 100
 }
 

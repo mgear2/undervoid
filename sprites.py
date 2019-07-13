@@ -31,23 +31,22 @@ def draw_hp(surface, x, y, pct, b_len, b_height, player):
         pg.draw.rect(surface, COLORS['WHITE'], outline_rect, 2)
 
 def collide_with_walls(sprite, group, dir):
-        hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
+    hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
+    if hits: 
         if dir == 'x':
-            if hits:
-                if hits[0].rect.centerx > sprite.hit_rect.centerx:
-                    sprite.pos.x = hits[0].rect.left - sprite.hit_rect.width / 2
-                if hits[0].rect.centerx < sprite.hit_rect.centerx:
-                    sprite.pos.x = hits[0].rect.right + sprite.hit_rect.width / 2 
-                sprite.vel.x = 0
-                sprite.hit_rect.centerx = sprite.pos.x
+            if hits[0].rect.centerx > sprite.hit_rect.centerx:
+                sprite.pos.x = hits[0].rect.left - sprite.hit_rect.width / 2
+            if hits[0].rect.centerx < sprite.hit_rect.centerx:
+                sprite.pos.x = hits[0].rect.right + sprite.hit_rect.width / 2 
+            sprite.vel.x = 0
+            sprite.hit_rect.centerx = sprite.pos.x
         if dir == 'y':
-            if hits:
-                if hits[0].rect.centery > sprite.hit_rect.centery:
-                    sprite.pos.y = hits[0].rect.top - sprite.hit_rect.height / 2
-                if hits[0].rect.centery < sprite.hit_rect.centery:
-                    sprite.pos.y = hits[0].rect.bottom + sprite.hit_rect.height / 2
-                sprite.vel.y = 0
-                sprite.hit_rect.centery = sprite.pos.y
+            if hits[0].rect.centery > sprite.hit_rect.centery:
+                sprite.pos.y = hits[0].rect.top - sprite.hit_rect.height / 2
+            if hits[0].rect.centery < sprite.hit_rect.centery:
+                sprite.pos.y = hits[0].rect.bottom + sprite.hit_rect.height / 2
+            sprite.vel.y = 0
+            sprite.hit_rect.centery = sprite.pos.y
 
 class Cursor(pg.sprite.Sprite):
     def __init__(self, game):
@@ -98,16 +97,12 @@ class Player(pg.sprite.Sprite):
         mouse = pg.mouse.get_pressed()
         if keys[pg.K_LEFT] or keys[pg.K_a]:
             self.vel.x = -PLAYER['SPEED']
-            #self.rot_speed = PLAYER_SETTINGS['ROT_SPEED']
         if keys[pg.K_RIGHT] or keys[pg.K_d]:
             self.vel.x = PLAYER['SPEED']
-            #self.rot_speed = -PLAYER_SETTINGS['ROT_SPEED']
         if keys[pg.K_UP] or keys[pg.K_w]:
             self.vel.y = -PLAYER['SPEED']
-            #self.vel = vec(PLAYER_SETTINGS['SPEED'], 0).rotate(-self.rot)
         if keys[pg.K_DOWN] or keys[pg.K_s]:
             self.vel.y = PLAYER['SPEED']
-            #self.vel = vec(-PLAYER_SETTINGS['SPEED'], 0).rotate(-self.rot)
         if keys[pg.K_SPACE] or mouse[0]:
             now = pg.time.get_ticks()
             if now - self.last_shot > WEAPON['VBULLET_RATE']:
@@ -123,13 +118,11 @@ class Player(pg.sprite.Sprite):
         if self.vel.x != 0 and self.vel.y != 0:
             # correct diagonal movement to be same speed
             # multiply by 1/sqrt(2)
-            # need to revisit this
             self.vel *= 0.70701
 
     def update(self):
         self.get_keys()
-        self.rot = (self.game.cursor.pos - self.pos).angle_to(vec(1,0))
-        # self.rot = (self.rot + self.rot_speed * self.game.dt) % 360
+        self.rot = (self.game.cursor.pos - self.pos).angle_to(vec(1,0)) % 360
         self.image = pg.transform.rotate(self.game.player_img, self.rot)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
