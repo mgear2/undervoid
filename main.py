@@ -31,17 +31,18 @@ class Game:
         self.music_folder = path.join(self.data_folder, 'music')
         self.sound_folder = path.join(self.data_folder, 'sounds')
 
-        self.undervoid_icon = pg.image.load(path.join(self.img_folder, IMG['ICON_IMG'])).convert_alpha()
+        self.undervoid_icon = pg.image.load(path.join(self.img_folder, IMG['ICON'])).convert_alpha()
         self.undervoid_icon = pg.transform.scale(self.undervoid_icon, (64, 64))
-        self.player_img = pg.image.load(path.join(self.img_folder, IMG['PLAYER_IMG'])).convert_alpha()
-        self.vbullet_img = pg.image.load(path.join(self.img_folder, IMG['VBULLET_IMG'])).convert_alpha()
+        #self.player_img = pg.image.load(path.join(self.img_folder, IMG['VOIDWALKER'])).convert_alpha()
+        self.vbullet_img = pg.image.load(path.join(self.img_folder, IMG['VBULLET'])).convert_alpha()
         self.vbullet_img = pg.transform.scale(self.vbullet_img, (64, 64))
-        self.thrall_img = pg.image.load(path.join(self.img_folder, IMG['THRALL_IMG'])).convert_alpha()
+        self.thrall_img = pg.image.load(path.join(self.img_folder, IMG['THRALL'])).convert_alpha()
         self.thrall_img = pg.transform.scale(self.thrall_img, (GEN['TILESIZE'], GEN['TILESIZE']))
-        self.player_img = pg.transform.scale(self.player_img, (GEN['TILESIZE'], GEN['TILESIZE']))
-        self.wall_img = pg.image.load(path.join(self.img_folder, IMG['WALL_IMG']))
+        self.wall_img = pg.image.load(path.join(self.img_folder, IMG['VOIDWALL']))
         self.wall_img = pg.transform.scale(self.wall_img, (GEN['TILESIZE'], GEN['TILESIZE']))
 
+        self.player_img_list = []
+        self.pmove_img = []
         self.cursor_img = []
         self.weapon_vfx = []
         self.item_img = {}
@@ -50,9 +51,14 @@ class Game:
 
         self.item_img['POTION_1'] = pg.transform.scale(pg.image.load(path.join(self.img_folder, IMG['POTION_1'])).convert_alpha(), (48, 48))
 
+        for img in IMG['VOIDWALKER']:
+            self.player_img_list.append(pg.image.load(path.join(self.img_folder, img)).convert_alpha())
+        self.player_img = pg.transform.scale(self.player_img_list[0], (GEN['PLAYERSIZE'], GEN['PLAYERSIZE']))
+        for img in IMG['VOIDWALKER_MOVE']:
+            self.pmove_img.append(pg.transform.scale((pg.image.load(path.join(self.img_folder, img)).convert_alpha()), (GEN['PLAYERSIZE'] + 16, GEN['PLAYERSIZE'] + 16)))
         for img in IMG['D_FLOOR']:
             self.floor_img.append(pg.image.load(path.join(self.img_folder, img)).convert_alpha())
-        for img in IMG['CURSOR_IMG']:
+        for img in IMG['CURSOR']:
             self.cursor_img.append(pg.image.load(path.join(self.img_folder, img)).convert_alpha())
         for img in WEAPON['VBULLET_VFX']:
             self.weapon_vfx.append(pg.image.load(path.join(self.img_folder, img)).convert_alpha())
@@ -90,11 +96,12 @@ class Game:
                     Wall(self, col, row)
                 if tile == 'P':
                     self.player = Player(self, col, row)
+                    self.pmove = pMove(self, col, row)
                 if tile == 'M':
                     Mob(self, col, row)
                 if tile == 'p':
                     Item(self, col, row, 'POTION_1', 'hp')
-                    
+
         self.camera = Camera(self.map.width, self.map.height, self.cursor)
 
     def run(self):

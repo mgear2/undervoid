@@ -73,6 +73,36 @@ class Cursor(pg.sprite.Sprite):
         self.rect.center = pg.mouse.get_pos()
         self.pos = pg.mouse.get_pos()
 
+class pMove(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self._layer = LAYER['PLAYER_MOVE']
+        self.groups = game.all_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.images = self.game.pmove_img
+        self.image = self.images[0]
+        self.current = self.image
+        self.rect = self.image.get_rect()
+        self.rect.center = x, y
+        self.pos = vec(x, y) * GEN['TILESIZE']
+        self.rot = 0
+        self.last = 0
+        self.i = 0
+
+    def update(self):
+        now = pg.time.get_ticks()
+        if self.game.player.vel != [0, 0]:
+            self.rot = (self.game.player.vel).angle_to(vec(1,0)) % 360
+            if now - self.last > 100:
+                self.last = now
+                self.current = self.images[self.i]
+                self.i += 1
+                if self.i >= len(self.images):
+                    self.i = 0
+        self.image = pg.transform.rotate(self.current, self.rot)
+        self.rect = self.image.get_rect()
+        self.rect.center = self.game.player.pos
+
 class Player(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self._layer = LAYER['PLAYER']
@@ -217,7 +247,7 @@ class Mob(pg.sprite.Sprite):
             collide_with_walls(self, self.game.walls, 'y')
             self.rect.center = self.hit_rect.center
         if self.hp <= 0: 
-            Grave(self.game, self.pos)
+            Grave(self.game, self.pos, self.rot)
             self.kill()
 
 class Wall(pg.sprite.Sprite):
@@ -233,12 +263,11 @@ class Wall(pg.sprite.Sprite):
         self.rect.y = y * GEN['TILESIZE']
 
 class Grave(pg.sprite.Sprite):
-    def __init__(self, game, pos):
+    def __init__(self, game, pos, rot):
         self._layer = LAYER['GRAVE']
         self.groups = game.all_sprites, game.graves
         pg.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
-        self.image = pg.transform.scale(choice(game.thrall_grave), (GEN['TILESIZE'], GEN['TILESIZE']))
+        self.image = pg.transform.rotate(pg.transform.scale(choice(game.thrall_grave), (GEN['TILESIZE'], GEN['TILESIZE'])), rot)
         self.rect = self.image.get_rect()
         self.pos = pos
         self.rect.center = pos

@@ -29,6 +29,7 @@ GEN = {
     'TITLE': 'Undervoid',
     'BGCOLOR': COLORS['BLACK'],
     'TILESIZE': 64,
+    'PLAYERSIZE': 128,
 }
 
 GRID = {
@@ -41,6 +42,7 @@ LAYER = {
     'GRAVE': 0,
     'WALL': 1,
     'ITEM': 1,
+    'PLAYER_MOVE': 1,
     'PLAYER': 2,
     'MOB': 2,   
     'BULLET': 3,
@@ -89,20 +91,31 @@ ITEMS = {
 """ Media: IMG, MUSIC, SOUNDS
 """
 IMG = {
-    'TITLE_IMG': 'undervoidtitle.png',
-    'PLAYER_IMG': 'voidwalker.png',
-    'CURSOR_IMG': [
+    'TITLE': 'undervoidtitle.png',
+    'VOIDWALKER': [
+        'voidwalker_magic.png',
+        'voidwalker_coachgun.png'
+    ],
+    'VOIDWALKER_MOVE': [
+        'voidwalkermove01.png',
+        'voidwalkermove02.png',
+        'voidwalkermove01.png',
+        'voidwalkermove03.png',
+        'voidwalkermove04.png',
+        'voidwalkermove03.png',
+    ],
+    'CURSOR': [
         'cursor01.png', 'cursor02.png', 'cursor03.png', 
         'cursor03.png', 'cursor02.png', 'cursor01.png'
         ],
-    'WALL_IMG': 'voidwall.png',
+    'VOIDWALL': 'voidwall.png',
     'D_FLOOR': [
         'dungeonfloor01.png', 'dungeonfloor02.png', 'dungeonfloor03.png', 
         'dungeonfloor04.png', 'dungeonfloor05.png'
         ],
-    'ICON_IMG': 'undervoidicon.png',
-    'THRALL_IMG': 'thrall.png',
-    'VBULLET_IMG': 'voidbullet02.png',
+    'ICON': 'undervoidicon.png',
+    'THRALL': 'thrall.png',
+    'VBULLET': 'voidbullet02.png',
     'SKULL': 'skull01.png',
     'THRALL_GRAVE': ['thrallgrave01.png', 'thrallgrave02.png', 'thrallgrave03.png'],
     'POTION_1': 'potion01.png'

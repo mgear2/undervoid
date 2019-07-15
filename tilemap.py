@@ -25,6 +25,7 @@ class Map:
         self.tileheight = len(self.data)
         self.width = self.tilewidth * GEN['TILESIZE']
         self.height = self.tileheight * GEN['TILESIZE']
+        self.rot = [0, 90, 180, 270]
 
     def render(self, surface):
         for row, tiles in enumerate(self.data):
@@ -32,7 +33,8 @@ class Map:
             for col, tile in enumerate(tiles):
                 col *= GEN['TILESIZE']
                 if tile != ' ' and tile != '0':
-                    self.floor_img = choice(self.game.floor_img)
+                    self.floor_img = pg.transform.rotate(
+                        choice(self.game.floor_img), choice(self.rot))
                     surface.blit(self.floor_img, (col, row))
                 if tile == '1':
                     surface.blit(self.game.wall_img, (col, row))
