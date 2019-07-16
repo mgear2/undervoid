@@ -82,6 +82,7 @@ class Game:
     def new(self):
         self.all_sprites = pg.sprite.LayeredUpdates()
         self.walls = pg.sprite.Group()
+        self.stops_bullets = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
         self.bullets = pg.sprite.Group()
         self.graves = pg.sprite.Group()
@@ -92,8 +93,10 @@ class Game:
 
         for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
-                if tile == '1' or tile == '0':
-                    Wall(self, col, row)
+                if tile == '1':
+                    Wall(self, col, row, True)
+                if tile == '0':
+                    Wall(self, col, row, False)
                 if tile == 'P':
                     self.player = Player(self, col, row)
                     self.pmove = pMove(self, col, row)
@@ -103,6 +106,12 @@ class Game:
                     Item(self, col, row, 'POTION_1', 'hp')
 
         self.camera = Camera(self.map.width, self.map.height, self.cursor)
+        # https://stackoverflow.com/questions/51973441/how-to-fade-from-one-colour-to-another-in-pygame
+        self.base_color = choice(VOID_COLORS)
+        self.next_color = choice(VOID_COLORS)
+        self.change_every_x_seconds = 2
+        self.number_of_steps = self.change_every_x_seconds * GEN['FPS']
+        self.step = 1
 
     def run(self):
         self.playing = True
@@ -140,6 +149,15 @@ class Game:
         for hit in hits:
             hit.hp -= WEAPON['VDMG']
             #hit.vel = vec(0, 0)
+        # https://stackoverflow.com/questions/51973441/how-to-fade-from-one-colour-to-another-in-pygame
+        self.step += 1
+        if self.step < self.number_of_steps:
+            self.current_color = [x + (((y-x)/self.number_of_steps)*self.step) for x, y in zip(pg.color.Color(self.base_color), pg.color.Color(self.next_color))]
+        else:
+            self.step = 1
+            self.base_color = self.next_color
+            self.next_color = choice(VOID_COLORS)
+        self.bg_color = self.current_color
 
     def draw_grid(self):
         for x in range(0, GEN['WIDTH'], GEN['TILESIZE']):
@@ -149,7 +167,7 @@ class Game:
 
     def draw(self):
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
-        self.screen.fill(GEN['BGCOLOR'])
+        self.screen.fill(self.bg_color)
         self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
         #self.draw_grid()
         for sprite in self.all_sprites:

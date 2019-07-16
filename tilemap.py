@@ -40,7 +40,8 @@ class Map:
                     surface.blit(self.game.wall_img, (col, row))
 
     def make_map(self):
-        temp_surface = pg.Surface((self.width, self.height))
+        # https://stackoverflow.com/questions/328061/how-to-make-a-surface-with-a-transparent-background-in-pygame#328067
+        temp_surface = pg.Surface((self.width, self.height), pg.SRCALPHA, 32).convert_alpha()
         self.render(temp_surface)
         return temp_surface
 

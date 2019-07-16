@@ -187,7 +187,7 @@ class Bullet(pg.sprite.Sprite):
     def update(self):
         self.pos += self.vel * self.game.dt
         self.rect.center = self.pos
-        if (pg.sprite.spritecollideany(self, self.game.walls)
+        if (pg.sprite.spritecollideany(self, self.game.stops_bullets)
                 or pg.time.get_ticks() - self.spawn_time > WEAPON['VBULLET_LIFETIME']):
             self.kill()
 
@@ -251,9 +251,12 @@ class Mob(pg.sprite.Sprite):
             self.kill()
 
 class Wall(pg.sprite.Sprite):
-    def __init__(self, game, x, y):
+    def __init__(self, game, x, y, stops_bullets):
         self._layer = LAYER['WALL']
-        self.groups = game.walls
+        if stops_bullets:
+            self.groups = game.walls, game.stops_bullets
+        else:
+            self.groups = game.walls
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.rect = pg.Rect(0, 0, GEN['TILESIZE'], GEN['TILESIZE'])

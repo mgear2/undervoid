@@ -22,6 +22,17 @@ COLORS = {
     'DARKBLUE':  (0, 0, 50)
 }
 
+# https://fschutt.github.io/pygame3-colors/
+VOID_COLORS = [
+    'black',
+    'gray0',
+    'gray1',
+    'darkmagenta',
+    'darkviolet',
+    'purple4',
+    'mediumvioletred',
+]
+
 GEN = {
     'WIDTH': 1440,   # 16 * 64 or 32 * 32 or 64 * 16
     'HEIGHT': 900,  # 16 * 48 or 32 * 24 or 64 * 12
