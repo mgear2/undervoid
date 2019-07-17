@@ -178,7 +178,6 @@ class Bullet(pg.sprite.Sprite):
         self.image = pg.transform.rotate(game.vbullet_img, self.rot + 90)
         self.rect = self.image.get_rect()
         self.pos = vec(pos)
-        #self.pos = vec(pos + self.game.cursor.pos)
         self.rect.center = pos
         spread = uniform(-WEAPON['VSPREAD'], WEAPON['VSPREAD'])
         self.vel = dir.rotate(spread) * WEAPON['VBULLET_SPEED']
@@ -240,7 +239,6 @@ class Mob(pg.sprite.Sprite):
             self.acc += self.vel * -1
             self.vel += self.acc * self.game.dt
             # Equations of motion
-            #self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 2
             self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 1.005
             self.hit_rect.centerx = self.pos.x
             collide_with_walls(self, self.game.walls, 'x')
@@ -249,10 +247,13 @@ class Mob(pg.sprite.Sprite):
             self.rect.center = self.hit_rect.center
         if self.hp <= 0: 
             Grave(self.game, self.pos, self.rot)
+            if random() < 0.25:
+                print('dropped item')
+                Item(self.game, self.pos, 'POTION_1', 'hp')
             self.kill()
 
 class Wall(pg.sprite.Sprite):
-    def __init__(self, game, x, y, stops_bullets):
+    def __init__(self, game, pos, stops_bullets):
         self._layer = LAYER['WALL']
         if stops_bullets:
             self.groups = game.walls, game.stops_bullets
@@ -260,20 +261,18 @@ class Wall(pg.sprite.Sprite):
             self.groups = game.walls
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
+        self.pos = pos
         self.rect = pg.Rect(0, 0, GEN['TILESIZE'], GEN['TILESIZE'])
-        self.x = x
-        self.y = y
-        self.rect.x = x * GEN['TILESIZE']
-        self.rect.y = y * GEN['TILESIZE']
+        self.rect.topleft = self.pos
 
 class Grave(pg.sprite.Sprite):
     def __init__(self, game, pos, rot):
         self._layer = LAYER['GRAVE']
         self.groups = game.all_sprites, game.graves
         pg.sprite.Sprite.__init__(self, self.groups)
+        self.pos = pos
         self.image = pg.transform.rotate(pg.transform.scale(choice(game.thrall_grave), (GEN['TILESIZE'], GEN['TILESIZE'])), rot)
         self.rect = self.image.get_rect()
-        self.pos = pos
         self.rect.center = pos
 
 class Weapon_VFX(pg.sprite.Sprite):
@@ -293,7 +292,7 @@ class Weapon_VFX(pg.sprite.Sprite):
             self.kill()
 
 class Item(pg.sprite.Sprite):
-    def __init__(self, game, x, y, img, kind):
+    def __init__(self, game, pos, img, kind):
         self._layer = LAYER['ITEM']
         self.groups = game.all_sprites, game.items
         pg.sprite.Sprite.__init__(self, self.groups)
@@ -301,8 +300,8 @@ class Item(pg.sprite.Sprite):
         self.image = game.item_img[img]
         self.kind = kind
         self.rect = self.image.get_rect()
-        self.rect.x, self.rect.y = x * GEN['TILESIZE'], y * GEN['TILESIZE']
-        self.pos = self.rect.center
+        self.pos = pos
+        self.rect.center = self.pos
         self.tween = tween.easeInOutSine
         self.step = 0
         self.dir = 1

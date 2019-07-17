@@ -36,7 +36,7 @@ class Game:
         self.undervoid_icon = pg.image.load(path.join(self.img_folder, IMG['ICON'])).convert_alpha()
         self.undervoid_icon = pg.transform.scale(self.undervoid_icon, (64, 64))
         self.vbullet_img = pg.image.load(path.join(self.img_folder, IMG['VBULLET'])).convert_alpha()
-        self.vbullet_img = pg.transform.scale(self.vbullet_img, (64, 64))
+        self.vbullet_img = pg.transform.scale(self.vbullet_img, (GEN['TILESIZE'], GEN['TILESIZE']))
         self.thrall_img = pg.image.load(path.join(self.img_folder, IMG['THRALL'])).convert_alpha()
         self.thrall_img = pg.transform.scale(self.thrall_img, (GEN['TILESIZE'], GEN['TILESIZE']))
         self.wall_img = pg.image.load(path.join(self.img_folder, IMG['VOIDWALL']))
@@ -96,16 +96,17 @@ class Game:
         for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
                 if tile == '1':
-                    Wall(self, col, row, True)
+                    Wall(self, vec(col, row) * GEN['TILESIZE'], True)
                 if tile == '0':
-                    Wall(self, col, row, False)
+                    Wall(self, vec(col, row) * GEN['TILESIZE'], False)
                 if tile == 'P':
                     self.player = Player(self, col, row)
                     self.pmove = pMove(self, col, row)
                 if tile == 'M':
                     Mob(self, col, row)
                 if tile == 'p':
-                    Item(self, col, row, 'POTION_1', 'hp')
+                    Item(self, vec(col, row) * GEN['TILESIZE'], 'POTION_1', 'hp')
+                    #Item(self, col, row, 'POTION_1', 'hp')
 
         self.camera = Camera(self.map.width, self.map.height, self.cursor)
         # https://stackoverflow.com/questions/51973441/how-to-fade-from-one-colour-to-another-in-pygame
@@ -196,6 +197,10 @@ class Game:
                     if event.key == pg.K_RETURN:
                         if self.selected == 'new':
                             self.intro = False
+                        elif self.selected == 'settings':
+                            print('Settings')
+                        elif self.selected == 'credits':
+                            print('Credits')
                         elif self.selected == 'exit':
                             self.quit()
                     if event.key == pg.K_UP:
