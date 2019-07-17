@@ -8,7 +8,7 @@
 
 import pygame as pg
 import sys
-from os import path
+from os import path, environ
 from settings import *
 from sprites import *
 from tilemap import Map
@@ -17,6 +17,7 @@ from tilemap import Camera
 class Game:
     def __init__(self):
         pg.init()
+        environ['SDL_VIDEO_CENTERED'] = '1'
         self.screen = pg.display.set_mode((GEN['WIDTH'], GEN['HEIGHT']))
         pg.display.set_caption(GEN['TITLE'])
         self.clock = pg.time.Clock()
@@ -30,16 +31,19 @@ class Game:
         self.maps_folder = path.join(self.data_folder, 'maps')
         self.music_folder = path.join(self.data_folder, 'music')
         self.sound_folder = path.join(self.data_folder, 'sounds')
+        self.fonts_folder = path.join(self.data_folder, 'fonts')
 
         self.undervoid_icon = pg.image.load(path.join(self.img_folder, IMG['ICON'])).convert_alpha()
         self.undervoid_icon = pg.transform.scale(self.undervoid_icon, (64, 64))
-        #self.player_img = pg.image.load(path.join(self.img_folder, IMG['VOIDWALKER'])).convert_alpha()
         self.vbullet_img = pg.image.load(path.join(self.img_folder, IMG['VBULLET'])).convert_alpha()
         self.vbullet_img = pg.transform.scale(self.vbullet_img, (64, 64))
         self.thrall_img = pg.image.load(path.join(self.img_folder, IMG['THRALL'])).convert_alpha()
         self.thrall_img = pg.transform.scale(self.thrall_img, (GEN['TILESIZE'], GEN['TILESIZE']))
         self.wall_img = pg.image.load(path.join(self.img_folder, IMG['VOIDWALL']))
         self.wall_img = pg.transform.scale(self.wall_img, (GEN['TILESIZE'], GEN['TILESIZE']))
+
+        self.title_art = pg.transform.scale((pg.image.load(
+            path.join(self.img_folder, IMG['TITLE'])).convert_alpha()), GEN['TITLE_DIMENSIONS'])
 
         self.player_img_list = []
         self.pmove_img = []
@@ -69,8 +73,6 @@ class Game:
         for sound in SOUNDS:
             self.sounds[sound] = pg.mixer.Sound(path.join(self.sound_folder, SOUNDS[sound]))
         pg.mixer.init()
-        pg.mixer.music.load(path.join(self.music_folder, MUSIC['leavinghome']))
-        pg.mixer.music.play(-1, 0.0)
 
         pg.mouse.set_visible(False)
         pg.display.set_icon(self.undervoid_icon)
@@ -112,6 +114,12 @@ class Game:
         self.change_every_x_seconds = 2
         self.number_of_steps = self.change_every_x_seconds * GEN['FPS']
         self.step = 1
+
+        pg.mixer.music.load(path.join(self.music_folder, MUSIC['leavinghome']))
+        pg.mixer.music.play(-1, 0.0)
+
+    def spawner(self):
+        pass
 
     def run(self):
         self.playing = True
@@ -184,9 +192,53 @@ class Game:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     self.quit()
+                if self.intro:
+                    if event.key == pg.K_RETURN:
+                        if self.selected == 'start':
+                            self.intro = False
+                        elif self.selected == 'quit':
+                            self.quit()
+                    if event.key == pg.K_UP:
+                        self.selected = 'start'
+                    elif event.key == pg.K_DOWN:
+                        self.selected = 'quit'
+
+    # Text Renderer https://www.sourcecodester.com/tutorials/python/11784/python-pygame-simple-main-menu-selection.html
+    def text_format(self, message, textFont, textSize, textColor):
+        newFont=pg.font.Font(textFont, textSize)
+        #newFont = pg.font.SysFont('franklingothic', textSize)
+        newText=newFont.render(message, 0, textColor)
+
+        return newText
 
     def show_start_screen(self):
-        pass
+        pg.mixer.music.load(path.join(self.music_folder, MUSIC['voidwalk']))
+        pg.mixer.music.play(-1, 0.0)
+        # https://www.1001freefonts.com/monster-of-south.font
+        self.font = path.join(self.fonts_folder, "monster_of_south_st.ttf")
+        self.intro = True
+        self.selected = "start"
+        while self.intro:
+            self.events()
+            self.screen.fill((0, 0, 0))
+            self.screen.blit(self.title_art, ((GEN['WIDTH'] - GEN['TITLE_DIMENSIONS'][0])/2, 20))
+            pg.display.update()
+            # https://www.sourcecodester.com/tutorials/python/11784/python-pygame-simple-main-menu-selection.html
+            if self.selected=="start":
+                text_start=self.text_format("START", self.font, 75, COLORS['MEDIUMVIOLETRED'])
+            else:
+                text_start = self.text_format("START", self.font, 75, COLORS['WHITE'])
+            if self.selected=="quit":
+                text_quit=self.text_format("QUIT", self.font, 75, COLORS['MEDIUMVIOLETRED'])
+            else:
+                text_quit = self.text_format("QUIT", self.font, 75, COLORS['WHITE'])
+
+            start_rect=text_start.get_rect()
+            quit_rect=text_quit.get_rect()
+            self.screen.blit(text_start, (GEN['WIDTH']/2 - (start_rect[2]/2), 300))
+            self.screen.blit(text_quit, (GEN['WIDTH']/2 - (quit_rect[2]/2), 360))
+            pg.display.update()
+            self.clock.tick(15)
 
     def show_go_screen(self):
         pass

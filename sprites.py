@@ -26,7 +26,7 @@ def draw_hp(surface, x, y, pct, b_len, b_height, player):
     fill = pct * b_len
     hp_bar = pg.Rect(x, y, fill, b_height)
     pg.draw.rect(surface, color, hp_bar)
-    if player == True:
+    if player:
         outline_rect = pg.Rect(x, y, b_len, b_height)
         pg.draw.rect(surface, COLORS['WHITE'], outline_rect, 2)
 
@@ -137,8 +137,8 @@ class Player(pg.sprite.Sprite):
             now = pg.time.get_ticks()
             if now - self.last_shot > WEAPON['VBULLET_RATE']:
                 self.last_shot = now
-                test = (self.game.cursor.pos - self.pos).angle_to(vec(1, 0))
-                dir = vec(1, 0).rotate(-test)
+                angle = (self.game.cursor.pos - self.pos).angle_to(vec(1, 0))
+                dir = vec(1, 0).rotate(-angle)
                 pos = self.pos + PLAYER['HAND_OFFSET'].rotate(-self.rot)
                 Bullet(self.game, pos, dir, self.rot)
                 if random() < 0.75:
@@ -240,7 +240,8 @@ class Mob(pg.sprite.Sprite):
             self.acc += self.vel * -1
             self.vel += self.acc * self.game.dt
             # Equations of motion
-            self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 2
+            #self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 2
+            self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 1.005
             self.hit_rect.centerx = self.pos.x
             collide_with_walls(self, self.game.walls, 'x')
             self.hit_rect.centery = self.pos.y

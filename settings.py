@@ -19,7 +19,8 @@ COLORS = {
     'GREEN': (0, 255, 0),
     'RED': (255, 0, 0),
     'YELLOW': (255, 255, 0),
-    'DARKBLUE':  (0, 0, 50)
+    'DARKBLUE':  (0, 0, 50),
+    'MEDIUMVIOLETRED': (199, 21, 133, 255)
 }
 
 # https://fschutt.github.io/pygame3-colors/
@@ -31,6 +32,7 @@ VOID_COLORS = [
     'darkviolet',
     'purple4',
     'mediumvioletred',
+    'deepskyblue4'
 ]
 
 GEN = {
@@ -38,9 +40,9 @@ GEN = {
     'HEIGHT': 900,  # 16 * 48 or 32 * 24 or 64 * 12
     'FPS': 120,
     'TITLE': 'Undervoid',
-    'BGCOLOR': COLORS['BLACK'],
     'TILESIZE': 64,
     'PLAYERSIZE': 128,
+    'TITLE_DIMENSIONS': (535, 65)
 }
 
 GRID = {
