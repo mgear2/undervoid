@@ -194,14 +194,14 @@ class Game:
                     self.quit()
                 if self.intro:
                     if event.key == pg.K_RETURN:
-                        if self.selected == 'start':
+                        if self.selected == 'new':
                             self.intro = False
-                        elif self.selected == 'quit':
+                        elif self.selected == 'exit':
                             self.quit()
                     if event.key == pg.K_UP:
-                        self.selected = 'start'
+                        self.menu_index -= 1
                     elif event.key == pg.K_DOWN:
-                        self.selected = 'quit'
+                        self.menu_index += 1
 
     # Text Renderer https://www.sourcecodester.com/tutorials/python/11784/python-pygame-simple-main-menu-selection.html
     def text_format(self, message, textFont, textSize, textColor):
@@ -217,26 +217,27 @@ class Game:
         # https://www.1001freefonts.com/monster-of-south.font
         self.font = path.join(self.fonts_folder, "monster_of_south_st.ttf")
         self.intro = True
-        self.selected = "start"
+        self.menu_index = 0
+        menu_items = ["new", "settings", "credits", "exit"]
         while self.intro:
             self.events()
-            self.screen.fill((0, 0, 0))
-            self.screen.blit(self.title_art, ((GEN['WIDTH'] - GEN['TITLE_DIMENSIONS'][0])/2, 20))
-            pg.display.update()
-            # https://www.sourcecodester.com/tutorials/python/11784/python-pygame-simple-main-menu-selection.html
-            if self.selected=="start":
-                text_start=self.text_format("START", self.font, 75, COLORS['MEDIUMVIOLETRED'])
-            else:
-                text_start = self.text_format("START", self.font, 75, COLORS['WHITE'])
-            if self.selected=="quit":
-                text_quit=self.text_format("QUIT", self.font, 75, COLORS['MEDIUMVIOLETRED'])
-            else:
-                text_quit = self.text_format("QUIT", self.font, 75, COLORS['WHITE'])
-
-            start_rect=text_start.get_rect()
-            quit_rect=text_quit.get_rect()
-            self.screen.blit(text_start, (GEN['WIDTH']/2 - (start_rect[2]/2), 300))
-            self.screen.blit(text_quit, (GEN['WIDTH']/2 - (quit_rect[2]/2), 360))
+            self.screen.fill(COLORS['BLACK'])
+            self.screen.blit(self.title_art, ((GEN['WIDTH'] - GEN['TITLE_DIMENSIONS'][0])/2, 50))
+            if self.menu_index > len(menu_items) - 1:
+                self.menu_index = 0
+            elif self.menu_index < 0:
+                self.menu_index = len(menu_items) - 1
+            self.selected = menu_items[self.menu_index]
+            item_y = 300
+            for item in menu_items:
+                if item == self.selected:
+                    color = COLORS['MEDIUMVIOLETRED']
+                else:
+                    color = COLORS['WHITE']
+                # https://www.sourcecodester.com/tutorials/python/11784/python-pygame-simple-main-menu-selection.html
+                item_text = self.text_format(item.upper(), self.font, 60, color)
+                self.screen.blit(item_text, (GEN['WIDTH']/2 - (item_text.get_rect()[2]/2), item_y))
+                item_y += 60
             pg.display.update()
             self.clock.tick(15)
 
