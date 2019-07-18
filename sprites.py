@@ -208,8 +208,9 @@ class Mob(pg.sprite.Sprite):
         self.rot = 0
         self.hp = MOB['THRALL_HP']
         self.max_hp = MOB['THRALL_HP']
-        self.speed = choice(MOB['THRALL_SPEED'])
+        self.speed = MOB['THRALL_SPEED'] * choice([13, 14, 15, 16])
         self.triggered = False
+        self.last_hit = 0
 
     def avoid_mobs(self):
         for mob in self.game.mobs:
@@ -223,13 +224,14 @@ class Mob(pg.sprite.Sprite):
         self.rot = self.target_dist.angle_to(vec(1,0))
         self.image = pg.transform.rotate(self.game.thrall_img, self.rot)
         self.rect = self.image.get_rect()
+        self.rect.center = self.pos
         if self.triggered == False and self.target_dist.length_squared() < MOB['DETECT_RADIUS'] ** 2:    
             self.triggered = True
+            self.game.sounds['growl01'].play()
         if self.triggered:
             #self.acc = vec(MOB['THRALL_SPEED'][0],0).rotate(-self.rot)
             if random() < 0.0015:
                 self.game.sounds['growl01'].play()
-            self.rect.center = self.pos
             self.acc = vec(1, 0).rotate(-self.rot)
             self.avoid_mobs()
             try:

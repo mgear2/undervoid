@@ -57,15 +57,15 @@ class Game:
         self.floor_img = []
         self.thrall_grave = []
 
-        self.item_img['POTION_1'] = pg.transform.scale(pg.image.load(path.join(self.img_folder, IMG['POTION_1'])).convert_alpha(), (48, 48))
+        self.item_img['POTION_1'] = pg.transform.scale(pg.image.load(path.join(self.img_folder, IMG['POTION_1'])).convert_alpha(), (int(GEN['TILESIZE']*.75), (int(GEN['TILESIZE']*.75))))
 
         for img in IMG['VOIDWALKER']:
             self.player_img_list.append(pg.image.load(path.join(self.img_folder, img)).convert_alpha())
-        self.player_img = pg.transform.scale(self.player_img_list[0], (GEN['PLAYERSIZE'], GEN['PLAYERSIZE']))
+        self.player_img = pg.transform.scale(self.player_img_list[0], (PLAYER['SIZE'], PLAYER['SIZE']))
         for img in IMG['VOIDWALKER_MOVE']:
-            self.pmove_img.append(pg.transform.scale((pg.image.load(path.join(self.img_folder, img)).convert_alpha()), (GEN['PLAYERSIZE'] + 16, GEN['PLAYERSIZE'] + 16)))
+            self.pmove_img.append(pg.transform.scale((pg.image.load(path.join(self.img_folder, img)).convert_alpha()), (PLAYER['SIZE'], PLAYER['SIZE'])))
         for img in IMG['D_FLOOR']:
-            self.floor_img.append(pg.image.load(path.join(self.img_folder, img)).convert_alpha())
+            self.floor_img.append(pg.transform.scale((pg.image.load(path.join(self.img_folder, img)).convert_alpha()), (GEN['TILESIZE'], GEN['TILESIZE'])))
         for img in IMG['CURSOR']:
             self.cursor_img.append(pg.image.load(path.join(self.img_folder, img)).convert_alpha())
         for img in WEAPON['VBULLET_VFX']:
@@ -74,9 +74,10 @@ class Game:
             self.thrall_grave.append(pg.image.load(path.join(self.img_folder, img)).convert_alpha())
 
         self.sounds = {}
+        pg.mixer.init()
         for sound in SOUNDS:
             self.sounds[sound] = pg.mixer.Sound(path.join(self.sound_folder, SOUNDS[sound]))
-        pg.mixer.init()
+        #pg.mixer.init()
 
         pg.mouse.set_visible(False)
         pg.display.set_icon(self.undervoid_icon)
@@ -128,7 +129,8 @@ class Game:
     def run(self):
         self.playing = True
         while self.playing:
-            self.dt = self.clock.tick(GEN['FPS']) / 1000
+            # tick_busy_loop() uses more cpu but is more accurate
+            self.dt = self.clock.tick_busy_loop(GEN['FPS']) / 1000 
             self.events()
             self.update()
             self.draw()
@@ -150,12 +152,17 @@ class Game:
         # mobs hitting player
         hits = pg.sprite.spritecollide(self.player, self.mobs, False, collide_hit_rect)
         for hit in hits:
-            self.player.hp -= MOB['THRALL_DMG']
-            hit.vel = vec(0, 0)
+            now = pg.time.get_ticks()
+            if now - hit.last_hit > MOB['DMG_RATE']:
+                hit.last_hit = now
+                self.player.hp -= MOB['THRALL_DMG']
+                hit.vel = vec(0, 0)
+                self.player.pos += vec(MOB['THRALL_KB'], 0).rotate(-hits[0].rot)
+                self.sounds[(choice(HIT_SOUNDS))].play()
+            elif random() < 0.5: # enemies get bounced back on ~50% of failed hits
+                hit.pos += vec(MOB['THRALL_KB'], 0).rotate(hits[0].rot)
             if self.player.hp <= 0:
                 self.playing = False
-        if hits:
-            self.player.pos += vec(MOB['THRALL_KB'], 0).rotate(-hits[0].rot)
         # bullets hitting mobs
         hits = pg.sprite.groupcollide(self.mobs, self.bullets, False, True)
         for hit in hits:
@@ -184,7 +191,7 @@ class Game:
         #self.draw_grid()
         for sprite in self.all_sprites:
             if isinstance(sprite, Mob) and sprite.hp < sprite.max_hp:
-                draw_hp(sprite.image, 0, 0, sprite.hp / sprite.max_hp, GEN['TILESIZE'], 7, False)
+                draw_hp(sprite.image, 0, 0, sprite.hp / sprite.max_hp, GEN['TILESIZE'], int(GEN['TILESIZE']/10), False)
             self.screen.blit(sprite.image, self.camera.apply(sprite))
         draw_hp(self.screen, 10, GEN['HEIGHT'] - 30, self.player.hp / PLAYER['HP'], 200, 15, True)
         pg.display.flip()
@@ -242,12 +249,11 @@ class Game:
                     color = COLORS['MEDIUMVIOLETRED']
                 else:
                     color = COLORS['WHITE']
-                # https://www.sourcecodester.com/tutorials/python/11784/python-pygame-simple-main-menu-selection.html
                 item_text = self.text_format(item.upper(), self.font, 60, color)
                 self.screen.blit(item_text, (GEN['WIDTH']/2 - (item_text.get_rect()[2]/2), item_y))
                 item_y += 60
             pg.display.update()
-            self.clock.tick(15)
+            self.clock.tick_busy_loop(GEN['FPS'])
 
     def show_go_screen(self):
         pass

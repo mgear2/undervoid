@@ -7,6 +7,7 @@
 # https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap
 
 import pygame as pg
+from random import choice
 vec = pg.math.Vector2
 
 """ General Settings: COLORS, GEN, GRID, LAYER
@@ -39,10 +40,9 @@ GEN = {
     'SCREEN': 'windowed',
     'WIDTH': 1440,
     'HEIGHT': 900,
-    'FPS': 120,
+    'FPS': 100,
     'TITLE': 'Undervoid',
     'TILESIZE': 64,
-    'PLAYERSIZE': 128,
     'TITLE_DIMENSIONS': (535, 65)
 }
 
@@ -67,7 +67,8 @@ LAYER = {
 """ Entity Settings: PLAYER, WEAPON, MOB, ITEMS
 """
 PLAYER = {
-    'SPEED': 500,
+    'SIZE': GEN['TILESIZE'] * 2,
+    'SPEED': GEN['TILESIZE'] * 10,
     'ROT_SPEED': 250,
     'HIT_RECT': pg.Rect(0, 0, 35, 35),
     'HAND_OFFSET': vec(65, 25),
@@ -77,24 +78,25 @@ PLAYER = {
 
 WEAPON = {
     'VBULLET_SPEED': 1500 + PLAYER['SPEED'],
-    'VBULLET_LIFETIME': 1000,
+    'VBULLET_LIFETIME': GEN['TILESIZE'] * 10,
     'VBULLET_RATE': 150,
     'VSPREAD': 5,
     'VDMG': 10 * PLAYER['DMG_MULT'],
     'VBULLET_VFX': ['voiddust01.png', 'voiddust02.png', 'voiddust03.png', 'voiddust04.png'],
-    'VDUST_SIZE': 32,
+    'VDUST_SIZE': GEN['TILESIZE'],
     'VDUST_LIFETIME': 40
 }
 
 MOB = {
-    'THRALL_SPEED': [600, 650, 700, 750],
-    'THRALL_HIT_RECT': pg.Rect(0, 0, 35, 35),
+    'THRALL_SPEED': GEN['TILESIZE'],#[600, 650, 700, 750],
+    'THRALL_HIT_RECT': pg.Rect(0, 0, GEN['TILESIZE']/2, GEN['TILESIZE']/2),
     'THRALL_HP': 75,
-    'THRALL_DMG': 10,
+    'THRALL_DMG': 15,
     'THRALL_KB': 20, # knockback
-    'THRALL_RADIUS': 75,
-    'DETECT_RADIUS': 800,
-    'DROP_CHANCE': 0.35
+    'THRALL_RADIUS': GEN['TILESIZE'],
+    'DETECT_RADIUS': GEN['TILESIZE'] * 12,
+    'DROP_CHANCE': 0.35,
+    'DMG_RATE': 150
 }
 
 ITEMS = {
@@ -146,5 +148,14 @@ SOUNDS = {
     'treasure01': 'treasure01.wav',
     'treasure02': 'treasure02.wav',
     'woadbear01': 'woadbear01.wav',
-    'wave01': 'wave01.wav'
+    'wave01': 'wave01.wav',
+    'hit01': 'hit01.wav',
+    'hit02': 'hit02.wav',
+    'hit03': 'hit03.wav'
 }
+
+HIT_SOUNDS = [
+    'hit01',
+    'hit02',
+    'hit03'
+]

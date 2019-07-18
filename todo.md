@@ -1,6 +1,5 @@
 Make a limit on how much damage each enemy can do per second  
 Modify settings so that pixel-number-based variables consistently scale off of tilesize  
-Detect monitor resolution on startup?  
 Settings menu with persistent settings file  
 Credits menu  
 Gold coin as collectable item  
