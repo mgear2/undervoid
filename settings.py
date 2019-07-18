@@ -68,7 +68,7 @@ LAYER = {
 """
 PLAYER = {
     'SIZE': GEN['TILESIZE'] * 2,
-    'SPEED': GEN['TILESIZE'] * 10,
+    'SPEED': GEN['TILESIZE'] * 8,
     'ROT_SPEED': 250,
     'HIT_RECT': pg.Rect(0, 0, 35, 35),
     'HAND_OFFSET': vec(65, 25),
@@ -88,7 +88,7 @@ WEAPON = {
 }
 
 MOB = {
-    'THRALL_SPEED': GEN['TILESIZE'],#[600, 650, 700, 750],
+    'THRALL_SPEED': [10, 11, 12, 13],#[600, 650, 700, 750],
     'THRALL_HIT_RECT': pg.Rect(0, 0, GEN['TILESIZE']/2, GEN['TILESIZE']/2),
     'THRALL_HP': 75,
     'THRALL_DMG': 15,

@@ -208,7 +208,7 @@ class Mob(pg.sprite.Sprite):
         self.rot = 0
         self.hp = MOB['THRALL_HP']
         self.max_hp = MOB['THRALL_HP']
-        self.speed = MOB['THRALL_SPEED'] * choice([13, 14, 15, 16])
+        self.speed = GEN['TILESIZE'] * choice(MOB['THRALL_SPEED'])
         self.triggered = False
         self.last_hit = 0
 

@@ -246,9 +246,9 @@ class Game:
             item_y = 300
             for item in menu_items:
                 if item == self.selected:
-                    color = COLORS['MEDIUMVIOLETRED']
-                else:
                     color = COLORS['WHITE']
+                else:
+                    color = COLORS['MEDIUMVIOLETRED']
                 item_text = self.text_format(item.upper(), self.font, 60, color)
                 self.screen.blit(item_text, (GEN['WIDTH']/2 - (item_text.get_rect()[2]/2), item_y))
                 item_y += 60
