@@ -247,8 +247,7 @@ class Mob(pg.sprite.Sprite):
             self.rect.center = self.hit_rect.center
         if self.hp <= 0: 
             Grave(self.game, self.pos, self.rot)
-            if random() < 0.25:
-                print('dropped item')
+            if random() < MOB['DROP_CHANCE']:
                 Item(self.game, self.pos, 'POTION_1', 'hp')
             self.kill()
 

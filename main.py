@@ -18,7 +18,11 @@ class Game:
     def __init__(self):
         pg.init()
         environ['SDL_VIDEO_CENTERED'] = '1'
-        self.screen = pg.display.set_mode((GEN['WIDTH'], GEN['HEIGHT']))
+        if GEN['SCREEN'] == 'full':
+            GEN['WIDTH'], GEN['HEIGHT'] = pg.display.Info().current_w, pg.display.Info().current_h
+            self.screen = pg.display.set_mode((0,0),pg.FULLSCREEN)
+        else:
+            self.screen = pg.display.set_mode((GEN['WIDTH'], GEN['HEIGHT']))
         pg.display.set_caption(GEN['TITLE'])
         self.clock = pg.time.Clock()
         pg.key.set_repeat(100, 100)
@@ -106,7 +110,6 @@ class Game:
                     Mob(self, col, row)
                 if tile == 'p':
                     Item(self, vec(col, row) * GEN['TILESIZE'], 'POTION_1', 'hp')
-                    #Item(self, col, row, 'POTION_1', 'hp')
 
         self.camera = Camera(self.map.width, self.map.height, self.cursor)
         # https://stackoverflow.com/questions/51973441/how-to-fade-from-one-colour-to-another-in-pygame

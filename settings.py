@@ -36,8 +36,9 @@ VOID_COLORS = [
 ]
 
 GEN = {
-    'WIDTH': 1440,   # 16 * 64 or 32 * 32 or 64 * 16
-    'HEIGHT': 900,  # 16 * 48 or 32 * 24 or 64 * 12
+    'SCREEN': 'windowed',
+    'WIDTH': 1440,
+    'HEIGHT': 900,
     'FPS': 120,
     'TITLE': 'Undervoid',
     'TILESIZE': 64,
@@ -92,7 +93,8 @@ MOB = {
     'THRALL_DMG': 10,
     'THRALL_KB': 20, # knockback
     'THRALL_RADIUS': 75,
-    'DETECT_RADIUS': 800
+    'DETECT_RADIUS': 800,
+    'DROP_CHANCE': 0.35
 }
 
 ITEMS = {
