@@ -7,7 +7,6 @@
 # https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap
 
 import pygame as pg
-from settings import *
 from random import choice
 from os import sys
 
@@ -23,15 +22,15 @@ class Map:
                 self.data.append(line.strip('\n'))
         self.tilewidth = len(self.data[0])
         self.tileheight = len(self.data)
-        self.width = self.tilewidth * GEN['TILESIZE']
-        self.height = self.tileheight * GEN['TILESIZE']
+        self.width = self.tilewidth * self.game.settings['gen']['tilesize']
+        self.height = self.tileheight * self.game.settings['gen']['tilesize']
         self.rot = [0, 90, 180, 270]
 
     def render(self, surface):
         for row, tiles in enumerate(self.data):
-            row *= GEN['TILESIZE']
+            row *= self.game.settings['gen']['tilesize']
             for col, tile in enumerate(tiles):
-                col *= GEN['TILESIZE']
+                col *= self.game.settings['gen']['tilesize']
                 if tile != ' ' and tile != '0':
                     self.floor_img = pg.transform.rotate(
                         choice(self.game.floor_img), choice(self.rot))
@@ -46,7 +45,8 @@ class Map:
         return temp_surface
 
 class Camera:
-    def __init__(self, width, height, cursor):
+    def __init__(self, game, width, height, cursor):
+        self.game = game
         self.camera = pg.Rect(0, 0, width, height)
         self.width = width
         self.height = height
@@ -59,8 +59,8 @@ class Camera:
         return rect.move(self.camera.topleft)
 
     def update(self, target):
-        x = -target.rect.centerx + int(GEN['WIDTH'] / 2)
-        y = -target.rect.centery + int(GEN['HEIGHT'] / 2)
+        x = -target.rect.centerx + int(self.game.settings['gen']['width'] / 2)
+        y = -target.rect.centery + int(self.game.settings['gen']['height'] / 2)
         self.camera = pg.Rect(x, y, self.width, self.height)
         self.cursor.rect.centerx -= x
         self.cursor.rect.centery -= y

@@ -3,3 +3,4 @@ voidwalk0.wav
 *.pyc
 data/img/old/
 Pipfile.lock
+.vscode/

@@ -6,10 +6,6 @@
 # Building off example code from
 # https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap
 
-import pygame as pg
-from random import choice
-vec = pg.math.Vector2
-
 """ General Settings: COLORS, GEN, GRID, LAYER
 """
 COLORS = {
@@ -37,10 +33,10 @@ VOID_COLORS = [
 ]
 
 GEN = {
-    'SCREEN': 'windowed',
+    'SCREEN': 'win',
     'WIDTH': 1440,
     'HEIGHT': 900,
-    'FPS': 100,
+    'FPS': 60,
     'TITLE': 'Undervoid',
     'TILESIZE': 64,
     'TITLE_DIMENSIONS': (535, 65)
@@ -70,8 +66,8 @@ PLAYER = {
     'SIZE': GEN['TILESIZE'] * 2,
     'SPEED': GEN['TILESIZE'] * 8,
     'ROT_SPEED': 250,
-    'HIT_RECT': pg.Rect(0, 0, 35, 35),
-    'HAND_OFFSET': vec(65, 25),
+    'HIT_RECT': (0, 0, 35, 35),
+    'HAND_OFFSET': (65, 25),
     'DMG_MULT': 1.5,
     'HP': 100
 }
@@ -89,7 +85,7 @@ WEAPON = {
 
 MOB = {
     'THRALL_SPEED': [10, 11, 12, 13],#[600, 650, 700, 750],
-    'THRALL_HIT_RECT': pg.Rect(0, 0, GEN['TILESIZE']/2, GEN['TILESIZE']/2),
+    'THRALL_HIT_RECT': (0, 0, GEN['TILESIZE']/2, GEN['TILESIZE']/2),
     'THRALL_HP': 75,
     'THRALL_DMG': 15,
     'THRALL_KB': 20, # knockback

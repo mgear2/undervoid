@@ -1,0 +1,29 @@
+gen:
+  screen    : full
+  width     : 1440
+  height    : 900
+  fps       : 60
+  title     : Undervoid
+  tilesize  : 64
+  titledim  : [535, 65]
+
+colors:
+  white           : [255, 255, 255]
+  black           : [0, 0, 0]
+  darkgrey        : [40, 40, 40]
+  lightgrey       : [100, 100, 100]
+  green           : [0, 255, 0]
+  red             : [255, 0, 0]
+  yellow          : [255, 255, 0]
+  darkblue        : [0, 0, 50]
+  mediumvioletred : [199, 21, 133, 255]
+
+void_colors:
+  - black
+  - gray0
+  - gray1
+  - darkmagenta
+  - darkviolet
+  - purple4
+  - mediumvioletred
+  - deepskyblue4

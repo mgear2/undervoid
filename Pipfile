@@ -8,5 +8,6 @@ verify_ssl = true
 [packages]
 pygame = "*"
 pytweening = "*"
+pyyaml = "*"
 
 [requires]

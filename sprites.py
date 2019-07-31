@@ -84,7 +84,7 @@ class pMove(pg.sprite.Sprite):
         self.current = self.image
         self.rect = self.image.get_rect()
         self.rect.center = x, y
-        self.pos = vec(x, y) * GEN['TILESIZE']
+        self.pos = vec(x, y) * self.game.settings['gen']['tilesize']
         self.rot = 0
         self.last = 0
         self.i = 0
@@ -112,10 +112,10 @@ class Player(pg.sprite.Sprite):
         self.image = game.player_img
         self.rect = self.image.get_rect()
         self.rect.center = x, y
-        self.hit_rect = PLAYER['HIT_RECT']
+        self.hit_rect = pg.Rect(PLAYER['HIT_RECT'])
         self.hit_rect.center = self.rect.center
         self.vel = vec(0, 0)
-        self.pos = vec(x, y) * GEN['TILESIZE']
+        self.pos = vec(x, y) * self.game.settings['gen']['tilesize']
         self.rot = 0
         self.last_shot = 0
         self.hp = PLAYER['HP']
@@ -139,11 +139,11 @@ class Player(pg.sprite.Sprite):
                 self.last_shot = now
                 angle = (self.game.cursor.pos - self.pos).angle_to(vec(1, 0))
                 dir = vec(1, 0).rotate(-angle)
-                pos = self.pos + PLAYER['HAND_OFFSET'].rotate(-self.rot)
+                pos = self.pos + vec(PLAYER['HAND_OFFSET']).rotate(-self.rot)
                 Bullet(self.game, pos, dir, self.rot)
                 if random() < 0.75:
                     self.game.sounds['wave01'].play()
-                Weapon_VFX(self.game, self.pos + PLAYER['HAND_OFFSET'].rotate(-self.rot))
+                Weapon_VFX(self.game, self.pos + vec(PLAYER['HAND_OFFSET']).rotate(-self.rot))
 
         if self.vel.x != 0 and self.vel.y != 0:
             # correct diagonal movement to be same speed
@@ -199,16 +199,16 @@ class Mob(pg.sprite.Sprite):
         self.image = game.thrall_img
         self.rect = self.image.get_rect()
         self.rect.center = x, y
-        self.hit_rect = MOB['THRALL_HIT_RECT'].copy()
+        self.hit_rect = pg.Rect(MOB['THRALL_HIT_RECT'])
         self.hit_rect.center = self.rect.center
-        self.pos = vec(x, y) * GEN['TILESIZE']
+        self.pos = vec(x, y) * self.game.settings['gen']['tilesize']
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
         self.rect.center = self.pos
         self.rot = 0
         self.hp = MOB['THRALL_HP']
         self.max_hp = MOB['THRALL_HP']
-        self.speed = GEN['TILESIZE'] * choice(MOB['THRALL_SPEED'])
+        self.speed = self.game.settings['gen']['tilesize'] * choice(MOB['THRALL_SPEED'])
         self.triggered = False
         self.last_hit = 0
 
@@ -263,16 +263,17 @@ class Wall(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.pos = pos
-        self.rect = pg.Rect(0, 0, GEN['TILESIZE'], GEN['TILESIZE'])
+        self.rect = pg.Rect(0, 0, self.game.settings['gen']['tilesize'], self.game.settings['gen']['tilesize'])
         self.rect.topleft = self.pos
 
 class Grave(pg.sprite.Sprite):
     def __init__(self, game, pos, rot):
+        self.game = game
         self._layer = LAYER['GRAVE']
         self.groups = game.all_sprites, game.graves
         pg.sprite.Sprite.__init__(self, self.groups)
         self.pos = pos
-        self.image = pg.transform.rotate(pg.transform.scale(choice(game.thrall_grave), (GEN['TILESIZE'], GEN['TILESIZE'])), rot)
+        self.image = pg.transform.rotate(pg.transform.scale(choice(game.thrall_grave), (self.game.settings['gen']['tilesize'], self.game.settings['gen']['tilesize'])), rot)
         self.rect = self.image.get_rect()
         self.rect.center = pos
 
