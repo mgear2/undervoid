@@ -1,6 +1,10 @@
 ![undervoidtitle](/data/img/undervoidtitle.png)
 
-# Undervoid  
+# Undervoid
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 Copyright (c) 2019 Matthew Geary  
 
 "There are more things in the Undervoid, Horatio, than are dreamt of in your philosophy."
