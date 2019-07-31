@@ -15,43 +15,66 @@ from sprites import *
 from tilemap import Map
 from tilemap import Camera
 
+
 class Game:
     def __init__(self):
         pg.init()
-        with open('settings.yaml') as f:
+        with open("settings.yaml") as f:
             self.settings = yaml.safe_load(f)
             f.close()
-        environ['SDL_VIDEO_CENTERED'] = '1'
-        if self.settings['gen']['screen'] == 'full':
-            self.settings['gen']['width'], self.settings['gen']['height'] = pg.display.Info().current_w, pg.display.Info().current_h
-            self.screen = pg.display.set_mode((0,0),pg.FULLSCREEN )
+        environ["SDL_VIDEO_CENTERED"] = "1"
+        if self.settings["gen"]["screen"] == "full":
+            self.settings["gen"]["width"], self.settings["gen"]["height"] = (
+                pg.display.Info().current_w,
+                pg.display.Info().current_h,
+            )
+            self.screen = pg.display.set_mode((0, 0), pg.FULLSCREEN)
         else:
-            self.screen = pg.display.set_mode((self.settings['gen']['width'], self.settings['gen']['height']))    
-        pg.display.set_caption(self.settings['gen']['title'])
+            self.screen = pg.display.set_mode(
+                (self.settings["gen"]["width"], self.settings["gen"]["height"])
+            )
+        pg.display.set_caption(self.settings["gen"]["title"])
         self.clock = pg.time.Clock()
         pg.key.set_repeat(100, 100)
         self.load_data()
 
     def load_data(self):
         self.game_folder = path.dirname(__file__)
-        self.data_folder = path.join(self.game_folder, 'data')
-        self.img_folder = path.join(self.data_folder, 'img')
-        self.maps_folder = path.join(self.data_folder, 'maps')
-        self.music_folder = path.join(self.data_folder, 'music')
-        self.sound_folder = path.join(self.data_folder, 'sounds')
-        self.fonts_folder = path.join(self.data_folder, 'fonts')
+        self.data_folder = path.join(self.game_folder, "data")
+        self.img_folder = path.join(self.data_folder, "img")
+        self.maps_folder = path.join(self.data_folder, "maps")
+        self.music_folder = path.join(self.data_folder, "music")
+        self.sound_folder = path.join(self.data_folder, "sounds")
+        self.fonts_folder = path.join(self.data_folder, "fonts")
 
-        self.undervoid_icon = pg.image.load(path.join(self.img_folder, IMG['ICON'])).convert_alpha()
+        self.undervoid_icon = pg.image.load(
+            path.join(self.img_folder, IMG["ICON"])
+        ).convert_alpha()
         self.undervoid_icon = pg.transform.scale(self.undervoid_icon, (64, 64))
-        self.vbullet_img = pg.image.load(path.join(self.img_folder, IMG['VBULLET'])).convert_alpha()
-        self.vbullet_img = pg.transform.scale(self.vbullet_img, (self.settings['gen']['tilesize'], self.settings['gen']['tilesize']))
-        self.thrall_img = pg.image.load(path.join(self.img_folder, IMG['THRALL'])).convert_alpha()
-        self.thrall_img = pg.transform.scale(self.thrall_img, (self.settings['gen']['tilesize'], self.settings['gen']['tilesize']))
-        self.wall_img = pg.image.load(path.join(self.img_folder, IMG['VOIDWALL']))
-        self.wall_img = pg.transform.scale(self.wall_img, (self.settings['gen']['tilesize'], self.settings['gen']['tilesize']))
+        self.vbullet_img = pg.image.load(
+            path.join(self.img_folder, IMG["VBULLET"])
+        ).convert_alpha()
+        self.vbullet_img = pg.transform.scale(
+            self.vbullet_img,
+            (self.settings["gen"]["tilesize"], self.settings["gen"]["tilesize"]),
+        )
+        self.thrall_img = pg.image.load(
+            path.join(self.img_folder, IMG["THRALL"])
+        ).convert_alpha()
+        self.thrall_img = pg.transform.scale(
+            self.thrall_img,
+            (self.settings["gen"]["tilesize"], self.settings["gen"]["tilesize"]),
+        )
+        self.wall_img = pg.image.load(path.join(self.img_folder, IMG["VOIDWALL"]))
+        self.wall_img = pg.transform.scale(
+            self.wall_img,
+            (self.settings["gen"]["tilesize"], self.settings["gen"]["tilesize"]),
+        )
 
-        self.title_art = pg.transform.scale((pg.image.load(
-            path.join(self.img_folder, IMG['TITLE'])).convert_alpha()), self.settings['gen']['titledim'])
+        self.title_art = pg.transform.scale(
+            (pg.image.load(path.join(self.img_folder, IMG["TITLE"])).convert_alpha()),
+            self.settings["gen"]["titledim"],
+        )
 
         self.player_img_list = []
         self.pmove_img = []
@@ -61,31 +84,62 @@ class Game:
         self.floor_img = []
         self.thrall_grave = []
 
-        self.item_img['POTION_1'] = pg.transform.scale(pg.image.load(path.join(self.img_folder, IMG['POTION_1'])).convert_alpha(), (int(self.settings['gen']['tilesize']*.75), (int(self.settings['gen']['tilesize']*.75))))
+        self.item_img["POTION_1"] = pg.transform.scale(
+            pg.image.load(path.join(self.img_folder, IMG["POTION_1"])).convert_alpha(),
+            (
+                int(self.settings["gen"]["tilesize"] * 0.75),
+                (int(self.settings["gen"]["tilesize"] * 0.75)),
+            ),
+        )
 
-        for img in IMG['VOIDWALKER']:
-            self.player_img_list.append(pg.image.load(path.join(self.img_folder, img)).convert_alpha())
-        self.player_img = pg.transform.scale(self.player_img_list[0], (PLAYER['SIZE'], PLAYER['SIZE']))
-        for img in IMG['VOIDWALKER_MOVE']:
-            self.pmove_img.append(pg.transform.scale((pg.image.load(path.join(self.img_folder, img)).convert_alpha()), (PLAYER['SIZE'], PLAYER['SIZE'])))
-        for img in IMG['D_FLOOR']:
-            self.floor_img.append(pg.transform.scale((pg.image.load(path.join(self.img_folder, img)).convert_alpha()), (self.settings['gen']['tilesize'], self.settings['gen']['tilesize'])))
-        for img in IMG['CURSOR']:
-            self.cursor_img.append(pg.image.load(path.join(self.img_folder, img)).convert_alpha())
-        for img in WEAPON['VBULLET_VFX']:
-            self.weapon_vfx.append(pg.image.load(path.join(self.img_folder, img)).convert_alpha())
-        for img in IMG['THRALL_GRAVE']:
-            self.thrall_grave.append(pg.image.load(path.join(self.img_folder, img)).convert_alpha())
+        for img in IMG["VOIDWALKER"]:
+            self.player_img_list.append(
+                pg.image.load(path.join(self.img_folder, img)).convert_alpha()
+            )
+        self.player_img = pg.transform.scale(
+            self.player_img_list[0], (PLAYER["SIZE"], PLAYER["SIZE"])
+        )
+        for img in IMG["VOIDWALKER_MOVE"]:
+            self.pmove_img.append(
+                pg.transform.scale(
+                    (pg.image.load(path.join(self.img_folder, img)).convert_alpha()),
+                    (PLAYER["SIZE"], PLAYER["SIZE"]),
+                )
+            )
+        for img in IMG["D_FLOOR"]:
+            self.floor_img.append(
+                pg.transform.scale(
+                    (pg.image.load(path.join(self.img_folder, img)).convert_alpha()),
+                    (
+                        self.settings["gen"]["tilesize"],
+                        self.settings["gen"]["tilesize"],
+                    ),
+                )
+            )
+        for img in IMG["CURSOR"]:
+            self.cursor_img.append(
+                pg.image.load(path.join(self.img_folder, img)).convert_alpha()
+            )
+        for img in WEAPON["VBULLET_VFX"]:
+            self.weapon_vfx.append(
+                pg.image.load(path.join(self.img_folder, img)).convert_alpha()
+            )
+        for img in IMG["THRALL_GRAVE"]:
+            self.thrall_grave.append(
+                pg.image.load(path.join(self.img_folder, img)).convert_alpha()
+            )
 
         self.sounds = {}
         pg.mixer.init()
         for sound in SOUNDS:
-            self.sounds[sound] = pg.mixer.Sound(path.join(self.sound_folder, SOUNDS[sound]))
+            self.sounds[sound] = pg.mixer.Sound(
+                path.join(self.sound_folder, SOUNDS[sound])
+            )
 
         pg.mouse.set_visible(False)
         pg.display.set_icon(self.undervoid_icon)
 
-        self.map = Map(self, path.join(self.maps_folder, 'map3.txt'))
+        self.map = Map(self, path.join(self.maps_folder, "map3.txt"))
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
 
@@ -103,27 +157,32 @@ class Game:
 
         for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
-                if tile == '1':
-                    Wall(self, vec(col, row) * self.settings['gen']['tilesize'], True)
-                if tile == '0':
-                    Wall(self, vec(col, row) * self.settings['gen']['tilesize'], False)
-                if tile == 'P':
+                if tile == "1":
+                    Wall(self, vec(col, row) * self.settings["gen"]["tilesize"], True)
+                if tile == "0":
+                    Wall(self, vec(col, row) * self.settings["gen"]["tilesize"], False)
+                if tile == "P":
                     self.player = Player(self, col, row)
                     self.pmove = pMove(self, col, row)
-                if tile == 'M':
+                if tile == "M":
                     Mob(self, col, row)
-                if tile == 'p':
-                    Item(self, vec(col, row) * self.settings['gen']['tilesize'], 'POTION_1', 'hp')
+                if tile == "p":
+                    Item(
+                        self,
+                        vec(col, row) * self.settings["gen"]["tilesize"],
+                        "POTION_1",
+                        "hp",
+                    )
 
         self.camera = Camera(self, self.map.width, self.map.height, self.cursor)
         # https://stackoverflow.com/questions/51973441/how-to-fade-from-one-colour-to-another-in-pygame
         self.base_color = choice(VOID_COLORS)
         self.next_color = choice(VOID_COLORS)
         self.change_every_x_seconds = 2
-        self.number_of_steps = self.change_every_x_seconds * self.settings['gen']['fps']
+        self.number_of_steps = self.change_every_x_seconds * self.settings["gen"]["fps"]
         self.step = 1
 
-        pg.mixer.music.load(path.join(self.music_folder, MUSIC['leavinghome']))
+        pg.mixer.music.load(path.join(self.music_folder, MUSIC["leavinghome"]))
         pg.mixer.music.play(-1, 0.0)
 
     def spawner(self):
@@ -133,7 +192,7 @@ class Game:
         self.playing = True
         while self.playing:
             # tick_busy_loop() uses more cpu but is more accurate
-            self.dt = self.clock.tick_busy_loop(self.settings['gen']['fps']) / 1000 
+            self.dt = self.clock.tick_busy_loop(self.settings["gen"]["fps"]) / 1000
             self.events()
             self.update()
             self.draw()
@@ -148,33 +207,38 @@ class Game:
         # player hits items
         hits = pg.sprite.spritecollide(self.player, self.items, False, collide_hit_rect)
         for hit in hits:
-            if hit.kind == 'hp' and self.player.hp < PLAYER['HP']:
+            if hit.kind == "hp" and self.player.hp < PLAYER["HP"]:
                 hit.kill()
-                self.sounds['treasure02'].play()
-                self.player.add_hp(ITEMS['POTION_1_HP'])
+                self.sounds["treasure02"].play()
+                self.player.add_hp(ITEMS["POTION_1_HP"])
         # mobs hitting player
         hits = pg.sprite.spritecollide(self.player, self.mobs, False, collide_hit_rect)
         for hit in hits:
             now = pg.time.get_ticks()
-            if now - hit.last_hit > MOB['DMG_RATE']:
+            if now - hit.last_hit > MOB["DMG_RATE"]:
                 hit.last_hit = now
-                self.player.hp -= MOB['THRALL_DMG']
+                self.player.hp -= MOB["THRALL_DMG"]
                 hit.vel = vec(0, 0)
-                self.player.pos += vec(MOB['THRALL_KB'], 0).rotate(-hits[0].rot)
+                self.player.pos += vec(MOB["THRALL_KB"], 0).rotate(-hits[0].rot)
                 self.sounds[(choice(HIT_SOUNDS))].play()
-            elif random() < 0.5: # enemies get bounced back on ~50% of failed hits
-                hit.pos += vec(MOB['THRALL_KB'], 0).rotate(hits[0].rot)
+            elif random() < 0.5:  # enemies get bounced back on ~50% of failed hits
+                hit.pos += vec(MOB["THRALL_KB"], 0).rotate(hits[0].rot)
             if self.player.hp <= 0:
                 self.playing = False
         # bullets hitting mobs
         hits = pg.sprite.groupcollide(self.mobs, self.bullets, False, True)
         for hit in hits:
-            hit.hp -= WEAPON['VDMG']
-            #hit.vel = vec(0, 0)
+            hit.hp -= WEAPON["VDMG"]
+            # hit.vel = vec(0, 0)
         # https://stackoverflow.com/questions/51973441/how-to-fade-from-one-colour-to-another-in-pygame
         self.step += 1
         if self.step < self.number_of_steps:
-            self.current_color = [x + (((y-x)/self.number_of_steps)*self.step) for x, y in zip(pg.color.Color(self.base_color), pg.color.Color(self.next_color))]
+            self.current_color = [
+                x + (((y - x) / self.number_of_steps) * self.step)
+                for x, y in zip(
+                    pg.color.Color(self.base_color), pg.color.Color(self.next_color)
+                )
+            ]
         else:
             self.step = 1
             self.base_color = self.next_color
@@ -182,21 +246,51 @@ class Game:
         self.bg_color = self.current_color
 
     def draw_grid(self):
-        for x in range(0, self.settings['gen']['width'], self.settings['gen']['tilesize']):
-            pg.draw.line(self.screen, COLORS['LIGHTGREY'], (x, 0), (x, self.settings['gen']['height']))
-        for y in range(0, self.settings['gen']['height'], self.settings['gen']['tilesize']):
-            pg.draw.line(self.screen, COLORS['LIGHTGREY'], (0, y), (self.settings['gen']['width'], y))
+        for x in range(
+            0, self.settings["gen"]["width"], self.settings["gen"]["tilesize"]
+        ):
+            pg.draw.line(
+                self.screen,
+                COLORS["LIGHTGREY"],
+                (x, 0),
+                (x, self.settings["gen"]["height"]),
+            )
+        for y in range(
+            0, self.settings["gen"]["height"], self.settings["gen"]["tilesize"]
+        ):
+            pg.draw.line(
+                self.screen,
+                COLORS["LIGHTGREY"],
+                (0, y),
+                (self.settings["gen"]["width"], y),
+            )
 
     def draw(self):
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
         self.screen.fill(self.bg_color)
         self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
-        #self.draw_grid()
+        # self.draw_grid()
         for sprite in self.all_sprites:
             if isinstance(sprite, Mob) and sprite.hp < sprite.max_hp:
-                draw_hp(sprite.image, 0, 0, sprite.hp / sprite.max_hp, self.settings['gen']['tilesize'], int(self.settings['gen']['tilesize']/10), False)
+                draw_hp(
+                    sprite.image,
+                    0,
+                    0,
+                    sprite.hp / sprite.max_hp,
+                    self.settings["gen"]["tilesize"],
+                    int(self.settings["gen"]["tilesize"] / 10),
+                    False,
+                )
             self.screen.blit(sprite.image, self.camera.apply(sprite))
-        draw_hp(self.screen, 10, self.settings['gen']['height'] - 30, self.player.hp / PLAYER['HP'], 200, 15, True)
+        draw_hp(
+            self.screen,
+            10,
+            self.settings["gen"]["height"] - 30,
+            self.player.hp / PLAYER["HP"],
+            200,
+            15,
+            True,
+        )
         pg.display.flip()
 
     def events(self):
@@ -208,15 +302,15 @@ class Game:
                     self.quit()
                 if self.inmenu:
                     if event.key == pg.K_RETURN:
-                        if self.selected == 'new':
+                        if self.selected == "new":
                             self.inmenu = False
-                        elif self.selected == 'settings':
+                        elif self.selected == "settings":
                             self.menu_loop(self.menu_settings)
-                        elif self.selected == 'credits':
+                        elif self.selected == "credits":
                             self.menu_loop(self.menu_credits)
-                        elif self.selected == 'exit':
+                        elif self.selected == "exit":
                             self.quit()
-                        elif self.selected == 'back':
+                        elif self.selected == "back":
                             self.menu_loop(self.menu_main)
                     if event.key == pg.K_UP:
                         self.menu_index -= 1
@@ -225,32 +319,42 @@ class Game:
 
     # Text Renderer https://www.sourcecodester.com/tutorials/python/11784/python-pygame-simple-main-menu-selection.html
     def text_format(self, message, textFont, textSize, textColor):
-        newFont=pg.font.Font(textFont, textSize)
-        #newFont = pg.font.SysFont('franklingothic', textSize)
-        newText=newFont.render(message, 0, textColor)
+        newFont = pg.font.Font(textFont, textSize)
+        # newFont = pg.font.SysFont('franklingothic', textSize)
+        newText = newFont.render(message, 0, textColor)
 
         return newText
 
     def show_start_screen(self):
-        self.menu_main = ['new', 'settings', 'credits', 'exit']
-        self.menu_settings = ['display', 'resolution', 'music', 'sound', 'back']
-        self.menu_credits = ['back']
+        self.menu_main = ["new", "settings", "credits", "exit"]
+        self.menu_settings = ["display", "resolution", "music", "sound", "back"]
+        self.menu_credits = ["back"]
         self.menu_loop(self.menu_main)
 
     def show_go_screen(self):
         pass
 
     def menu_loop(self, menu_items):
-        pg.mixer.music.load(path.join(self.music_folder, MUSIC['voidwalk']))
+        pg.mixer.music.load(path.join(self.music_folder, MUSIC["voidwalk"]))
         pg.mixer.music.play(-1, 0.0)
         # https://www.1001freefonts.com/monster-of-south.font
-        self.font = path.join(self.fonts_folder, 'monster_of_south_st.ttf')
+        self.font = path.join(self.fonts_folder, "monster_of_south_st.ttf")
         self.inmenu = True
         self.menu_index = 0
         while self.inmenu:
             self.events()
-            self.screen.fill(COLORS['BLACK'])
-            self.screen.blit(self.title_art, ((self.settings['gen']['width'] - self.settings['gen']['titledim'][0])/2, 50))
+            self.screen.fill(COLORS["BLACK"])
+            self.screen.blit(
+                self.title_art,
+                (
+                    (
+                        self.settings["gen"]["width"]
+                        - self.settings["gen"]["titledim"][0]
+                    )
+                    / 2,
+                    50,
+                ),
+            )
             if self.menu_index > len(menu_items) - 1:
                 self.menu_index = 0
             elif self.menu_index < 0:
@@ -259,16 +363,26 @@ class Game:
             item_y = 300
             for item in menu_items:
                 if item == self.selected:
-                    color = COLORS['WHITE']
+                    color = COLORS["WHITE"]
                 else:
-                    color = COLORS['MEDIUMVIOLETRED']
-                item_text = self.text_format(item.split(' ')[0].upper(), self.font, 60, color)
-                self.screen.blit(item_text, (self.settings['gen']['width']/2 - (item_text.get_rect()[2]/2), item_y))
+                    color = COLORS["MEDIUMVIOLETRED"]
+                item_text = self.text_format(
+                    item.split(" ")[0].upper(), self.font, 60, color
+                )
+                self.screen.blit(
+                    item_text,
+                    (
+                        self.settings["gen"]["width"] / 2
+                        - (item_text.get_rect()[2] / 2),
+                        item_y,
+                    ),
+                )
                 item_y += 60
             pg.display.update()
-            self.clock.tick_busy_loop(self.settings['gen']['fps'])
+            self.clock.tick_busy_loop(self.settings["gen"]["fps"])
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     g = Game()
     g.show_start_screen()
     while True:
