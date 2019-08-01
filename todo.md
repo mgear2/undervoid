@@ -1,6 +1,5 @@
 # Todo
 
-- Credits menu  
 - Create function for image loading
 - Gold coin as collectable item  
 - Ranged enemy type  
@@ -15,12 +14,13 @@
 - Stats, leveling up, and leveled enemies  
 - Save file support  
 - support for enemy pathing using A*
-- further refactoring of settings file  
+- fully deprecate settings.py in favor of settings.yaml
 - Docstrings
 - Citations
 
 ## Complete
 
 - Settings menu with persistent settings file  
+- Credits menu  
 - Linting with Black
   

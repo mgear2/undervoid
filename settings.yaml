@@ -9,7 +9,7 @@ gen:
   title: Undervoid
   tilesize: 64
   titledim: [535, 65]
-  music: on
+  music: off
   sound: on
 
 layer:

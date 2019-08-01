@@ -332,8 +332,8 @@ class Game:
 
     # Text Renderer https://www.sourcecodester.com/tutorials/python/11784/python-pygame-simple-main-menu-selection.html
     def text_format(self, message, textFont, textSize, textColor):
-        newFont = pg.font.Font(textFont, textSize)
-        # newFont = pg.font.SysFont('franklingothic', textSize)
+        # newFont = pg.font.Font(textFont, textSize)
+        newFont = pg.font.SysFont("franklingothic", textSize)
         newText = newFont.render(message, 0, textColor)
 
         return newText
@@ -374,13 +374,18 @@ class Game:
             elif self.menu_index < 0:
                 self.menu_index = len(menu_items) - 1
             self.selected = menu_items[self.menu_index]
-            item_y = 300
+            if menu_items is self.menu_credits:
+                item_y = self.settings["gen"]["height"] - 100
+                self.show_credits()
+            else:
+                item_y = 300
+            fontsize = 80
             for item in menu_items:
                 if item == self.selected:
                     color = self.settings["colors"]["white"]
                 else:
                     color = self.settings["colors"]["mediumvioletred"]
-                item_text = self.text_format(item.upper(), self.font, 60, color)
+                item_text = self.text_format(item.upper(), self.font, fontsize, color)
                 self.screen.blit(
                     item_text,
                     (
@@ -389,9 +394,43 @@ class Game:
                         item_y,
                     ),
                 )
-                item_y += 60
+                item_y += fontsize
             pg.display.update()
             self.clock.tick_busy_loop(self.settings["gen"]["fps"])
+
+    def show_credits(self):
+        credits = [
+            "Copyright (c) 2019 Matthew Geary",
+            "",
+            "Music:",
+            '"Leaving Home" - Kevin MacLeod (incompetech.com)',
+            '"voidwalk" - Matthew Geary',
+            "The music for Undervoid is licensed under Creative Commons: By Attribution 4.0 License",
+            "Found in `\data\music\MUSIC_LICENSE` or at http://creativecommons.org/licenses/by/4.0/",
+            "",
+            "In-game artwork by Matthew Geary.",
+            "Title Art generated at https://fontmeme.com/pixel-fonts/",
+            "",
+            "LICENSE",
+            'This program is licensed under the "MIT License".  Please',
+            "see the file `LICENSE` in the source distribution of this",
+            "software for license terms.",
+        ]
+        fontsize = 30
+        line_y = 200
+        for line in credits:
+            credits_text = self.text_format(
+                line, self.font, fontsize, self.settings["colors"]["white"]
+            )
+            self.screen.blit(
+                credits_text,
+                (
+                    self.settings["gen"]["width"] / 2
+                    - (credits_text.get_rect()[2] / 2),
+                    line_y,
+                ),
+            )
+            line_y += fontsize
 
 
 if __name__ == "__main__":
