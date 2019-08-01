@@ -16,21 +16,21 @@ import pytweening as tween
 vec = pg.math.Vector2
 
 
-def draw_hp(surface, x, y, pct, b_len, b_height, player):
+def draw_hp(game, surface, x, y, pct, b_len, b_height, player):
     if pct < 0:
         pct = 0
     if pct > 0.6:
-        color = COLORS["GREEN"]
+        color = game.settings["colors"]["green"]
     elif pct > 0.3:
-        color = COLORS["YELLOW"]
+        color = game.settings["colors"]["yellow"]
     else:
-        color = COLORS["RED"]
+        color = game.settings["colors"]["red"]
     fill = pct * b_len
     hp_bar = pg.Rect(x, y, fill, b_height)
     pg.draw.rect(surface, color, hp_bar)
     if player:
         outline_rect = pg.Rect(x, y, b_len, b_height)
-        pg.draw.rect(surface, COLORS["WHITE"], outline_rect, 2)
+        pg.draw.rect(surface, game.settings["colors"]["white"], outline_rect, 2)
 
 
 def collide_with_walls(sprite, group, dir):

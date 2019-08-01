@@ -1,11 +1,7 @@
 # Todo
 
-- Create function for image loading
-- Linting with Black
-- Docstrings
-- Citations
-- further refactoring of settings file  
 - Credits menu  
+- Create function for image loading
 - Gold coin as collectable item  
 - Ranged enemy type  
 - Second player weapon type and ability to switch on the fly  
@@ -19,7 +15,12 @@
 - Stats, leveling up, and leveled enemies  
 - Save file support  
 - support for enemy pathing using A*
+- further refactoring of settings file  
+- Docstrings
+- Citations
 
 ## Complete
 
 - Settings menu with persistent settings file  
+- Linting with Black
+  
