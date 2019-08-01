@@ -8,35 +8,42 @@
 
 import pygame as pg
 import sys
-import yaml
+import ruamel.yaml
 from os import path, environ
 from settings import *
 from sprites import *
 from tilemap import Map
 from tilemap import Camera
 
+yaml = ruamel.yaml.YAML()
+
 
 class Game:
     def __init__(self):
         pg.init()
         with open("settings.yaml") as f:
-            self.settings = yaml.safe_load(f)
+            self.settings = yaml.load(f)
             f.close()
+        self.init_game_window()
+        pg.display.set_caption(self.settings["gen"]["title"])
+        self.clock = pg.time.Clock()
+        pg.key.set_repeat(100, 100)
+        self.load_data()
+
+    def init_game_window(self):
         environ["SDL_VIDEO_CENTERED"] = "1"
-        if self.settings["gen"]["screen"] == "full":
+        if self.settings["gen"]["fullscreen"] == "on":
             self.settings["gen"]["width"], self.settings["gen"]["height"] = (
                 pg.display.Info().current_w,
                 pg.display.Info().current_h,
             )
             self.screen = pg.display.set_mode((0, 0), pg.FULLSCREEN)
         else:
+            self.settings["gen"]["width"] = self.settings["gen"]["winres"]["width"]
+            self.settings["gen"]["height"] = self.settings["gen"]["winres"]["height"]
             self.screen = pg.display.set_mode(
                 (self.settings["gen"]["width"], self.settings["gen"]["height"])
             )
-        pg.display.set_caption(self.settings["gen"]["title"])
-        self.clock = pg.time.Clock()
-        pg.key.set_repeat(100, 100)
-        self.load_data()
 
     def load_data(self):
         self.game_folder = path.dirname(__file__)
@@ -182,8 +189,9 @@ class Game:
         self.number_of_steps = self.change_every_x_seconds * self.settings["gen"]["fps"]
         self.step = 1
 
-        pg.mixer.music.load(path.join(self.music_folder, MUSIC["leavinghome"]))
-        pg.mixer.music.play(-1, 0.0)
+        if self.settings['gen']['music'] == "on":
+            pg.mixer.music.load(path.join(self.music_folder, MUSIC["leavinghome"]))
+            pg.mixer.music.play(-1, 0.0)
 
     def spawner(self):
         pass
@@ -244,27 +252,7 @@ class Game:
             self.base_color = self.next_color
             self.next_color = choice(VOID_COLORS)
         self.bg_color = self.current_color
-
-    def draw_grid(self):
-        for x in range(
-            0, self.settings["gen"]["width"], self.settings["gen"]["tilesize"]
-        ):
-            pg.draw.line(
-                self.screen,
-                COLORS["LIGHTGREY"],
-                (x, 0),
-                (x, self.settings["gen"]["height"]),
-            )
-        for y in range(
-            0, self.settings["gen"]["height"], self.settings["gen"]["tilesize"]
-        ):
-            pg.draw.line(
-                self.screen,
-                COLORS["LIGHTGREY"],
-                (0, y),
-                (self.settings["gen"]["width"], y),
-            )
-
+        
     def draw(self):
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
         self.screen.fill(self.bg_color)
@@ -302,6 +290,7 @@ class Game:
                     self.quit()
                 if self.inmenu:
                     if event.key == pg.K_RETURN:
+                        self.selected = self.selected.split(" ")[0].strip(": ")
                         if self.selected == "new":
                             self.inmenu = False
                         elif self.selected == "settings":
@@ -312,10 +301,30 @@ class Game:
                             self.quit()
                         elif self.selected == "back":
                             self.menu_loop(self.menu_main)
+                        elif self.selected == "fullscreen" or self.selected == "music" or self.selected == "sound":
+                            if self.settings['gen'][self.selected] == "on":
+                                self.settings['gen'][self.selected] = "off"
+                            else:
+                                self.settings['gen'][self.selected] = "on"
+                            self.update_settings()
+                            self.menu_loop(self.menu_settings)
                     if event.key == pg.K_UP:
                         self.menu_index -= 1
                     elif event.key == pg.K_DOWN:
                         self.menu_index += 1
+
+    def update_settings(self):
+        with open("settings.yaml", "w") as f:
+            yaml.dump(self.settings, f)
+            f.close()
+        self.menu_settings = [
+            "fullscreen: {}".format(self.settings['gen']['fullscreen']), 
+            "music: {}". format(self.settings['gen']['music']), 
+            "sound: {}".format(self.settings['gen']['sound']), 
+            "back"
+        ]
+
+    # resolution: {}x{}".format(self.settings['gen']['width'], self.settings['gen']['height'])
 
     # Text Renderer https://www.sourcecodester.com/tutorials/python/11784/python-pygame-simple-main-menu-selection.html
     def text_format(self, message, textFont, textSize, textColor):
@@ -326,21 +335,22 @@ class Game:
         return newText
 
     def show_start_screen(self):
+        # https://www.1001freefonts.com/monster-of-south.font
+        self.font = path.join(self.fonts_folder, "monster_of_south_st.ttf")
+        if self.settings['gen']['music'] == "on":
+            pg.mixer.music.load(path.join(self.music_folder, MUSIC["voidwalk"]))
+            pg.mixer.music.play(-1, 0.0)
         self.menu_main = ["new", "settings", "credits", "exit"]
-        self.menu_settings = ["display", "resolution", "music", "sound", "back"]
+        self.update_settings()
         self.menu_credits = ["back"]
+        self.menu_index = 0
         self.menu_loop(self.menu_main)
 
     def show_go_screen(self):
         pass
 
     def menu_loop(self, menu_items):
-        pg.mixer.music.load(path.join(self.music_folder, MUSIC["voidwalk"]))
-        pg.mixer.music.play(-1, 0.0)
-        # https://www.1001freefonts.com/monster-of-south.font
-        self.font = path.join(self.fonts_folder, "monster_of_south_st.ttf")
         self.inmenu = True
-        self.menu_index = 0
         while self.inmenu:
             self.events()
             self.screen.fill(COLORS["BLACK"])
@@ -367,7 +377,7 @@ class Game:
                 else:
                     color = COLORS["MEDIUMVIOLETRED"]
                 item_text = self.text_format(
-                    item.split(" ")[0].upper(), self.font, 60, color
+                    item.upper(), self.font, 60, color
                 )
                 self.screen.blit(
                     item_text,

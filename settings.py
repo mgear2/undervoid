@@ -42,11 +42,6 @@ GEN = {
     "TITLE_DIMENSIONS": (535, 65),
 }
 
-GRID = {
-    "GRIDWIDTH": GEN["WIDTH"] / GEN["TILESIZE"],
-    "GRIDHEIGHT": GEN["HEIGHT"] / GEN["TILESIZE"],
-}
-
 LAYER = {
     "FLOOR": 0,
     "GRAVE": 0,

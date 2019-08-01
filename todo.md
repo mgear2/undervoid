@@ -4,7 +4,7 @@
 - Linting with Black
 - Docstrings
 - Citations
-- Settings menu with persistent settings file  
+- further refactoring of settings file  
 - Credits menu  
 - Gold coin as collectable item  
 - Ranged enemy type  
@@ -19,3 +19,7 @@
 - Stats, leveling up, and leveled enemies  
 - Save file support  
 - support for enemy pathing using A*
+
+## Complete
+
+- Settings menu with persistent settings file  
