@@ -203,7 +203,8 @@ class Game:
         for hit in hits:
             if hit.kind == "hp" and self.player.hp < PLAYER["HP"]:
                 hit.kill()
-                self.sounds["treasure02"].play()
+                if self.settings["gen"]["sound"] == "on":
+                    self.sounds["treasure02"].play()
                 self.player.add_hp(ITEMS["POTION_1_HP"])
         # mobs hitting player
         hits = pg.sprite.spritecollide(self.player, self.mobs, False, collide_hit_rect)
@@ -214,7 +215,8 @@ class Game:
                 self.player.hp -= MOB["THRALL_DMG"]
                 hit.vel = vec(0, 0)
                 self.player.pos += vec(MOB["THRALL_KB"], 0).rotate(-hits[0].rot)
-                self.sounds[(choice(HIT_SOUNDS))].play()
+                if self.settings["gen"]["sound"] == "on":
+                    self.sounds[(choice(HIT_SOUNDS))].play()
             elif random() < 0.5:  # enemies get bounced back on ~50% of failed hits
                 hit.pos += vec(MOB["THRALL_KB"], 0).rotate(hits[0].rot)
             if self.player.hp <= 0:

@@ -148,7 +148,7 @@ class Player(pg.sprite.Sprite):
                 dir = vec(1, 0).rotate(-angle)
                 pos = self.pos + vec(PLAYER["HAND_OFFSET"]).rotate(-self.rot)
                 Bullet(self.game, pos, dir, self.rot)
-                if random() < 0.75:
+                if self.game.settings["gen"]["sound"] == "on" and random() < 0.75:
                     self.game.sounds["wave01"].play()
                 Weapon_VFX(
                     self.game, self.pos + vec(PLAYER["HAND_OFFSET"]).rotate(-self.rot)
@@ -243,10 +243,11 @@ class Mob(pg.sprite.Sprite):
             and self.target_dist.length_squared() < MOB["DETECT_RADIUS"] ** 2
         ):
             self.triggered = True
-            self.game.sounds["growl01"].play()
+            if self.game.settings["gen"]["sound"] == "on":
+                self.game.sounds["growl01"].play()
         if self.triggered:
             # self.acc = vec(MOB['THRALL_SPEED'][0],0).rotate(-self.rot)
-            if random() < 0.0015:
+            if self.game.settings["gen"]["sound"] == "on" and random() < 0.0015:
                 self.game.sounds["growl01"].play()
             self.acc = vec(1, 0).rotate(-self.rot)
             self.avoid_mobs()
