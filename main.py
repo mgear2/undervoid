@@ -308,8 +308,12 @@ class Game:
                         ):
                             if self.settings["gen"][self.selected] == "on":
                                 self.settings["gen"][self.selected] = "off"
+                                if self.selected == "music":
+                                    pg.mixer.music.pause()
                             else:
                                 self.settings["gen"][self.selected] = "on"
+                                if self.selected == "music":
+                                    pg.mixer.music.play(-1, 0.0)
                             self.update_settings()
                             self.menu_loop(self.menu_settings)
                     if event.key == pg.K_UP:
@@ -339,10 +343,10 @@ class Game:
     def show_start_screen(self):
         # https://www.1001freefonts.com/monster-of-south.font
         self.font = path.join(self.fonts_folder, "monster_of_south_st.ttf")
-        if self.settings["gen"]["music"] == "on":
-            pg.mixer.music.load(
+        pg.mixer.music.load(
                 path.join(self.music_folder, self.settings["music"]["voidwalk"])
             )
+        if self.settings["gen"]["music"] == "on":
             pg.mixer.music.play(-1, 0.0)
         self.menu_main = ["new", "settings", "credits", "exit"]
         self.update_settings()

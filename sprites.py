@@ -126,7 +126,9 @@ class Player(pg.sprite.Sprite):
         self.last_shot = 0
         self.max_hp = game.settings["player"]["hp"]
         self.hp = game.settings["player"]["hp"]
-        self.speed = (game.settings["gen"]["tilesize"] * game.settings["player"]["speed_mult"])
+        self.speed = (
+            game.settings["gen"]["tilesize"] * game.settings["player"]["speed_mult"]
+        )
 
     def get_keys(self):
         self.rot_speed = 0
@@ -147,12 +149,18 @@ class Player(pg.sprite.Sprite):
                 self.last_shot = now
                 angle = (self.game.cursor.pos - self.pos).angle_to(vec(1, 0))
                 dir = vec(1, 0).rotate(-angle)
-                pos = self.pos + vec(self.game.settings["player"]["hand_offset"]).rotate(-self.rot)
+                pos = self.pos + vec(
+                    self.game.settings["player"]["hand_offset"]
+                ).rotate(-self.rot)
                 Bullet(self.game, pos, dir, self.rot)
                 if self.game.settings["gen"]["sound"] == "on" and random() < 0.75:
                     self.game.sounds["wave01"].play()
                 Weapon_VFX(
-                    self.game, self.pos + vec(self.game.settings["player"]["hand_offset"]).rotate(-self.rot)
+                    self.game,
+                    self.pos
+                    + vec(self.game.settings["player"]["hand_offset"]).rotate(
+                        -self.rot
+                    ),
                 )
 
         if self.vel.x != 0 and self.vel.y != 0:
@@ -190,7 +198,10 @@ class Bullet(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.pos = vec(pos)
         self.rect.center = pos
-        spread = uniform(-game.settings["weapon"]["vbullet"]["spread"], game.settings["weapon"]["vbullet"]["spread"])
+        spread = uniform(
+            -game.settings["weapon"]["vbullet"]["spread"],
+            game.settings["weapon"]["vbullet"]["spread"],
+        )
         self.vel = dir.rotate(spread) * game.settings["weapon"]["vbullet"]["speed"]
         self.spawn_time = pg.time.get_ticks()
 
@@ -199,7 +210,8 @@ class Bullet(pg.sprite.Sprite):
         self.rect.center = self.pos
         if (
             pg.sprite.spritecollideany(self, self.game.stops_bullets)
-            or pg.time.get_ticks() - self.spawn_time > self.game.settings["weapon"]["vbullet"]["life"]
+            or pg.time.get_ticks() - self.spawn_time
+            > self.game.settings["weapon"]["vbullet"]["life"]
         ):
             self.kill()
 
@@ -213,7 +225,12 @@ class Mob(pg.sprite.Sprite):
         self.image = game.thrall_img
         self.rect = self.image.get_rect()
         self.rect.center = x, y
-        self.hit_rect = pg.Rect(0, 0, game.settings["gen"]["tilesize"] / 2, game.settings["gen"]["tilesize"] / 2)
+        self.hit_rect = pg.Rect(
+            0,
+            0,
+            game.settings["gen"]["tilesize"] / 2,
+            game.settings["gen"]["tilesize"] / 2,
+        )
         self.hit_rect.center = self.rect.center
         self.pos = vec(x, y) * self.game.settings["gen"]["tilesize"]
         self.vel = vec(0, 0)
@@ -222,7 +239,9 @@ class Mob(pg.sprite.Sprite):
         self.rot = 0
         self.hp = game.settings["mob"]["thrall"]["hp"]
         self.max_hp = game.settings["mob"]["thrall"]["hp"]
-        self.speed = game.settings["gen"]["tilesize"] * choice(game.settings["mob"]["thrall"]["speed"])
+        self.speed = game.settings["gen"]["tilesize"] * choice(
+            game.settings["mob"]["thrall"]["speed"]
+        )
         self.triggered = False
         self.last_hit = 0
 
@@ -241,7 +260,8 @@ class Mob(pg.sprite.Sprite):
         self.rect.center = self.pos
         if (
             self.triggered == False
-            and self.target_dist.length_squared() < self.game.settings["mob"]["thrall"]["player_radius"] ** 2
+            and self.target_dist.length_squared()
+            < self.game.settings["mob"]["thrall"]["player_radius"] ** 2
         ):
             self.triggered = True
             if self.game.settings["gen"]["sound"] == "on":
@@ -319,7 +339,11 @@ class Weapon_VFX(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.transform.scale(
-            choice(game.weapon_vfx), (self.game.settings["gen"]["tilesize"], self.game.settings["gen"]["tilesize"])
+            choice(game.weapon_vfx),
+            (
+                self.game.settings["gen"]["tilesize"],
+                self.game.settings["gen"]["tilesize"],
+            ),
         )
         self.rect = self.image.get_rect()
         self.pos = pos
@@ -327,7 +351,10 @@ class Weapon_VFX(pg.sprite.Sprite):
         self.spawn_time = pg.time.get_ticks()
 
     def update(self):
-        if pg.time.get_ticks() - self.spawn_time > self.game.settings["weapon"]["vbullet"]["fx_life"]:
+        if (
+            pg.time.get_ticks() - self.spawn_time
+            > self.game.settings["weapon"]["vbullet"]["fx_life"]
+        ):
             self.kill()
 
 

@@ -1,6 +1,5 @@
 # Todo
 
-- Create function for image loading
 - Gold coin as collectable item  
 - Ranged enemy type  
 - Second player weapon type and ability to switch on the fly  
@@ -14,12 +13,13 @@
 - Stats, leveling up, and leveled enemies  
 - Save file support  
 - support for enemy pathing using A*
-- fully deprecate settings.py in favor of settings.yaml
 - Docstrings
 - Citations
 
 ## Complete
 
+- Create function for image loading
+- fully deprecate settings.py in favor of settings.yaml
 - Settings menu with persistent settings file  
 - Credits menu  
 - Linting with Black
