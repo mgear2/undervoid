@@ -10,7 +10,7 @@ gen:
   tilesize: 64
   titledim: [535, 65]
   music: off
-  sound: on
+  sound: off
 
 layer:
   floor: 0
@@ -74,9 +74,9 @@ img:
   - cursor01.png
   player:
     voidwalker:
-      weapons:
-      - voidwalker_magic.png
-      - voidwalker_coachgun.png
+      stance:
+        magic: voidwalker_magic.png
+        coachgun: voidwalker_coachgun.png
       move:
       - voidwalkermove01.png
       - voidwalkermove02.png
@@ -91,9 +91,12 @@ img:
       - thrallgrave01.png
       - thrallgrave02.png
       - thrallgrave03.png
+  items:
+    potions:
+      red: potion01.png
   bullets:
     void:
-      bullet: voidbullet2.png
+      bullet: voidbullet02.png
       fx:
       - voiddust01.png
       - voiddust02.png

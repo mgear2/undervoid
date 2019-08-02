@@ -115,7 +115,8 @@ class Player(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.player_sprite
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = game.player_img
+        self.stance = "magic"
+        self.image = game.player_img[self.stance]
         self.rect = self.image.get_rect()
         self.rect.center = x, y
         self.hit_rect = pg.Rect(PLAYER["HIT_RECT"])
@@ -161,7 +162,7 @@ class Player(pg.sprite.Sprite):
     def update(self):
         self.get_keys()
         self.rot = (self.game.cursor.pos - self.pos).angle_to(vec(1, 0)) % 360
-        self.image = pg.transform.rotate(self.game.player_img, self.rot)
+        self.image = pg.transform.rotate(self.game.player_img[self.stance], self.rot)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
         self.pos += self.vel * self.game.dt
@@ -265,7 +266,7 @@ class Mob(pg.sprite.Sprite):
         if self.hp <= 0:
             Grave(self.game, self.pos, self.rot)
             if random() < MOB["DROP_CHANCE"]:
-                Item(self.game, self.pos, "POTION_1", "hp")
+                Item(self.game, self.pos, "red_potion", "hp")
             self.kill()
 
 

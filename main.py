@@ -21,6 +21,7 @@ yaml = ruamel.yaml.YAML()
 class Game:
     def __init__(self):
         pg.init()
+        pg.mixer.init()
         with open("settings.yaml") as f:
             self.settings = yaml.load(f)
             f.close()
@@ -28,6 +29,7 @@ class Game:
         pg.display.set_caption(self.settings["gen"]["title"])
         self.clock = pg.time.Clock()
         pg.key.set_repeat(100, 100)
+        self.build_path()
         self.load_data()
 
     def init_game_window(self):
@@ -45,7 +47,7 @@ class Game:
                 (self.settings["gen"]["width"], self.settings["gen"]["height"])
             )
 
-    def load_data(self):
+    def build_path(self):
         self.game_folder = path.dirname(__file__)
         self.data_folder = path.join(self.game_folder, "data")
         self.img_folder = path.join(self.data_folder, "img")
@@ -54,90 +56,74 @@ class Game:
         self.sound_folder = path.join(self.data_folder, "sounds")
         self.fonts_folder = path.join(self.data_folder, "fonts")
 
-        self.undervoid_icon = pg.image.load(
-            path.join(self.img_folder, IMG["ICON"])
-        ).convert_alpha()
-        self.undervoid_icon = pg.transform.scale(self.undervoid_icon, (64, 64))
-        self.vbullet_img = pg.image.load(
-            path.join(self.img_folder, IMG["VBULLET"])
-        ).convert_alpha()
-        self.vbullet_img = pg.transform.scale(
-            self.vbullet_img,
-            (self.settings["gen"]["tilesize"], self.settings["gen"]["tilesize"]),
-        )
-        self.thrall_img = pg.image.load(
-            path.join(self.img_folder, IMG["THRALL"])
-        ).convert_alpha()
-        self.thrall_img = pg.transform.scale(
-            self.thrall_img,
-            (self.settings["gen"]["tilesize"], self.settings["gen"]["tilesize"]),
-        )
-        self.wall_img = pg.image.load(path.join(self.img_folder, IMG["VOIDWALL"]))
-        self.wall_img = pg.transform.scale(
-            self.wall_img,
-            (self.settings["gen"]["tilesize"], self.settings["gen"]["tilesize"]),
-        )
+    def load_img(self, source, scale, alpha):
+        img = pg.image.load(path.join(self.img_folder, source))
+        img = pg.transform.scale(img, scale)
+        if alpha:
+            img = img.convert_alpha()
+        else:
+            img = img.convert()
+        return img
 
-        self.title_art = pg.transform.scale(
-            (pg.image.load(path.join(self.img_folder, IMG["TITLE"])).convert_alpha()),
-            self.settings["gen"]["titledim"],
-        )
-
-        self.player_img_list = []
-        self.pmove_img = []
+    def load_data(self):
         self.cursor_img = []
         self.weapon_vfx = []
-        self.item_img = {}
         self.floor_img = []
         self.thrall_grave = []
-
-        self.item_img["POTION_1"] = pg.transform.scale(
-            pg.image.load(path.join(self.img_folder, IMG["POTION_1"])).convert_alpha(),
-            (
-                int(self.settings["gen"]["tilesize"] * 0.75),
-                (int(self.settings["gen"]["tilesize"] * 0.75)),
-            ),
-        )
-
-        for img in IMG["VOIDWALKER"]:
-            self.player_img_list.append(
-                pg.image.load(path.join(self.img_folder, img)).convert_alpha()
-            )
-        self.player_img = pg.transform.scale(
-            self.player_img_list[0], (PLAYER["SIZE"], PLAYER["SIZE"])
-        )
-        for img in IMG["VOIDWALKER_MOVE"]:
-            self.pmove_img.append(
-                pg.transform.scale(
-                    (pg.image.load(path.join(self.img_folder, img)).convert_alpha()),
-                    (PLAYER["SIZE"], PLAYER["SIZE"]),
-                )
-            )
-        for img in IMG["D_FLOOR"]:
-            self.floor_img.append(
-                pg.transform.scale(
-                    (pg.image.load(path.join(self.img_folder, img)).convert_alpha()),
-                    (
-                        self.settings["gen"]["tilesize"],
-                        self.settings["gen"]["tilesize"],
-                    ),
-                )
-            )
-        for img in IMG["CURSOR"]:
-            self.cursor_img.append(
-                pg.image.load(path.join(self.img_folder, img)).convert_alpha()
-            )
-        for img in WEAPON["VBULLET_VFX"]:
-            self.weapon_vfx.append(
-                pg.image.load(path.join(self.img_folder, img)).convert_alpha()
-            )
-        for img in IMG["THRALL_GRAVE"]:
-            self.thrall_grave.append(
-                pg.image.load(path.join(self.img_folder, img)).convert_alpha()
-            )
-
+        self.pmove_img = []
+        self.player_img = {}
+        self.item_img = {}
         self.sounds = {}
-        pg.mixer.init()
+        self.stances = ["magic", "coachgun"]
+        tilesize = (self.settings["gen"]["tilesize"], self.settings["gen"]["tilesize"])
+
+        # System Images
+        self.undervoid_icon = self.load_img(
+            self.settings["img"]["icon"], (64, 64), True
+        )
+        self.title_art = self.load_img(
+            self.settings["img"]["title"],
+            tuple(self.settings["gen"]["titledim"]),
+            False,
+        )
+        for img in self.settings["img"]["cursor"]:
+            self.cursor_img.append(self.load_img(img, tilesize, True))
+        # Environment Images
+        self.wall_img = self.load_img(
+            self.settings["img"]["wall"]["voidwall"], tilesize, False
+        )
+        for img in self.settings["img"]["floor"]["dungeon"]:
+            self.floor_img.append(self.load_img(img, tilesize, False))
+        # Player Images
+        for stance in self.stances:
+            self.player_img[stance] = self.load_img(
+                self.settings["img"]["player"]["voidwalker"]["stance"][stance],
+                tuple((2 * x) for x in tilesize),
+                True,
+            )
+        for img in self.settings["img"]["player"]["voidwalker"]["move"]:
+            self.pmove_img.append(
+                self.load_img(img, tuple((2 * x) for x in tilesize), True)
+            )
+        # Bullet Images
+        self.vbullet_img = self.load_img(
+            self.settings["img"]["bullets"]["void"]["bullet"], tilesize, True
+        )
+        for img in self.settings["img"]["bullets"]["void"]["fx"]:
+            self.weapon_vfx.append(self.load_img(img, tilesize, True))
+        # Mob Images
+        self.thrall_img = self.load_img(
+            self.settings["img"]["mob"]["thrall"]["main"], tilesize, True
+        )
+        for img in self.settings["img"]["mob"]["thrall"]["grave"]:
+            self.thrall_grave.append(self.load_img(img, tilesize, True))
+        self.item_img["red_potion"] = self.load_img(
+            self.settings["img"]["items"]["potions"]["red"],
+            # https://stackoverflow.com/questions/1781970/multiplying-a-tuple-by-a-scalar
+            tuple(int(0.75 * x) for x in tilesize),
+            True,
+        )
+
         for sound in SOUNDS:
             self.sounds[sound] = pg.mixer.Sound(
                 path.join(self.sound_folder, SOUNDS[sound])
