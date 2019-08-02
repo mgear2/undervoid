@@ -7,7 +7,6 @@
 # https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap
 
 import pygame as pg
-from settings import *
 from os import path
 from random import uniform, choice, random
 from tilemap import collide_hit_rect
@@ -54,7 +53,7 @@ def collide_with_walls(sprite, group, dir):
 
 class Cursor(pg.sprite.Sprite):
     def __init__(self, game):
-        self._layer = LAYER["CURSOR"]
+        self._layer = game.settings["layer"]["cursor"]
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
@@ -80,16 +79,16 @@ class Cursor(pg.sprite.Sprite):
 
 class pMove(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        self._layer = LAYER["PLAYER_MOVE"]
+        self.game = game
+        self._layer = game.settings["layer"]["player_move"]
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
-        self.images = self.game.pmove_img
+        self.images = game.pmove_img
         self.image = self.images[0]
         self.current = self.image
         self.rect = self.image.get_rect()
         self.rect.center = x, y
-        self.pos = vec(x, y) * self.game.settings["gen"]["tilesize"]
+        self.pos = vec(x, y) * game.settings["gen"]["tilesize"]
         self.rot = 0
         self.last = 0
         self.i = 0
@@ -111,21 +110,23 @@ class pMove(pg.sprite.Sprite):
 
 class Player(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        self._layer = LAYER["PLAYER"]
+        self.game = game
+        self._layer = game.settings["layer"]["player"]
         self.groups = game.all_sprites, game.player_sprite
         pg.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
         self.stance = "magic"
         self.image = game.player_img[self.stance]
         self.rect = self.image.get_rect()
         self.rect.center = x, y
-        self.hit_rect = pg.Rect(PLAYER["HIT_RECT"])
+        self.hit_rect = pg.Rect(game.settings["player"]["hit_rect"])
         self.hit_rect.center = self.rect.center
         self.vel = vec(0, 0)
-        self.pos = vec(x, y) * self.game.settings["gen"]["tilesize"]
+        self.pos = vec(x, y) * game.settings["gen"]["tilesize"]
         self.rot = 0
         self.last_shot = 0
-        self.hp = PLAYER["HP"]
+        self.max_hp = game.settings["player"]["hp"]
+        self.hp = game.settings["player"]["hp"]
+        self.speed = (game.settings["gen"]["tilesize"] * game.settings["player"]["speed_mult"])
 
     def get_keys(self):
         self.rot_speed = 0
@@ -133,25 +134,25 @@ class Player(pg.sprite.Sprite):
         keys = pg.key.get_pressed()
         mouse = pg.mouse.get_pressed()
         if keys[pg.K_LEFT] or keys[pg.K_a]:
-            self.vel.x = -PLAYER["SPEED"]
+            self.vel.x = -self.speed
         if keys[pg.K_RIGHT] or keys[pg.K_d]:
-            self.vel.x = PLAYER["SPEED"]
+            self.vel.x = self.speed
         if keys[pg.K_UP] or keys[pg.K_w]:
-            self.vel.y = -PLAYER["SPEED"]
+            self.vel.y = -self.speed
         if keys[pg.K_DOWN] or keys[pg.K_s]:
-            self.vel.y = PLAYER["SPEED"]
+            self.vel.y = self.speed
         if keys[pg.K_SPACE] or mouse[0]:
             now = pg.time.get_ticks()
-            if now - self.last_shot > WEAPON["VBULLET_RATE"]:
+            if now - self.last_shot > self.game.settings["weapon"]["vbullet"]["rate"]:
                 self.last_shot = now
                 angle = (self.game.cursor.pos - self.pos).angle_to(vec(1, 0))
                 dir = vec(1, 0).rotate(-angle)
-                pos = self.pos + vec(PLAYER["HAND_OFFSET"]).rotate(-self.rot)
+                pos = self.pos + vec(self.game.settings["player"]["hand_offset"]).rotate(-self.rot)
                 Bullet(self.game, pos, dir, self.rot)
                 if self.game.settings["gen"]["sound"] == "on" and random() < 0.75:
                     self.game.sounds["wave01"].play()
                 Weapon_VFX(
-                    self.game, self.pos + vec(PLAYER["HAND_OFFSET"]).rotate(-self.rot)
+                    self.game, self.pos + vec(self.game.settings["player"]["hand_offset"]).rotate(-self.rot)
                 )
 
         if self.vel.x != 0 and self.vel.y != 0:
@@ -174,23 +175,23 @@ class Player(pg.sprite.Sprite):
 
     def add_hp(self, amount):
         self.hp += amount
-        if self.hp > PLAYER["HP"]:
-            self.hp = PLAYER["HP"]
+        if self.hp > self.max_hp:
+            self.hp = self.max_hp
 
 
 class Bullet(pg.sprite.Sprite):
     def __init__(self, game, pos, dir, rot):
-        self._layer = LAYER["BULLET"]
+        self.game = game
+        self._layer = game.settings["layer"]["bullet"]
         self.groups = game.all_sprites, game.bullets
         pg.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
         self.rot = rot
         self.image = pg.transform.rotate(game.vbullet_img, self.rot + 90)
         self.rect = self.image.get_rect()
         self.pos = vec(pos)
         self.rect.center = pos
-        spread = uniform(-WEAPON["VSPREAD"], WEAPON["VSPREAD"])
-        self.vel = dir.rotate(spread) * WEAPON["VBULLET_SPEED"]
+        spread = uniform(-game.settings["weapon"]["vbullet"]["spread"], game.settings["weapon"]["vbullet"]["spread"])
+        self.vel = dir.rotate(spread) * game.settings["weapon"]["vbullet"]["speed"]
         self.spawn_time = pg.time.get_ticks()
 
     def update(self):
@@ -198,30 +199,30 @@ class Bullet(pg.sprite.Sprite):
         self.rect.center = self.pos
         if (
             pg.sprite.spritecollideany(self, self.game.stops_bullets)
-            or pg.time.get_ticks() - self.spawn_time > WEAPON["VBULLET_LIFETIME"]
+            or pg.time.get_ticks() - self.spawn_time > self.game.settings["weapon"]["vbullet"]["life"]
         ):
             self.kill()
 
 
 class Mob(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        self._layer = LAYER["MOB"]
+        self.game = game
+        self._layer = game.settings["layer"]["mob"]
         self.groups = game.all_sprites, game.mobs
         pg.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
         self.image = game.thrall_img
         self.rect = self.image.get_rect()
         self.rect.center = x, y
-        self.hit_rect = pg.Rect(MOB["THRALL_HIT_RECT"])
+        self.hit_rect = pg.Rect(0, 0, game.settings["gen"]["tilesize"] / 2, game.settings["gen"]["tilesize"] / 2)
         self.hit_rect.center = self.rect.center
         self.pos = vec(x, y) * self.game.settings["gen"]["tilesize"]
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
         self.rect.center = self.pos
         self.rot = 0
-        self.hp = MOB["THRALL_HP"]
-        self.max_hp = MOB["THRALL_HP"]
-        self.speed = self.game.settings["gen"]["tilesize"] * choice(MOB["THRALL_SPEED"])
+        self.hp = game.settings["mob"]["thrall"]["hp"]
+        self.max_hp = game.settings["mob"]["thrall"]["hp"]
+        self.speed = game.settings["gen"]["tilesize"] * choice(game.settings["mob"]["thrall"]["speed"])
         self.triggered = False
         self.last_hit = 0
 
@@ -229,7 +230,7 @@ class Mob(pg.sprite.Sprite):
         for mob in self.game.mobs:
             if mob != self:
                 dist = self.pos - mob.pos
-                if 0 < dist.length() < MOB["THRALL_RADIUS"]:
+                if 0 < dist.length() < self.game.settings["gen"]["tilesize"]:
                     self.acc += dist.normalize()
 
     def update(self):
@@ -240,7 +241,7 @@ class Mob(pg.sprite.Sprite):
         self.rect.center = self.pos
         if (
             self.triggered == False
-            and self.target_dist.length_squared() < MOB["DETECT_RADIUS"] ** 2
+            and self.target_dist.length_squared() < self.game.settings["mob"]["thrall"]["player_radius"] ** 2
         ):
             self.triggered = True
             if self.game.settings["gen"]["sound"] == "on":
@@ -266,20 +267,20 @@ class Mob(pg.sprite.Sprite):
             self.rect.center = self.hit_rect.center
         if self.hp <= 0:
             Grave(self.game, self.pos, self.rot)
-            if random() < MOB["DROP_CHANCE"]:
-                Item(self.game, self.pos, "red_potion", "hp")
+            if random() < self.game.settings["mob"]["thrall"]["drop_chance"]:
+                Item(self.game, self.pos, "redpotion", "hp")
             self.kill()
 
 
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, pos, stops_bullets):
-        self._layer = LAYER["WALL"]
+        self.game = game
+        self._layer = game.settings["layer"]["wall"]
         if stops_bullets:
             self.groups = game.walls, game.stops_bullets
         else:
             self.groups = game.walls
         pg.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
         self.pos = pos
         self.rect = pg.Rect(
             0,
@@ -293,7 +294,7 @@ class Wall(pg.sprite.Sprite):
 class Grave(pg.sprite.Sprite):
     def __init__(self, game, pos, rot):
         self.game = game
-        self._layer = LAYER["GRAVE"]
+        self._layer = game.settings["layer"]["grave"]
         self.groups = game.all_sprites, game.graves
         pg.sprite.Sprite.__init__(self, self.groups)
         self.pos = pos
@@ -313,12 +314,12 @@ class Grave(pg.sprite.Sprite):
 
 class Weapon_VFX(pg.sprite.Sprite):
     def __init__(self, game, pos):
-        self._layer = LAYER["VFX"]
+        self._layer = game.settings["layer"]["vfx"]
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.transform.scale(
-            choice(game.weapon_vfx), (WEAPON["VDUST_SIZE"], WEAPON["VDUST_SIZE"])
+            choice(game.weapon_vfx), (self.game.settings["gen"]["tilesize"], self.game.settings["gen"]["tilesize"])
         )
         self.rect = self.image.get_rect()
         self.pos = pos
@@ -326,13 +327,15 @@ class Weapon_VFX(pg.sprite.Sprite):
         self.spawn_time = pg.time.get_ticks()
 
     def update(self):
-        if pg.time.get_ticks() - self.spawn_time > WEAPON["VDUST_LIFETIME"]:
+        if pg.time.get_ticks() - self.spawn_time > self.game.settings["weapon"]["vbullet"]["fx_life"]:
             self.kill()
 
 
 class Item(pg.sprite.Sprite):
     def __init__(self, game, pos, img, kind):
-        self._layer = LAYER["ITEM"]
+        self._layer = game.settings["layer"]["item"]
+        self.bob_range = game.settings["items"]["potions"]["red"]["bob_range"]
+        self.bob_speed = game.settings["items"]["potions"]["red"]["bob_speed"]
         self.groups = game.all_sprites, game.items
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
@@ -347,9 +350,9 @@ class Item(pg.sprite.Sprite):
 
     def update(self):
         # item bobbing motion
-        offset = ITEMS["BOB_RANGE"] * (self.tween(self.step / ITEMS["BOB_RANGE"]) - 0.5)
+        offset = self.bob_range * (self.tween(self.step / self.bob_range) - 0.5)
         self.rect.centery = self.pos[1] + offset * self.dir
-        self.step += ITEMS["BOB_SPEED"]
-        if self.step > ITEMS["BOB_RANGE"]:
+        self.step += self.bob_speed
+        if self.step > self.bob_range:
             self.step = 0
             self.dir *= -1

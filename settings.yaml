@@ -9,7 +9,7 @@ gen:
   title: Undervoid
   tilesize: 64
   titledim: [535, 65]
-  music: on
+  music: off
   sound: on
 
 layer:
@@ -26,41 +26,38 @@ layer:
 
 player:
   size: GEN["TILESIZE"] * 2
-  speed: GEN["TILESIZE"] * 8
+  speed_mult: 8
   rot_speed: 250
   hit_rect: [0, 0, 35, 35]
   hand_offset: [65, 25]
-  dmg:mult: 1.5
+  dmg_mult: 1.5
   hp: 100
 
 weapon:
   vbullet:
-    speed: 1500 + PLAYER["SPEED"]
+    speed: 1500
     life: 750
     rate: 150
     spread: 5
-    dmg: 10 * PLAYER["DMG_MULT"]
-    fx:
-      size: GEN["TILESIZE"]
-      life: 40
+    dmg: 10
+    fx_life: 40
 
 mob:
   thrall:
     speed: [10, 11, 12, 13]
-    hit_rect: (0, 0, GEN["TILESIZE"] / 2, GEN["TILESIZE"] / 2)
     hp: 75
     dmg: 15
     knockback: 20
-    ally_radius: GEN["TILESIZE"]
-    player_radius: GEN["TILESIZE"]
+    player_radius: 1000
     drop_chance: 0.35
     dmg_rate: 150
 
 items:
-  red_potion:
-    hp: 0.20 * PLAYER["HP"]
-    bob_range: 15
-    bob_speed: 0.4
+  potions:
+    red:
+      hp: 0.20
+      bob_range: 15
+      bob_speed: 0.4
 
 img:
   title: undervoidtitle.png
@@ -125,6 +122,7 @@ sounds:
   hit01: hit01.wav
   hit02: hit02.wav
   hit03: hit03.wav
+
 
 hit_sounds:
 - hit01

@@ -10,7 +10,6 @@ import pygame as pg
 import sys
 import ruamel.yaml
 from os import path, environ
-from settings import *
 from sprites import *
 from tilemap import Map
 from tilemap import Camera
@@ -117,16 +116,16 @@ class Game:
         )
         for img in self.settings["img"]["mob"]["thrall"]["grave"]:
             self.thrall_grave.append(self.load_img(img, tilesize, True))
-        self.item_img["red_potion"] = self.load_img(
+        self.item_img["redpotion"] = self.load_img(
             self.settings["img"]["items"]["potions"]["red"],
             # https://stackoverflow.com/questions/1781970/multiplying-a-tuple-by-a-scalar
             tuple(int(0.75 * x) for x in tilesize),
             True,
         )
 
-        for sound in SOUNDS:
+        for sound in self.settings["sounds"]:
             self.sounds[sound] = pg.mixer.Sound(
-                path.join(self.sound_folder, SOUNDS[sound])
+                path.join(self.sound_folder, self.settings["sounds"][sound])
             )
 
         pg.mouse.set_visible(False)
@@ -163,7 +162,7 @@ class Game:
                     Item(
                         self,
                         vec(col, row) * self.settings["gen"]["tilesize"],
-                        "POTION_1",
+                        "redpotion",
                         "hp",
                     )
 
@@ -176,7 +175,9 @@ class Game:
         self.step = 1
 
         if self.settings["gen"]["music"] == "on":
-            pg.mixer.music.load(path.join(self.music_folder, MUSIC["leavinghome"]))
+            pg.mixer.music.load(
+                path.join(self.music_folder, self.settings["music"]["leavinghome"])
+            )
             pg.mixer.music.play(-1, 0.0)
 
     def spawner(self):
@@ -201,30 +202,39 @@ class Game:
         # player hits items
         hits = pg.sprite.spritecollide(self.player, self.items, False, collide_hit_rect)
         for hit in hits:
-            if hit.kind == "hp" and self.player.hp < PLAYER["HP"]:
+            if hit.kind == "hp" and self.player.hp < self.settings["player"]["hp"]:
                 hit.kill()
                 if self.settings["gen"]["sound"] == "on":
                     self.sounds["treasure02"].play()
-                self.player.add_hp(ITEMS["POTION_1_HP"])
+                self.player.add_hp(
+                    self.settings["items"]["potions"]["red"]["hp"] * self.player.max_hp
+                )
         # mobs hitting player
         hits = pg.sprite.spritecollide(self.player, self.mobs, False, collide_hit_rect)
         for hit in hits:
             now = pg.time.get_ticks()
-            if now - hit.last_hit > MOB["DMG_RATE"]:
+            if now - hit.last_hit > self.settings["mob"]["thrall"]["dmg_rate"]:
                 hit.last_hit = now
-                self.player.hp -= MOB["THRALL_DMG"]
+                self.player.hp -= self.settings["mob"]["thrall"]["dmg"]
                 hit.vel = vec(0, 0)
-                self.player.pos += vec(MOB["THRALL_KB"], 0).rotate(-hits[0].rot)
+                self.player.pos += vec(
+                    self.settings["mob"]["thrall"]["knockback"], 0
+                ).rotate(-hits[0].rot)
                 if self.settings["gen"]["sound"] == "on":
-                    self.sounds[(choice(HIT_SOUNDS))].play()
+                    self.sounds[(choice(self.settings["hit_sounds"]))].play()
             elif random() < 0.5:  # enemies get bounced back on ~50% of failed hits
-                hit.pos += vec(MOB["THRALL_KB"], 0).rotate(hits[0].rot)
+                hit.pos += vec(self.settings["mob"]["thrall"]["knockback"], 0).rotate(
+                    hits[0].rot
+                )
             if self.player.hp <= 0:
                 self.playing = False
         # bullets hitting mobs
         hits = pg.sprite.groupcollide(self.mobs, self.bullets, False, True)
         for hit in hits:
-            hit.hp -= WEAPON["VDMG"]
+            hit.hp -= (
+                self.settings["weapon"]["vbullet"]["dmg"]
+                * self.settings["player"]["dmg_mult"]
+            )
             # hit.vel = vec(0, 0)
         # https://stackoverflow.com/questions/51973441/how-to-fade-from-one-colour-to-another-in-pygame
         self.step += 1
@@ -264,7 +274,7 @@ class Game:
             self.screen,
             10,
             self.settings["gen"]["height"] - 30,
-            self.player.hp / PLAYER["HP"],
+            self.player.hp / self.player.max_hp,
             200,
             15,
             True,
@@ -330,7 +340,9 @@ class Game:
         # https://www.1001freefonts.com/monster-of-south.font
         self.font = path.join(self.fonts_folder, "monster_of_south_st.ttf")
         if self.settings["gen"]["music"] == "on":
-            pg.mixer.music.load(path.join(self.music_folder, MUSIC["voidwalk"]))
+            pg.mixer.music.load(
+                path.join(self.music_folder, self.settings["music"]["voidwalk"])
+            )
             pg.mixer.music.play(-1, 0.0)
         self.menu_main = ["new", "settings", "credits", "exit"]
         self.update_settings()
