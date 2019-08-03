@@ -8,13 +8,13 @@
 - NPCs and a "home-base" area with an intro area leading up to it  
 - Randomized maps made of pre-built pieces  
 - System for switching between areas  
+- Docstrings
+- Citations
 - Second character (Woadbear)  
 - Character selection menu  
 - Stats, leveling up, and leveled enemies  
 - Save file support  
 - support for enemy pathing using A*
-- Docstrings
-- Citations
 
 ## Complete
 

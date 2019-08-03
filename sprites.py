@@ -32,6 +32,26 @@ def draw_hp(game, surface, x, y, pct, b_len, b_height, player):
         pg.draw.rect(surface, game.settings["colors"]["white"], outline_rect, 2)
 
 
+def draw_score(game):
+    score = game.text_format(
+        str(game.player.coins), game.font, 60, game.settings["colors"]["white"]
+    )
+    game.screen.blit(
+        pg.transform.scale(
+            game.item_img["coin"],
+            (
+                int(game.settings["gen"]["tilesize"] * 1.5),
+                int(game.settings["gen"]["tilesize"] * 1.5),
+            ),
+        ),
+        (game.settings["gen"]["width"] - 100, game.settings["gen"]["height"] - 100),
+    )
+    game.screen.blit(
+        score,
+        (game.settings["gen"]["width"] - 100, game.settings["gen"]["height"] - 70),
+    )
+
+
 def collide_with_walls(sprite, group, dir):
     hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
     if hits:
@@ -129,6 +149,7 @@ class Player(pg.sprite.Sprite):
         self.speed = (
             game.settings["gen"]["tilesize"] * game.settings["player"]["speed_mult"]
         )
+        self.coins = 0
 
     def get_keys(self):
         self.rot_speed = 0
@@ -244,6 +265,7 @@ class Mob(pg.sprite.Sprite):
         )
         self.triggered = False
         self.last_hit = 0
+        self.items = [("redpotion", "hp"), ("coin", "gp")]
 
     def avoid_mobs(self):
         for mob in self.game.mobs:
@@ -288,7 +310,8 @@ class Mob(pg.sprite.Sprite):
         if self.hp <= 0:
             Grave(self.game, self.pos, self.rot)
             if random() < self.game.settings["mob"]["thrall"]["drop_chance"]:
-                Item(self.game, self.pos, "redpotion", "hp")
+                item = choice(self.items)
+                Item(self.game, self.pos, item[0], item[1])
             self.kill()
 
 
@@ -360,12 +383,12 @@ class Weapon_VFX(pg.sprite.Sprite):
 
 class Item(pg.sprite.Sprite):
     def __init__(self, game, pos, img, kind):
+        self.game = game
         self._layer = game.settings["layer"]["item"]
-        self.bob_range = game.settings["items"]["potions"]["red"]["bob_range"]
-        self.bob_speed = game.settings["items"]["potions"]["red"]["bob_speed"]
+        self.bob_range = game.settings["items"]["bob_range"]
+        self.bob_speed = game.settings["items"]["bob_speed"]
         self.groups = game.all_sprites, game.items
         pg.sprite.Sprite.__init__(self, self.groups)
-        self.game = game
         self.image = game.item_img[img]
         self.kind = kind
         self.rect = self.image.get_rect()

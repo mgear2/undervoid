@@ -116,12 +116,14 @@ class Game:
         )
         for img in self.settings["img"]["mob"]["thrall"]["grave"]:
             self.thrall_grave.append(self.load_img(img, tilesize, True))
-        self.item_img["redpotion"] = self.load_img(
-            self.settings["img"]["items"]["potions"]["red"],
-            # https://stackoverflow.com/questions/1781970/multiplying-a-tuple-by-a-scalar
-            tuple(int(0.75 * x) for x in tilesize),
-            True,
-        )
+        # Item Images
+        for item in self.settings["img"]["items"]:
+            self.item_img[item] = self.load_img(
+                self.settings["img"]["items"][item],
+                # https://stackoverflow.com/questions/1781970/multiplying-a-tuple-by-a-scalar
+                tuple(int(0.75 * x) for x in tilesize),
+                True,
+            )
 
         for sound in self.settings["sounds"]:
             self.sounds[sound] = pg.mixer.Sound(
@@ -209,6 +211,11 @@ class Game:
                 self.player.add_hp(
                     self.settings["items"]["potions"]["red"]["hp"] * self.player.max_hp
                 )
+            if hit.kind == "gp":
+                hit.kill()
+                if self.settings["gen"]["sound"] == "on":
+                    self.sounds["treasure03"].play()
+                self.player.coins += 1
         # mobs hitting player
         hits = pg.sprite.spritecollide(self.player, self.mobs, False, collide_hit_rect)
         for hit in hits:
@@ -279,6 +286,7 @@ class Game:
             15,
             True,
         )
+        draw_score(self)
         pg.display.flip()
 
     def events(self):
@@ -344,8 +352,8 @@ class Game:
         # https://www.1001freefonts.com/monster-of-south.font
         self.font = path.join(self.fonts_folder, "monster_of_south_st.ttf")
         pg.mixer.music.load(
-                path.join(self.music_folder, self.settings["music"]["voidwalk"])
-            )
+            path.join(self.music_folder, self.settings["music"]["voidwalk"])
+        )
         if self.settings["gen"]["music"] == "on":
             pg.mixer.music.play(-1, 0.0)
         self.menu_main = ["new", "settings", "credits", "exit"]
