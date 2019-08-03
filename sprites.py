@@ -46,9 +46,10 @@ def draw_score(game):
         ),
         (game.settings["gen"]["width"] - 100, game.settings["gen"]["height"] - 100),
     )
+    score_x = 75 + len(str(game.player.coins)) * 25
     game.screen.blit(
         score,
-        (game.settings["gen"]["width"] - 100, game.settings["gen"]["height"] - 70),
+        (game.settings["gen"]["width"] - score_x, game.settings["gen"]["height"] - 70),
     )
 
 
@@ -149,7 +150,7 @@ class Player(pg.sprite.Sprite):
         self.speed = (
             game.settings["gen"]["tilesize"] * game.settings["player"]["speed_mult"]
         )
-        self.coins = 0
+        self.coins = 1
 
     def get_keys(self):
         self.rot_speed = 0

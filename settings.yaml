@@ -10,7 +10,7 @@ gen:
   tilesize: 64
   titledim: [535, 65]
   music: off
-  sound: on
+  sound: off
 
 layer:
   floor: 0
