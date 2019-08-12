@@ -13,6 +13,7 @@ from sprites import Mob
 
 vec = pg.math.Vector2
 
+
 class Map:
     def __init__(self, game, filename):
         self.data = []
@@ -70,6 +71,7 @@ class Camera:
         self.cursor.rect.centery -= y
         self.cursor.pos = self.cursor.rect.center
 
+
 class Spawner(pg.sprite.Sprite):
     def __init__(self, game, col, row):
         self.game = game
@@ -81,19 +83,22 @@ class Spawner(pg.sprite.Sprite):
     def update(self):
         self.target_dist = self.game.player.pos - self.pos
         if (
-            self.game.settings["gen"]["spawn_min_dist"] ** 2 
+            self.game.settings["gen"]["spawn_min_dist"] ** 2
             < self.target_dist.length_squared()
             < self.game.settings["gen"]["spawn_max_dist"] ** 2
             and self.game.mob_count < self.game.mob_max
         ):
             self.spawn()
-    
+
     def spawn(self):
-        max_count = randint(self.game.settings["gen"]["spawn_min"], self.game.settings["gen"]["spawn_max"])
+        max_count = randint(
+            self.game.settings["gen"]["spawn_min"],
+            self.game.settings["gen"]["spawn_max"],
+        )
         count = 0
         for row in range(self.rows - 4, self.rows + 4):
             for col in range(self.cols - 4, self.cols + 4):
-                if count >= max_count: 
+                if count >= max_count:
                     break
                 elif self.game.map.data[row][col] == "." and random() < 0.25:
                     if random() < 0.5:
