@@ -7,10 +7,15 @@ gen:
   height: 900
   fps: 60
   title: Undervoid
-  tilesize: 64
+  tilesize: 48
   titledim: [535, 65]
   music: off
   sound: off
+  spawn_max_dist: 1000
+  spawn_min_dist: 500
+  spawn_max: 10
+  spawn_min: 6
+  mob_max: 10
 
 layer:
   floor: 0
@@ -26,11 +31,11 @@ layer:
 
 player:
   size: GEN["TILESIZE"] * 2
-  speed_mult: 8
+  speed_mult: 10
   rot_speed: 250
   hit_rect: [0, 0, 35, 35]
   hand_offset: [65, 25]
-  dmg_mult: 1.5
+  dmg_mult: 2.0
   hp: 100
 
 weapon:
@@ -47,6 +52,14 @@ mob:
     speed: [10, 11, 12, 13]
     hp: 75
     dmg: 15
+    knockback: 20
+    player_radius: 1000
+    drop_chance: 0.75
+    dmg_rate: 150
+  sleeper:
+    speed: [7, 8, 9, 10]
+    hp: 100
+    dmg: 20
     knockback: 20
     player_radius: 1000
     drop_chance: 0.75
@@ -88,6 +101,11 @@ img:
       - thrallgrave01.png
       - thrallgrave02.png
       - thrallgrave03.png
+    sleeper:
+      main: sleeper.png
+      grave:
+      - sleepergrave01.png
+      - sleepergrave02.png
   items:
     redpotion: potion01.png
     coin: coin01.png

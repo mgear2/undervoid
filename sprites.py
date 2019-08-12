@@ -9,11 +9,12 @@
 import pygame as pg
 from os import path
 from random import uniform, choice, random
-from tilemap import collide_hit_rect
 import pytweening as tween
 
 vec = pg.math.Vector2
 
+def collide_hit_rect(one, two):
+    return one.hit_rect.colliderect(two.rect)
 
 def draw_hp(game, surface, x, y, pct, b_len, b_height, player):
     if pct < 0:
@@ -239,12 +240,13 @@ class Bullet(pg.sprite.Sprite):
 
 
 class Mob(pg.sprite.Sprite):
-    def __init__(self, game, x, y):
+    def __init__(self, game, kind, x, y):
         self.game = game
+        self.kind = kind
         self._layer = game.settings["layer"]["mob"]
         self.groups = game.all_sprites, game.mobs
         pg.sprite.Sprite.__init__(self, self.groups)
-        self.image = game.thrall_img
+        self.image = game.mob_img[kind]
         self.rect = self.image.get_rect()
         self.rect.center = x, y
         self.hit_rect = pg.Rect(
@@ -259,10 +261,10 @@ class Mob(pg.sprite.Sprite):
         self.acc = vec(0, 0)
         self.rect.center = self.pos
         self.rot = 0
-        self.hp = game.settings["mob"]["thrall"]["hp"]
-        self.max_hp = game.settings["mob"]["thrall"]["hp"]
+        self.hp = game.settings["mob"][kind]["hp"]
+        self.max_hp = game.settings["mob"][kind]["hp"]
         self.speed = game.settings["gen"]["tilesize"] * choice(
-            game.settings["mob"]["thrall"]["speed"]
+            game.settings["mob"][kind]["speed"]
         )
         self.triggered = False
         self.last_hit = 0
@@ -272,19 +274,19 @@ class Mob(pg.sprite.Sprite):
         for mob in self.game.mobs:
             if mob != self:
                 dist = self.pos - mob.pos
-                if 0 < dist.length() < self.game.settings["gen"]["tilesize"]:
+                if 0 < dist.length() < self.game.settings["gen"]["tilesize"] * 2:
                     self.acc += dist.normalize()
 
     def update(self):
         self.target_dist = self.game.player.pos - self.pos
         self.rot = self.target_dist.angle_to(vec(1, 0))
-        self.image = pg.transform.rotate(self.game.thrall_img, self.rot)
+        self.image = pg.transform.rotate(self.game.mob_img[self.kind], self.rot)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
         if (
             self.triggered == False
             and self.target_dist.length_squared()
-            < self.game.settings["mob"]["thrall"]["player_radius"] ** 2
+            < self.game.settings["mob"][self.kind]["player_radius"] ** 2
         ):
             self.triggered = True
             if self.game.settings["gen"]["sound"] == "on":
@@ -302,7 +304,7 @@ class Mob(pg.sprite.Sprite):
             self.acc += self.vel * -1
             self.vel += self.acc * self.game.dt
             # Equations of motion
-            self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 1.005
+            self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 1.025
             self.hit_rect.centerx = self.pos.x
             collide_with_walls(self, self.game.walls, "x")
             self.hit_rect.centery = self.pos.y
@@ -310,9 +312,10 @@ class Mob(pg.sprite.Sprite):
             self.rect.center = self.hit_rect.center
         if self.hp <= 0:
             Grave(self.game, self.pos, self.rot)
-            if random() < self.game.settings["mob"]["thrall"]["drop_chance"]:
+            if random() < self.game.settings["mob"][self.kind]["drop_chance"]:
                 item = choice(self.items)
                 Item(self.game, self.pos, item[0], item[1])
+            self.game.mob_count -= 1
             self.kill()
 
 

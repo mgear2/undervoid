@@ -12,7 +12,8 @@ import ruamel.yaml
 from os import path, environ
 from sprites import *
 from tilemap import Map
-from tilemap import Camera
+from tilemap import Camera, Spawner
+from random import random, randint
 
 yaml = ruamel.yaml.YAML()
 
@@ -69,8 +70,10 @@ class Game:
         self.weapon_vfx = []
         self.floor_img = []
         self.thrall_grave = []
+        self.sleeper_grave = []
         self.pmove_img = []
         self.player_img = {}
+        self.mob_img = {}
         self.item_img = {}
         self.sounds = {}
         self.stances = ["magic", "coachgun"]
@@ -111,11 +114,16 @@ class Game:
         for img in self.settings["img"]["bullets"]["void"]["fx"]:
             self.weapon_vfx.append(self.load_img(img, tilesize, True))
         # Mob Images
-        self.thrall_img = self.load_img(
+        self.mob_img["thrall"] = self.load_img(
             self.settings["img"]["mob"]["thrall"]["main"], tilesize, True
+        )
+        self.mob_img["sleeper"] = self.load_img(
+            self.settings["img"]["mob"]["sleeper"]["main"], tilesize, True
         )
         for img in self.settings["img"]["mob"]["thrall"]["grave"]:
             self.thrall_grave.append(self.load_img(img, tilesize, True))
+        for img in self.settings["img"]["mob"]["sleeper"]["grave"]:
+            self.sleeper_grave.append(self.load_img(img, tilesize, True))
         # Item Images
         for item in self.settings["img"]["items"]:
             self.item_img[item] = self.load_img(
@@ -133,7 +141,7 @@ class Game:
         pg.mouse.set_visible(False)
         pg.display.set_icon(self.undervoid_icon)
 
-        self.map = Map(self, path.join(self.maps_folder, "map3.txt"))
+        self.map = Map(self, path.join(self.maps_folder, "map3c.txt"))
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
 
@@ -147,8 +155,10 @@ class Game:
         self.items = pg.sprite.Group()
         self.player_sprite = pg.sprite.Group()
         self.cursor_sprite = pg.sprite.Group()
+        self.spawners = pg.sprite.Group()
         self.cursor = Cursor(self)
-
+        self.mob_count = 0
+        self.mob_max = self.settings["gen"]["mob_max"]
         for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
                 if tile == "1":
@@ -159,7 +169,7 @@ class Game:
                     self.player = Player(self, col, row)
                     self.pmove = pMove(self, col, row)
                 if tile == "M":
-                    Mob(self, col, row)
+                    Spawner(self, col, row)
                 if tile == "p":
                     Item(
                         self,
@@ -182,9 +192,6 @@ class Game:
             )
             pg.mixer.music.play(-1, 0.0)
 
-    def spawner(self):
-        pass
-
     def run(self):
         self.playing = True
         while self.playing:
@@ -200,6 +207,7 @@ class Game:
 
     def update(self):
         self.all_sprites.update()
+        self.spawners.update()
         self.camera.update(self.player)
         # player hits items
         hits = pg.sprite.spritecollide(self.player, self.items, False, collide_hit_rect)
