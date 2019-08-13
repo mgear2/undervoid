@@ -177,3 +177,5 @@ void_colors:
 map:
   basic:
   - map_gen01.txt
+  - map_gen02.txt
+  - map_gen03.txt

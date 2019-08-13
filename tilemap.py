@@ -54,7 +54,7 @@ class Forge:
     def __init__(self, game):
         self.game = game
         self.data = {}
-        self.return_data = []
+        self.level_data = []
         self.rot = [0, 90, 180, 270]
         self.max_size = self.game.settings["lvl"]["pieces"]
         self.load_all()
@@ -86,9 +86,10 @@ class Forge:
 
     def build_lvl(self):
         for i in range(0, self.max_size):
-            piece = "map_gen01.txt"
+            # https://stackoverflow.com/questions/4859292/how-to-get-a-random-value-in-python-dictionary
+            piece = choice(list(self.data.keys()))
             self.render(self.temp_surface, self.data[piece], i)
-            self.return_data.extend(self.data[piece])
+            self.level_data.extend(self.data[piece])
 
     def render(self, surface, piece, i):
         y_offset = i * 32
@@ -126,7 +127,7 @@ class Forge:
                     )
                     surface.blit(self.game.wall_img, (col, row + row_offset))
                 if tile == "R" and i == 0:
-                    print("RIFT: unimplemented")
+                    pass
                 if tile == "P" and i == self.max_size - 1:
                     self.game.player = Player(self.game, col, row + row_offset)
                     self.game.pmove = pMove(self.game, col, row + row_offset)
@@ -196,7 +197,7 @@ class Spawner(pg.sprite.Sprite):
             for col in range(self.cols - 4, self.cols + 4):
                 if count >= max_count:
                     break
-                elif self.game.map.return_data[row][col] == "." and random() < 0.25:
+                elif self.game.map.level_data[row][col] == "." and random() < 0.25:
                     if random() < 0.5:
                         Mob(self.game, "sleeper", col, row)
                     else:
