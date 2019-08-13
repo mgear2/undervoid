@@ -7,15 +7,16 @@ gen:
   height: 900
   fps: 60
   title: Undervoid
-  tilesize: 48
+  tilesize: 32
   titledim: [535, 65]
   music: off
   sound: off
   spawn_max_dist: 1000
-  spawn_min_dist: 500
-  spawn_max: 10
-  spawn_min: 6
-  mob_max: 10
+  spawn_min_dist: 750
+  spawn_max: 8
+  spawn_min: 5
+  mob_max: 8
+  lvl_size: 8
 
 layer:
   floor: 0
@@ -143,7 +144,6 @@ sounds:
   hit02: hit02.wav
   hit03: hit03.wav
 
-
 hit_sounds:
 - hit01
 - hit02
@@ -169,3 +169,7 @@ void_colors:
 - purple4
 - mediumvioletred
 - deepskyblue4
+
+map:
+  basic:
+  - map_gen01.txt

@@ -1,9 +1,11 @@
 # Todo
 
-## Core
+## In Progress
 
 - Ranged enemy type  
-- Dynamically spawn enemies  
+
+## Core
+
 - NPCs and a "home-base" area with an intro area leading up to it  
 - Randomized maps made of pre-built pieces  
 - System for switching between areas  
@@ -22,6 +24,7 @@
 
 ## Complete
 
+- Dynamically spawn enemies
 - Gold coin as collectable item  
 - Create function for image loading
 - fully deprecate settings.py in favor of settings.yaml
