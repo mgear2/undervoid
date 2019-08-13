@@ -18,7 +18,7 @@ gen:
   mob_max: 8
 
 lvl:
-  pieces: 4
+  pieces: 5
   tiles_wide: 64
   tiles_high: 32
 
@@ -179,3 +179,4 @@ map:
   - map_gen01.txt
   - map_gen02.txt
   - map_gen03.txt
+  - map_gen04.txt
