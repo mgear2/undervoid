@@ -151,13 +151,14 @@ class Spawner(pg.sprite.Sprite):
         count = 0
         for row in range(self.rows - 4, self.rows + 4):
             for col in range(self.cols - 4, self.cols + 4):
-                if count >= max_count:
-                    break
-                elif self.game.map.level_data[row][col] == "." and random() < 0.25:
-                    if random() < 0.5:
-                        Mob(self.game, "sleeper", col, row)
-                    else:
-                        Mob(self.game, "thrall", col, row)
-                    count += 1
+                if col <= self.game.settings["lvl"]["tiles_wide"]:
+                    if count >= max_count:
+                        break
+                    elif self.game.map.level_data[row][col] == "." and random() < 0.25:
+                        if random() < 0.5:
+                            Mob(self.game, "sleeper", col, row)
+                        else:
+                            Mob(self.game, "thrall", col, row)
+                        count += 1
         self.game.mob_count += count
         self.kill()

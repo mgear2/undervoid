@@ -3,8 +3,6 @@
 ## In Progress
 
 - ensure all sprite classes initialize position in the same manner
-- make forge class completely replace former map class
-- Randomized maps made of pre-built pieces  
 - Ranged enemy type  
 
 ## Core
@@ -27,6 +25,7 @@
 
 ## Complete
 
+- Randomized maps made of pre-built pieces  
 - Dynamically spawn enemies
 - Gold coin as collectable item  
 - Create function for image loading
