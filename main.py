@@ -11,7 +11,6 @@ import sys
 import ruamel.yaml
 from os import path, environ
 from sprites import *
-from tilemap import Map
 from tilemap import Camera, Spawner, Forge
 from random import random, randint
 
@@ -141,10 +140,6 @@ class Game:
         pg.mouse.set_visible(False)
         pg.display.set_icon(self.undervoid_icon)
 
-        # self.map = Map(self, path.join(self.map_folder, "map3c.txt"))
-        # self.map_img = self.map.make_map()
-        # self.map_rect = self.map_img.get_rect()
-
     def new(self):
         self.all_sprites = pg.sprite.LayeredUpdates()
         self.walls = pg.sprite.Group()
@@ -160,11 +155,20 @@ class Game:
         self.mob_count = 0
         self.mob_max = self.settings["gen"]["mob_max"]
 
-        self.map = Forge(self)
-        self.map.new_lvl()
+        self.map = Forge(self, 1)
+        self.map.load("map3c.txt")
+        self.map.new_surface(108, 127)
         self.map.build_lvl()
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
+
+        """
+        self.map = Forge(self, self.settings["lvl"]["pieces"])
+        self.map.load_all()
+        self.map.new_surface(self.game.settings["lvl"]["tiles_wide"], self.game.settings["lvl"]["tiles_high"]])
+        self.map.build_lvl()
+        self.map_img = self.map.make_map()
+        self.map_rect = self.map_img.get_rect()"""
 
         self.camera = Camera(self, self.map.width, self.map.height, self.cursor)
         # https://stackoverflow.com/questions/51973441/how-to-fade-from-one-colour-to-another-in-pygame
@@ -446,5 +450,6 @@ if __name__ == "__main__":
     g.show_start_screen()
     while True:
         g.new()
+        pg.mixer.quit()
         g.run()
         g.show_go_screen()

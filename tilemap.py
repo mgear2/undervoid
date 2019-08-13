@@ -14,61 +14,17 @@ from sprites import Mob, Wall, Player, pMove, Item
 vec = pg.math.Vector2
 
 
-class Map:
-    def __init__(self, game, filename):
-        self.data = []
-        self.game = game
-        with open(filename, "rt") as f:
-            for line in f:
-                self.data.append(line.strip("\n"))
-        tiles_wide = max(len(elem) for elem in self.data)
-        self.tile_width = tiles_wide
-        self.tile_height = len(self.data)
-        self.width = self.tile_width * self.game.settings["gen"]["tilesize"]
-        self.height = self.tile_height * self.game.settings["gen"]["tilesize"]
-        self.rot = [0, 90, 180, 270]
-
-    def render(self, surface):
-        for row, tiles in enumerate(self.data):
-            row *= self.game.settings["gen"]["tilesize"]
-            for col, tile in enumerate(tiles):
-                col *= self.game.settings["gen"]["tilesize"]
-                if tile != " " and tile != "0":
-                    self.floor_img = pg.transform.rotate(
-                        choice(self.game.floor_img), choice(self.rot)
-                    )
-                    surface.blit(self.floor_img, (col, row))
-                if tile == "1":
-                    surface.blit(self.game.wall_img, (col, row))
-
-    def make_map(self):
-        # https://stackoverflow.com/questions/328061/how-to-make-a-surface-with-a-transparent-background-in-pygame#328067
-        temp_surface = pg.Surface(
-            (self.width, self.height), pg.SRCALPHA, 32
-        ).convert_alpha()
-        self.render(temp_surface)
-        return temp_surface
-
-
 class Forge:
-    def __init__(self, game):
+    def __init__(self, game, size):
         self.game = game
         self.data = {}
         self.level_data = []
         self.rot = [0, 90, 180, 270]
-        self.max_size = self.game.settings["lvl"]["pieces"]
-        self.load_all()
+        self.max_size = size
 
-    def new_lvl(self):
-        self.width = (
-            self.game.settings["lvl"]["tiles_wide"]
-            * self.game.settings["gen"]["tilesize"]
-        )
-        self.height = (
-            self.game.settings["lvl"]["tiles_high"]
-            * self.game.settings["gen"]["tilesize"]
-            * self.max_size
-        )
+    def new_surface(self, tiles_wide, tiles_high):
+        self.width = tiles_wide * self.game.settings["gen"]["tilesize"]
+        self.height = tiles_high * self.game.settings["gen"]["tilesize"] * self.max_size
         # https://stackoverflow.com/questions/328061/how-to-make-a-surface-with-a-transparent-background-in-pygame#328067
         self.temp_surface = pg.Surface(
             (self.width, self.height), pg.SRCALPHA, 32
