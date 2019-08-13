@@ -54,17 +54,19 @@ class Forge:
     def __init__(self, game):
         self.game = game
         self.data = {}
+        self.return_data = []
         self.rot = [0, 90, 180, 270]
-        self.max_size = 1#self.max_size = self.game.settings["gen"]["lvl_size"]
+        self.max_size = 3  # self.max_size = self.game.settings["gen"]["lvl_size"]
         self.load_all()
 
     def new_lvl(self):
         # https://stackoverflow.com/questions/30902558/finding-the-longest-list-in-a-list-of-lists-in-python
-        self.tile_width = max(len(elem) for elem in self.data)
-        self.tile_height = len(self.data)
-        self.width = self.tile_width * self.game.settings["gen"]["tilesize"]
-        self.height = self.tile_height * self.game.settings["gen"]["tilesize"] * self.max_size
-        print(self.width, self.height)
+        self.tiles_w = self.game.settings["lvl"]["tiles_wide"]
+        self.tiles_h = self.game.settings["lvl"]["tiles_high"]
+        self.width = self.tiles_w * self.game.settings["gen"]["tilesize"]
+        self.height = (
+            self.tiles_h * self.game.settings["gen"]["tilesize"] * self.max_size
+        )
         # https://stackoverflow.com/questions/328061/how-to-make-a-surface-with-a-transparent-background-in-pygame#328067
         self.temp_surface = pg.Surface(
             (self.width, self.height), pg.SRCALPHA, 32
@@ -85,49 +87,55 @@ class Forge:
             piece = "map_gen01.txt"
             print(self.data[piece])
             self.render(self.temp_surface, self.data[piece], i)
+        self.return_data.append(self.data[piece])
 
     def render(self, surface, piece, i):
-        y_offset = i * 32 * self.game.settings["gen"]["tilesize"]
+        y_offset = i * 32
+        row_offset = y_offset * self.game.settings["gen"]["tilesize"]
         for row, tiles in enumerate(piece):
+            y = row
             row *= self.game.settings["gen"]["tilesize"]
             for col, tile in enumerate(tiles):
+                x = col
                 col *= self.game.settings["gen"]["tilesize"]
                 if tile != " " and tile != "0":
                     self.floor_img = pg.transform.rotate(
                         choice(self.game.floor_img), choice(self.rot)
                     )
-                    surface.blit(self.floor_img, (col, row + y_offset))
+                    surface.blit(self.floor_img, (col, row + row_offset))
+                if tile == "1":
+                    print("blitting {}, {}".format(col, row + row_offset))
+                    surface.blit(self.game.wall_img, (col, row + row_offset))
+                    Wall(
+                        self.game,
+                        vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
+                        True,
+                    )
                 if tile == "0":
                     Wall(
                         self.game,
-                        vec(col, row + y_offset) * self.game.settings["gen"]["tilesize"],
+                        vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
                         False,
-                    )
-                if tile == "1":
-                    surface.blit(self.game.wall_img, (col, row + y_offset))
-                    Wall(
-                        self.game,
-                        vec(col, row + y_offset) * self.game.settings["gen"]["tilesize"],
-                        True,
                     )
                 if tile == "R" and i == 0:
                     print("RIFT: unimplemented")
                 if tile == "P" and i == self.max_size - 1:
-                    print("PLAYER")
-                    self.game.player = Player(self.game, col, row + y_offset)
-                    self.game.pmove = pMove(self.game, col, row + y_offset)
+                    print("PLAYER {}, {}".format(x, y + y_offset))
+                    self.game.player = Player(self.game, x, y + y_offset)
+                    self.game.pmove = pMove(self.game, x, y + y_offset)
                 if tile == "M":
-                    Mob(self.game, "thrall", col, row + y_offset)
-                    #Spawner(self, col, row + y_offset)
+                    Mob(self.game, "thrall", x, y + y_offset)
+                    # Spawner(self, col, row + y_offset)
                 if tile == "p":
                     Item(
                         self.game,
-                        vec(col, row + y_offset) * self.game.settings["gen"]["tilesize"],
+                        vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
                         "redpotion",
                         "hp",
                     )
 
     def make_map(self):
+        print(self.temp_surface)
         return self.temp_surface
 
 

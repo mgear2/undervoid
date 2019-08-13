@@ -16,7 +16,10 @@ gen:
   spawn_max: 8
   spawn_min: 5
   mob_max: 8
-  lvl_size: 8
+
+lvl:
+  tiles_wide: 64
+  tiles_high: 640
 
 layer:
   floor: 0
@@ -32,7 +35,7 @@ layer:
 
 player:
   size: GEN["TILESIZE"] * 2
-  speed_mult: 10
+  speed_mult: 15
   rot_speed: 250
   hit_rect: [0, 0, 35, 35]
   hand_offset: [65, 25]

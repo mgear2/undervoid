@@ -141,9 +141,9 @@ class Game:
         pg.mouse.set_visible(False)
         pg.display.set_icon(self.undervoid_icon)
 
-        #self.map = Map(self, path.join(self.map_folder, "map3c.txt"))
-        #self.map_img = self.map.make_map()
-        #self.map_rect = self.map_img.get_rect()
+        # self.map = Map(self, path.join(self.map_folder, "map3c.txt"))
+        # self.map_img = self.map.make_map()
+        # self.map_rect = self.map_img.get_rect()
 
     def new(self):
         self.all_sprites = pg.sprite.LayeredUpdates()
@@ -166,24 +166,7 @@ class Game:
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
 
-        """for row, tiles in enumerate(self.map.data):
-            for col, tile in enumerate(tiles):
-                if tile == "1":
-                    Wall(self, vec(col, row) * self.settings["gen"]["tilesize"], True)
-                if tile == "0":
-                    Wall(self, vec(col, row) * self.settings["gen"]["tilesize"], False)
-                if tile == "P":
-                    self.player = Player(self, col, row)
-                    self.pmove = pMove(self, col, row)
-                if tile == "M":
-                    Spawner(self, col, row)
-                if tile == "p":
-                    Item(
-                        self,
-                        vec(col, row) * self.settings["gen"]["tilesize"],
-                        "redpotion",
-                        "hp",
-                    )"""
+        print(self.map.return_data)
 
         self.camera = Camera(self, self.map.width, self.map.height, self.cursor)
         # https://stackoverflow.com/questions/51973441/how-to-fade-from-one-colour-to-another-in-pygame
