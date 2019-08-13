@@ -166,8 +166,6 @@ class Game:
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
 
-        print(self.map.return_data)
-
         self.camera = Camera(self, self.map.width, self.map.height, self.cursor)
         # https://stackoverflow.com/questions/51973441/how-to-fade-from-one-colour-to-another-in-pygame
         self.base_color = choice(self.settings["void_colors"])

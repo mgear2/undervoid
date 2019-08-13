@@ -56,16 +56,18 @@ class Forge:
         self.data = {}
         self.return_data = []
         self.rot = [0, 90, 180, 270]
-        self.max_size = 3  # self.max_size = self.game.settings["gen"]["lvl_size"]
+        self.max_size = self.game.settings["lvl"]["pieces"]
         self.load_all()
 
     def new_lvl(self):
-        # https://stackoverflow.com/questions/30902558/finding-the-longest-list-in-a-list-of-lists-in-python
-        self.tiles_w = self.game.settings["lvl"]["tiles_wide"]
-        self.tiles_h = self.game.settings["lvl"]["tiles_high"]
-        self.width = self.tiles_w * self.game.settings["gen"]["tilesize"]
+        self.width = (
+            self.game.settings["lvl"]["tiles_wide"]
+            * self.game.settings["gen"]["tilesize"]
+        )
         self.height = (
-            self.tiles_h * self.game.settings["gen"]["tilesize"] * self.max_size
+            self.game.settings["lvl"]["tiles_high"]
+            * self.game.settings["gen"]["tilesize"]
+            * self.max_size
         )
         # https://stackoverflow.com/questions/328061/how-to-make-a-surface-with-a-transparent-background-in-pygame#328067
         self.temp_surface = pg.Surface(
@@ -85,9 +87,8 @@ class Forge:
     def build_lvl(self):
         for i in range(0, self.max_size):
             piece = "map_gen01.txt"
-            print(self.data[piece])
             self.render(self.temp_surface, self.data[piece], i)
-        self.return_data.append(self.data[piece])
+            self.return_data.extend(self.data[piece])
 
     def render(self, surface, piece, i):
         y_offset = i * 32
@@ -104,28 +105,33 @@ class Forge:
                     )
                     surface.blit(self.floor_img, (col, row + row_offset))
                 if tile == "1":
-                    print("blitting {}, {}".format(col, row + row_offset))
                     surface.blit(self.game.wall_img, (col, row + row_offset))
-                    Wall(
-                        self.game,
-                        vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
-                        True,
-                    )
-                if tile == "0":
+                if tile == "0" or tile == "1":
                     Wall(
                         self.game,
                         vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
                         False,
                     )
+                if tile == "y" and i == 0:
+                    Wall(
+                        self.game,
+                        vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
+                        False,
+                    )
+                if tile == "x" and i == self.max_size - 1:
+                    Wall(
+                        self.game,
+                        vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
+                        False,
+                    )
+                    surface.blit(self.game.wall_img, (col, row + row_offset))
                 if tile == "R" and i == 0:
                     print("RIFT: unimplemented")
                 if tile == "P" and i == self.max_size - 1:
-                    print("PLAYER {}, {}".format(x, y + y_offset))
-                    self.game.player = Player(self.game, x, y + y_offset)
-                    self.game.pmove = pMove(self.game, x, y + y_offset)
+                    self.game.player = Player(self.game, col, row + row_offset)
+                    self.game.pmove = pMove(self.game, col, row + row_offset)
                 if tile == "M":
-                    Mob(self.game, "thrall", x, y + y_offset)
-                    # Spawner(self, col, row + y_offset)
+                    Spawner(self.game, x, y + y_offset)
                 if tile == "p":
                     Item(
                         self.game,
@@ -190,7 +196,7 @@ class Spawner(pg.sprite.Sprite):
             for col in range(self.cols - 4, self.cols + 4):
                 if count >= max_count:
                     break
-                elif self.game.map.data[row][col] == "." and random() < 0.25:
+                elif self.game.map.return_data[row][col] == "." and random() < 0.25:
                     if random() < 0.5:
                         Mob(self.game, "sleeper", col, row)
                     else:

@@ -145,7 +145,7 @@ class Player(pg.sprite.Sprite):
         self.hit_rect = pg.Rect(game.settings["player"]["hit_rect"])
         self.hit_rect.center = self.rect.center
         self.vel = vec(0, 0)
-        self.pos = vec(x, y) * game.settings["gen"]["tilesize"]
+        self.pos = vec(x, y)
         self.rot = 0
         self.last_shot = 0
         self.max_hp = game.settings["player"]["hp"]

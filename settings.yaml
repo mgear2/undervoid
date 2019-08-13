@@ -7,7 +7,7 @@ gen:
   height: 900
   fps: 60
   title: Undervoid
-  tilesize: 32
+  tilesize: 48
   titledim: [535, 65]
   music: off
   sound: off
@@ -18,8 +18,9 @@ gen:
   mob_max: 8
 
 lvl:
+  pieces: 4
   tiles_wide: 64
-  tiles_high: 640
+  tiles_high: 32
 
 layer:
   floor: 0
@@ -35,7 +36,7 @@ layer:
 
 player:
   size: GEN["TILESIZE"] * 2
-  speed_mult: 15
+  speed_mult: 12
   rot_speed: 250
   hit_rect: [0, 0, 35, 35]
   hand_offset: [65, 25]
@@ -53,7 +54,7 @@ weapon:
 
 mob:
   thrall:
-    speed: [10, 11, 12, 13]
+    speed: [11, 12, 13, 14]
     hp: 75
     dmg: 15
     knockback: 20
@@ -61,7 +62,7 @@ mob:
     drop_chance: 0.75
     dmg_rate: 150
   sleeper:
-    speed: [7, 8, 9, 10]
+    speed: [10, 11, 12]
     hp: 100
     dmg: 20
     knockback: 20
