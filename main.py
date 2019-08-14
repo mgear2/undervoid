@@ -77,6 +77,7 @@ class Game:
         self.item_img = {}
         self.sounds = {}
         self.stances = ["magic", "coachgun"]
+        self.characters = ["voidwalker", "pilgrim", "wizard"]
         tilesize = (self.settings["gen"]["tilesize"], self.settings["gen"]["tilesize"])
 
         # System Images
@@ -98,16 +99,19 @@ class Game:
         for img in self.settings["img"]["floor"]["dungeon"]:
             self.floor_img.append(self.load_img(img, tilesize, False))
         # Player Images
-        for stance in self.stances:
-            self.player_img[stance] = self.load_img(
-                self.settings["img"]["player"]["voidwalker"]["stance"][stance],
-                tuple((2 * x) for x in tilesize),
-                True,
-            )
-        for img in self.settings["img"]["player"]["voidwalker"]["move"]:
-            self.pmove_img.append(
-                self.load_img(img, tuple((2 * x) for x in tilesize), True)
-            )
+        for character in self.characters:
+            self.player_img[character] = {}
+            for stance in self.stances:
+                self.player_img[character][stance] = self.load_img(
+                    self.settings["img"]["player"][character]["stance"][stance],
+                    tuple((2 * x) for x in tilesize),
+                    True,
+                )
+            self.player_img[character]["move"] = []
+            for img in self.settings["img"]["player"][character]["move"]:
+                self.player_img[character]["move"].append(
+                    self.load_img(img, tuple((2 * x) for x in tilesize), True)
+                )
         # Bullet Images
         self.vbullet_img = self.load_img(
             self.settings["img"]["bullets"]["void"]["bullet"], tilesize, True
@@ -150,6 +154,8 @@ class Game:
                 sprite.kill()
         for wall in self.walls:
             wall.kill()
+        for spawner in self.spawners:
+            spawner.kill()
         if level == "gen":
             self.map = Forge(self, self.settings["lvl"]["pieces"])
             self.map.load_all()
@@ -183,7 +189,6 @@ class Game:
         self.spawners = pg.sprite.Group()
 
         self.init_player = True
-        # self.level("gen")
         self.level("temple.txt")
         # https://stackoverflow.com/questions/51973441/how-to-fade-from-one-colour-to-another-in-pygame
         self.base_color = choice(self.settings["void_colors"])
@@ -314,7 +319,11 @@ class Game:
                     if event.key == pg.K_RETURN:
                         self.selected = self.selected.split(" ")[0].strip(": ")
                         if self.selected == "new":
+                            self.menu_loop(self.menu_characters)
+                        if self.selected in self.characters:
+                            self.character = self.selected
                             self.inmenu = False
+                            return "break"
                         elif self.selected == "settings":
                             self.menu_loop(self.menu_settings)
                         elif self.selected == "credits":
@@ -371,6 +380,7 @@ class Game:
         self.menu_main = ["new", "settings", "credits", "exit"]
         self.update_settings()
         self.menu_credits = ["back"]
+        self.menu_characters = ["wizard", "pilgrim", "voidwalker", "back"]
         self.menu_index = 0
         self.menu_loop(self.menu_main)
 
@@ -380,7 +390,8 @@ class Game:
     def menu_loop(self, menu_items):
         self.inmenu = True
         while self.inmenu:
-            self.events()
+            if self.events() == "break":
+                break
             self.screen.fill(self.settings["colors"]["black"])
             self.screen.blit(
                 self.title_art,

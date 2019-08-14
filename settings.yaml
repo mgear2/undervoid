@@ -101,6 +101,28 @@ img:
       - voidwalkermove03.png
       - voidwalkermove04.png
       - voidwalkermove03.png
+    pilgrim:
+      stance:
+        magic: pilgrim_magic.png
+        coachgun: pilgrim_coachgun.png
+      move:
+      - pilgrimmove01.png
+      - pilgrimmove02.png
+      - pilgrimmove01.png
+      - pilgrimmove03.png
+      - pilgrimmove04.png
+      - pilgrimmove03.png
+    wizard:
+      stance:
+        magic: wizard_magic.png
+        coachgun: wizard_coachgun.png
+      move:
+      - wizardmove01.png
+      - wizardmove02.png
+      - wizardmove01.png
+      - wizardmove03.png
+      - wizardmove04.png
+      - wizardmove03.png
   mob:
     thrall:
       main: thrall.png

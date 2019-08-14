@@ -100,7 +100,7 @@ class pMove(pg.sprite.Sprite):
         self._layer = game.settings["layer"]["player_move"]
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
-        self.images = game.pmove_img
+        self.images = game.player_img[game.character]["move"]
         self.image = self.images[0]
         self.current = self.image
         self.rect = self.image.get_rect()
@@ -137,7 +137,7 @@ class Player(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.player_sprite
         pg.sprite.Sprite.__init__(self, self.groups)
         self.stance = "magic"
-        self.image = game.player_img[self.stance]
+        self.image = game.player_img[game.character][self.stance]
         self.rect = self.image.get_rect()
         self.rect.center = x, y
         self.hit_rect = pg.Rect(game.settings["player"]["hit_rect"])
@@ -199,7 +199,9 @@ class Player(pg.sprite.Sprite):
     def update(self):
         self.get_keys()
         self.rot = (self.game.cursor.pos - self.pos).angle_to(vec(1, 0)) % 360
-        self.image = pg.transform.rotate(self.game.player_img[self.stance], self.rot)
+        self.image = pg.transform.rotate(
+            self.game.player_img[self.game.character][self.stance], self.rot
+        )
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
         self.pos += self.vel * self.game.dt
