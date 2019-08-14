@@ -1,10 +1,10 @@
 gen:
-  fullscreen: on
+  fullscreen: off
   winres:
     width: 1440
     height: 900
-  width: 1920
-  height: 1080
+  width: 1440
+  height: 900
   fps: 60
   title: Undervoid
   tilesize: 48
@@ -18,9 +18,10 @@ gen:
   mob_max: 8
 
 lvl:
-  pieces: 5
+  pieces: 1
   tiles_wide: 64
   tiles_high: 32
+  rift_usable: 100
 
 layer:
   floor: 0

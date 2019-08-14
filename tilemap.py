@@ -9,7 +9,7 @@
 import pygame as pg
 from random import choice, randint, random
 from os import sys, path
-from sprites import Mob, Wall, Player, pMove, Item
+from sprites import Mob, Wall, Player, pMove, Item, Rift
 
 vec = pg.math.Vector2
 
@@ -83,7 +83,10 @@ class Forge:
                     )
                     surface.blit(self.game.wall_img, (col, row + row_offset))
                 if tile == "R" and i == 0:
-                    pass
+                    Rift(
+                        self.game,
+                        vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
+                    )
                 if tile == "P" and i == self.max_size - 1:
                     self.game.player = Player(self.game, col, row + row_offset)
                     self.game.pmove = pMove(self.game, col, row + row_offset)

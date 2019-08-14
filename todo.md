@@ -4,18 +4,18 @@
 
 - ensure all sprite classes initialize position in the same manner
 - Ranged enemy type  
+- Second character (Pilgrim)  
+- System for switching between areas  
 
 ## Core
 
 - NPCs and a "home-base" area with an intro area leading up to it  
-- System for switching between areas  
 - Second player weapon type and ability to switch on the fly  
 - Docstrings
 - Citations
   
 ## Stretch
 
-- Second character (Woadbear)  
 - Character selection menu  
 - Experience points  
 - Stats, leveling up, and leveled enemies  

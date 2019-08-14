@@ -318,7 +318,9 @@ class Wall(pg.sprite.Sprite):
     def __init__(self, game, pos, stops_bullets):
         self.game = game
         self._layer = game.settings["layer"]["wall"]
-        if stops_bullets:
+        if stops_bullets == "Rift":
+            self.groups = game.walls, game.stops_bullets, game.all_sprites
+        elif stops_bullets:
             self.groups = game.walls, game.stops_bullets
         else:
             self.groups = game.walls
@@ -405,3 +407,28 @@ class Item(pg.sprite.Sprite):
         if self.step > self.bob_range:
             self.step = 0
             self.dir *= -1
+
+
+class Rift(Wall):
+    def __init__(self, game, pos):
+        Wall.__init__(self, game, pos, "Rift")
+        self.game.rift_usable = False
+        self.image = self.game.rift_img
+
+    def check_usable(self):
+        self.target_dist = self.game.player.pos - self.pos
+        if (
+            self.target_dist.length_squared()
+            < self.game.settings["lvl"]["rift_usable"] ** 2
+        ):
+            self.game.rift_usable = True
+        else:
+            self.game.rift_usable = False
+
+    def update(self):
+        self.check_usable()
+        if self.game.rift_usable == True:
+            keys = pg.key.get_pressed()
+            if keys[pg.K_e]:
+                # hacky way of getting a new level, for now
+                self.game.playing = False

@@ -144,6 +144,21 @@ class Game:
         pg.mouse.set_visible(False)
         pg.display.set_icon(self.undervoid_icon)
 
+    def level(self, level):
+        if level == "gen":
+            self.map = Forge(self, self.settings["lvl"]["pieces"])
+            self.map.load_all()
+            self.map.new_surface(
+                self.settings["lvl"]["tiles_wide"], self.settings["lvl"]["tiles_high"]
+            )
+        else:
+            self.map = Forge(self, 1)
+            self.map.load(level)
+            self.map.new_surface(128, 128)
+        self.map.build_lvl()
+        self.map_img = self.map.make_map()
+        self.map_rect = self.map_img.get_rect()
+
     def new(self):
         self.all_sprites = pg.sprite.LayeredUpdates()
         self.walls = pg.sprite.Group()
@@ -159,21 +174,7 @@ class Game:
         self.mob_count = 0
         self.mob_max = self.settings["gen"]["mob_max"]
 
-        """self.map = Forge(self, 1)
-        self.map.load("map3c.txt")
-        self.map.new_surface(108, 127)
-        self.map.build_lvl()
-        self.map_img = self.map.make_map()
-        self.map_rect = self.map_img.get_rect()"""
-
-        self.map = Forge(self, self.settings["lvl"]["pieces"])
-        self.map.load_all()
-        self.map.new_surface(
-            self.settings["lvl"]["tiles_wide"], self.settings["lvl"]["tiles_high"]
-        )
-        self.map.build_lvl()
-        self.map_img = self.map.make_map()
-        self.map_rect = self.map_img.get_rect()
+        self.level("gen")
 
         self.camera = Camera(self, self.map.width, self.map.height, self.cursor)
         # https://stackoverflow.com/questions/51973441/how-to-fade-from-one-colour-to-another-in-pygame
