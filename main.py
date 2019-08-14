@@ -67,7 +67,7 @@ class Game:
     def load_data(self):
         self.cursor_img = []
         self.weapon_vfx = []
-        self.floor_img = []
+        self.floor_img = {}
         self.thrall_grave = []
         self.sleeper_grave = []
         self.pmove_img = []
@@ -78,6 +78,7 @@ class Game:
         self.sounds = {}
         self.stances = ["magic", "coachgun"]
         self.characters = ["voidwalker", "pilgrim", "wizard"]
+        self.biomes = ["dungeon", "grass", "void"]
         tilesize = (self.settings["gen"]["tilesize"], self.settings["gen"]["tilesize"])
 
         # System Images
@@ -96,8 +97,13 @@ class Game:
         self.wall_img = self.load_img(
             self.settings["img"]["wall"]["voidwall"], tilesize, False
         )
-        for img in self.settings["img"]["floor"]["dungeon"]:
-            self.floor_img.append(self.load_img(img, tilesize, False))
+        for biome in self.biomes:
+            self.floor_img[biome] = []
+            for img in self.settings["img"]["floor"][biome]:
+                self.floor_img[biome].append(self.load_img(img, tilesize, False))
+
+        #for img in self.settings["img"]["floor"]["dungeon"]:
+        #    self.floor_img.append(self.load_img(img, tilesize, False))
         # Player Images
         for character in self.characters:
             self.player_img[character] = {}
@@ -162,13 +168,14 @@ class Game:
             self.map.new_surface(
                 self.settings["lvl"]["tiles_wide"], self.settings["lvl"]["tiles_high"]
             )
+            self.map.build_lvl("dungeon")
         else:
             self.map = Forge(self, 1)
             self.map.load(level)
             self.map.new_surface(128, 128)
             if level == "temple.txt" and not self.init_player:
                 self.player.hp = self.player.max_hp
-        self.map.build_lvl()
+            self.map.build_lvl("void")
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
         self.cursor = Cursor(self)

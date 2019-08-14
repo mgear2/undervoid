@@ -1,16 +1,16 @@
 gen:
-  fullscreen: off
+  fullscreen: on
   winres:
     width: 1440
     height: 900
-  width: 1440
-  height: 900
+  width: 1920
+  height: 1080
   fps: 60
   title: Undervoid
   tilesize: 48
   titledim: [535, 65]
-  music: off
-  sound: off
+  music: on
+  sound: on
   spawn_max_dist: 1000
   spawn_min_dist: 500
   spawn_max: 8
@@ -156,6 +156,12 @@ img:
     - dungeonfloor03.png
     - dungeonfloor04.png
     - dungeonfloor05.png
+    grass:
+    - grassfloor01.png
+    void:
+    - voidfloor01.png
+    - voidfloor02.png
+    - voidfloor03.png
 
 music:
   leavinghome: Leaving Home.mp3

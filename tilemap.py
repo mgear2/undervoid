@@ -40,14 +40,14 @@ class Forge:
             for line in f:
                 self.data[piece].append(line.strip("\n"))
 
-    def build_lvl(self):
+    def build_lvl(self, biome):
         for i in range(0, self.max_size):
             # https://stackoverflow.com/questions/4859292/how-to-get-a-random-value-in-python-dictionary
             piece = choice(list(self.data.keys()))
-            self.render(self.temp_surface, self.data[piece], i)
+            self.render(self.temp_surface, self.data[piece], biome, i)
             self.level_data.extend(self.data[piece])
 
-    def render(self, surface, piece, i):
+    def render(self, surface, piece, biome, i):
         y_offset = i * 32
         row_offset = y_offset * self.game.settings["gen"]["tilesize"]
         for row, tiles in enumerate(piece):
@@ -58,7 +58,7 @@ class Forge:
                 col *= self.game.settings["gen"]["tilesize"]
                 if tile != " " and tile != "0":
                     self.floor_img = pg.transform.rotate(
-                        choice(self.game.floor_img), choice(self.rot)
+                        choice(self.game.floor_img[biome]), choice(self.rot)
                     )
                     surface.blit(self.floor_img, (col, row + row_offset))
                 if tile == "1":
