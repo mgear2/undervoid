@@ -73,6 +73,7 @@ class Game:
         self.pmove_img = []
         self.player_img = {}
         self.mob_img = {}
+        self.grave_img = {}
         self.item_img = {}
         self.sounds = {}
         self.stances = ["magic", "coachgun"]
@@ -88,7 +89,7 @@ class Game:
             False,
         )
         for img in self.settings["img"]["cursor"]:
-            self.cursor_img.append(self.load_img(img, tilesize, True))
+            self.cursor_img.append(self.load_img(img, (64, 64), True))
         # Environment Images
         self.wall_img = self.load_img(
             self.settings["img"]["wall"]["voidwall"], tilesize, False
@@ -119,10 +120,12 @@ class Game:
         self.mob_img["sleeper"] = self.load_img(
             self.settings["img"]["mob"]["sleeper"]["main"], tilesize, True
         )
+        self.grave_img["thrall"] = []
+        self.grave_img["sleeper"] = []
         for img in self.settings["img"]["mob"]["thrall"]["grave"]:
-            self.thrall_grave.append(self.load_img(img, tilesize, True))
+            self.grave_img["thrall"].append(self.load_img(img, tilesize, True))
         for img in self.settings["img"]["mob"]["sleeper"]["grave"]:
-            self.sleeper_grave.append(self.load_img(img, tilesize, True))
+            self.grave_img["sleeper"].append(self.load_img(img, tilesize, True))
         # Item Images
         for item in self.settings["img"]["items"]:
             self.item_img[item] = self.load_img(

@@ -83,7 +83,6 @@ class Cursor(pg.sprite.Sprite):
         self.game = game
         self.image = game.cursor_img[0]
         self.rect = self.image.get_rect()
-        self.rect = self.image.get_rect()
         self.rect.center = pg.mouse.get_pos()
         self.pos = pg.mouse.get_pos()
         self.counter = 0
@@ -313,7 +312,7 @@ class Mob(pg.sprite.Sprite):
             collide_with_walls(self, self.game.walls, "y")
             self.rect.center = self.hit_rect.center
         if self.hp <= 0:
-            Grave(self.game, self.pos, self.rot)
+            Grave(self.game, self.kind, self.pos, self.rot)
             if random() < self.game.settings["mob"][self.kind]["drop_chance"]:
                 item = choice(self.items)
                 Item(self.game, self.pos, item[0], item[1])
@@ -341,7 +340,7 @@ class Wall(pg.sprite.Sprite):
 
 
 class Grave(pg.sprite.Sprite):
-    def __init__(self, game, pos, rot):
+    def __init__(self, game, kind, pos, rot):
         self.game = game
         self._layer = game.settings["layer"]["grave"]
         self.groups = game.all_sprites, game.graves
@@ -349,7 +348,7 @@ class Grave(pg.sprite.Sprite):
         self.pos = pos
         self.image = pg.transform.rotate(
             pg.transform.scale(
-                choice(game.thrall_grave),
+                choice(game.grave_img[kind]),
                 (
                     self.game.settings["gen"]["tilesize"],
                     self.game.settings["gen"]["tilesize"],
