@@ -145,6 +145,10 @@ class Game:
         pg.display.set_icon(self.undervoid_icon)
 
     def level(self, level):
+        for sprite in self.all_sprites:
+            sprite.kill()
+        for wall in self.walls:
+            wall.kill()
         if level == "gen":
             self.map = Forge(self, self.settings["lvl"]["pieces"])
             self.map.load_all()
@@ -158,6 +162,10 @@ class Game:
         self.map.build_lvl()
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
+        self.cursor = Cursor(self)
+        self.camera = Camera(self, self.map.width, self.map.height, self.cursor)
+        self.mob_count = 0
+        self.mob_max = self.settings["gen"]["mob_max"]
 
     def new(self):
         self.all_sprites = pg.sprite.LayeredUpdates()
@@ -170,13 +178,9 @@ class Game:
         self.player_sprite = pg.sprite.Group()
         self.cursor_sprite = pg.sprite.Group()
         self.spawners = pg.sprite.Group()
-        self.cursor = Cursor(self)
-        self.mob_count = 0
-        self.mob_max = self.settings["gen"]["mob_max"]
-
+    
         self.level("gen")
 
-        self.camera = Camera(self, self.map.width, self.map.height, self.cursor)
         # https://stackoverflow.com/questions/51973441/how-to-fade-from-one-colour-to-another-in-pygame
         self.base_color = choice(self.settings["void_colors"])
         self.next_color = choice(self.settings["void_colors"])

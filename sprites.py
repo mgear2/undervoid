@@ -430,5 +430,5 @@ class Rift(Wall):
         if self.game.rift_usable == True:
             keys = pg.key.get_pressed()
             if keys[pg.K_e]:
-                # hacky way of getting a new level, for now
-                self.game.playing = False
+                # current method of switching levels does not retain player data
+                self.game.level("gen")
