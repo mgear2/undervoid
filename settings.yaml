@@ -12,7 +12,7 @@ gen:
   music: off
   sound: off
   spawn_max_dist: 1000
-  spawn_min_dist: 750
+  spawn_min_dist: 500
   spawn_max: 8
   spawn_min: 5
   mob_max: 8
@@ -80,6 +80,7 @@ items:
 img:
   title: undervoidtitle.png
   icon: undervoidicon.png
+  rift: rift01.png
   cursor:
   - cursor01.png
   - cursor02.png

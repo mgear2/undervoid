@@ -40,13 +40,7 @@ def draw_score(game):
         str(game.player.coins), game.font, 60, game.settings["colors"]["white"]
     )
     game.screen.blit(
-        pg.transform.scale(
-            game.item_img["coin"],
-            (
-                int(game.settings["gen"]["tilesize"] * 1.5),
-                int(game.settings["gen"]["tilesize"] * 1.5),
-            ),
-        ),
+        pg.transform.scale(game.item_img["coin"], (92, 92)),
         (game.settings["gen"]["width"] - 100, game.settings["gen"]["height"] - 100),
     )
     score_x = 75 + len(str(game.player.coins)) * 25

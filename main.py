@@ -88,6 +88,7 @@ class Game:
             tuple(self.settings["gen"]["titledim"]),
             False,
         )
+        self.rift_img = self.load_img(self.settings["img"]["rift"], tilesize, False)
         for img in self.settings["img"]["cursor"]:
             self.cursor_img.append(self.load_img(img, (64, 64), True))
         # Environment Images
@@ -346,15 +347,13 @@ class Game:
 
     # Text Renderer https://www.sourcecodester.com/tutorials/python/11784/python-pygame-simple-main-menu-selection.html
     def text_format(self, message, textFont, textSize, textColor):
-        # newFont = pg.font.Font(textFont, textSize)
-        newFont = pg.font.SysFont("franklingothic", textSize)
+        newFont = pg.font.SysFont(textFont, textSize)
         newText = newFont.render(message, 0, textColor)
 
         return newText
 
     def show_start_screen(self):
-        # https://www.1001freefonts.com/monster-of-south.font
-        self.font = path.join(self.fonts_folder, "monster_of_south_st.ttf")
+        self.font = "franklingothic"
         pg.mixer.music.load(
             path.join(self.music_folder, self.settings["music"]["voidwalk"])
         )
@@ -454,6 +453,5 @@ if __name__ == "__main__":
     g.show_start_screen()
     while True:
         g.new()
-        pg.mixer.quit()
         g.run()
         g.show_go_screen()
