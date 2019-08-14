@@ -78,6 +78,7 @@ class Game:
         self.sounds = {}
         self.stances = ["magic", "coachgun"]
         self.characters = ["voidwalker", "pilgrim", "wizard"]
+        self.mob_kinds = ["thrall", "sleeper"]
         self.biomes = ["dungeon", "grass", "void"]
         tilesize = (self.settings["gen"]["tilesize"], self.settings["gen"]["tilesize"])
 
@@ -125,18 +126,13 @@ class Game:
         for img in self.settings["img"]["bullets"]["void"]["fx"]:
             self.weapon_vfx.append(self.load_img(img, tilesize, True))
         # Mob Images
-        self.mob_img["thrall"] = self.load_img(
-            self.settings["img"]["mob"]["thrall"]["main"], tilesize, True
-        )
-        self.mob_img["sleeper"] = self.load_img(
-            self.settings["img"]["mob"]["sleeper"]["main"], tilesize, True
-        )
-        self.grave_img["thrall"] = []
-        self.grave_img["sleeper"] = []
-        for img in self.settings["img"]["mob"]["thrall"]["grave"]:
-            self.grave_img["thrall"].append(self.load_img(img, tilesize, True))
-        for img in self.settings["img"]["mob"]["sleeper"]["grave"]:
-            self.grave_img["sleeper"].append(self.load_img(img, tilesize, True))
+        for kind in self.mob_kinds:
+            self.mob_img[kind] = self.load_img(
+                self.settings["img"]["mob"][kind]["main"], tilesize, True
+            )
+            self.grave_img[kind] = []
+            for img in self.settings["img"]["mob"][kind]["grave"]:
+                self.grave_img[kind].append(self.load_img(img, tilesize, True))
         # Item Images
         for item in self.settings["img"]["items"]:
             self.item_img[item] = self.load_img(
