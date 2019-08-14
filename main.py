@@ -146,7 +146,8 @@ class Game:
 
     def level(self, level):
         for sprite in self.all_sprites:
-            sprite.kill()
+            if sprite != self.player and sprite != self.pmove:
+                sprite.kill()
         for wall in self.walls:
             wall.kill()
         if level == "gen":
@@ -159,6 +160,8 @@ class Game:
             self.map = Forge(self, 1)
             self.map.load(level)
             self.map.new_surface(128, 128)
+            if level == "temple.txt" and not self.init_player:
+                self.player.hp = self.player.max_hp
         self.map.build_lvl()
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
@@ -178,9 +181,10 @@ class Game:
         self.player_sprite = pg.sprite.Group()
         self.cursor_sprite = pg.sprite.Group()
         self.spawners = pg.sprite.Group()
-    
-        self.level("gen")
 
+        self.init_player = True
+        # self.level("gen")
+        self.level("temple.txt")
         # https://stackoverflow.com/questions/51973441/how-to-fade-from-one-colour-to-another-in-pygame
         self.base_color = choice(self.settings["void_colors"])
         self.next_color = choice(self.settings["void_colors"])

@@ -88,8 +88,13 @@ class Forge:
                         vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
                     )
                 if tile == "P" and i == self.max_size - 1:
-                    self.game.player = Player(self.game, col, row + row_offset)
-                    self.game.pmove = pMove(self.game, col, row + row_offset)
+                    if self.game.init_player:
+                        self.game.player = Player(self.game, col, row + row_offset)
+                        self.game.pmove = pMove(self.game, col, row + row_offset)
+                        self.game.init_player = False
+                    else:
+                        self.game.player.place(col, row + row_offset)
+                        self.game.pmove.place(col, row + row_offset)
                 if tile == "M":
                     Spawner(self.game, x, y + y_offset)
                 if tile == "p":
@@ -101,7 +106,6 @@ class Forge:
                     )
 
     def make_map(self):
-        print(self.temp_surface)
         return self.temp_surface
 
 

@@ -18,10 +18,10 @@ gen:
   mob_max: 8
 
 lvl:
-  pieces: 1
+  pieces: 5
   tiles_wide: 64
   tiles_high: 32
-  rift_usable: 100
+  rift_usable_distance: 100
 
 layer:
   floor: 0

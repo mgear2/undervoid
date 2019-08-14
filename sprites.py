@@ -110,6 +110,11 @@ class pMove(pg.sprite.Sprite):
         self.last = 0
         self.i = 0
 
+    def place(self, x, y):
+        self.pos = vec(x, y)
+        self.rect = self.image.get_rect()
+        self.rect.center = self.pos
+
     def update(self):
         now = pg.time.get_ticks()
         if self.game.player.vel != [0, 0]:
@@ -147,6 +152,11 @@ class Player(pg.sprite.Sprite):
             game.settings["gen"]["tilesize"] * game.settings["player"]["speed_mult"]
         )
         self.coins = 1
+
+    def place(self, x, y):
+        self.pos = vec(x, y)
+        self.rect = self.image.get_rect()
+        self.rect.center = self.pos
 
     def get_keys(self):
         self.rot_speed = 0
@@ -419,7 +429,7 @@ class Rift(Wall):
         self.target_dist = self.game.player.pos - self.pos
         if (
             self.target_dist.length_squared()
-            < self.game.settings["lvl"]["rift_usable"] ** 2
+            < self.game.settings["lvl"]["rift_usable_distance"] ** 2
         ):
             self.game.rift_usable = True
         else:
@@ -432,3 +442,5 @@ class Rift(Wall):
             if keys[pg.K_e]:
                 # current method of switching levels does not retain player data
                 self.game.level("gen")
+            if keys[pg.K_r]:
+                self.game.level("temple.txt")
