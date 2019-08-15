@@ -151,7 +151,7 @@ class Player(pg.sprite.Sprite):
         self.speed = (
             game.settings["gen"]["tilesize"] * game.settings["player"]["speed_mult"]
         )
-        self.coins = 1
+        self.coins = 0
 
     def place(self, x, y):
         self.pos = vec(x, y)
@@ -443,6 +443,6 @@ class Rift(Wall):
             keys = pg.key.get_pressed()
             if keys[pg.K_e]:
                 # current method of switching levels does not retain player data
-                self.game.level("gen")
+                self.game.level("gen", choice(self.game.biomes))
             if keys[pg.K_r]:
-                self.game.level("temple.txt")
+                self.game.level("temple.txt", "void")

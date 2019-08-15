@@ -70,16 +70,15 @@ class Game:
         self.floor_img = {}
         self.thrall_grave = []
         self.sleeper_grave = []
-        self.pmove_img = []
         self.player_img = {}
         self.mob_img = {}
         self.grave_img = {}
         self.item_img = {}
         self.sounds = {}
         self.stances = ["magic", "coachgun"]
-        self.characters = ["voidwalker", "pilgrim", "wizard"]
+        self.characters = ["pilgrim", "voidwalker", "lizardwizard"]
         self.mob_kinds = ["thrall", "sleeper"]
-        self.biomes = ["dungeon", "grass", "void"]
+        self.biomes = ["dungeon", "dungeon", "snow", "void"]
         tilesize = (self.settings["gen"]["tilesize"], self.settings["gen"]["tilesize"])
 
         # System Images
@@ -103,7 +102,7 @@ class Game:
             for img in self.settings["img"]["floor"][biome]:
                 self.floor_img[biome].append(self.load_img(img, tilesize, False))
 
-        #for img in self.settings["img"]["floor"]["dungeon"]:
+        # for img in self.settings["img"]["floor"]["dungeon"]:
         #    self.floor_img.append(self.load_img(img, tilesize, False))
         # Player Images
         for character in self.characters:
@@ -150,7 +149,7 @@ class Game:
         pg.mouse.set_visible(False)
         pg.display.set_icon(self.undervoid_icon)
 
-    def level(self, level):
+    def level(self, level, biome):
         for sprite in self.all_sprites:
             if sprite != self.player and sprite != self.pmove:
                 sprite.kill()
@@ -164,14 +163,13 @@ class Game:
             self.map.new_surface(
                 self.settings["lvl"]["tiles_wide"], self.settings["lvl"]["tiles_high"]
             )
-            self.map.build_lvl("dungeon")
         else:
             self.map = Forge(self, 1)
             self.map.load(level)
             self.map.new_surface(128, 128)
             if level == "temple.txt" and not self.init_player:
                 self.player.hp = self.player.max_hp
-            self.map.build_lvl("void")
+        self.map.build_lvl(biome)
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
         self.cursor = Cursor(self)
@@ -192,7 +190,7 @@ class Game:
         self.spawners = pg.sprite.Group()
 
         self.init_player = True
-        self.level("temple.txt")
+        self.level("temple.txt", "void")
         # https://stackoverflow.com/questions/51973441/how-to-fade-from-one-colour-to-another-in-pygame
         self.base_color = choice(self.settings["void_colors"])
         self.next_color = choice(self.settings["void_colors"])
@@ -383,7 +381,7 @@ class Game:
         self.menu_main = ["new", "settings", "credits", "exit"]
         self.update_settings()
         self.menu_credits = ["back"]
-        self.menu_characters = ["wizard", "pilgrim", "voidwalker", "back"]
+        self.menu_characters = self.characters
         self.menu_index = 0
         self.menu_loop(self.menu_main)
 
@@ -433,6 +431,25 @@ class Game:
                     ),
                 )
                 item_y += fontsize
+                if self.selected in self.menu_characters:
+                    self.screen.blit(
+                        pg.transform.scale(
+                            self.player_img[self.selected]["move"][0], (320, 320)
+                        ),
+                        (
+                            self.settings["gen"]["width"] / 2 - 170,
+                            self.settings["gen"]["height"] / 2 + 25,
+                        ),
+                    )
+                    self.screen.blit(
+                        pg.transform.scale(
+                            self.player_img[self.selected]["magic"], (320, 320)
+                        ),
+                        (
+                            self.settings["gen"]["width"] / 2 - 160,
+                            self.settings["gen"]["height"] / 2 + 25,
+                        ),
+                    )
             pg.display.update()
             self.clock.tick_busy_loop(self.settings["gen"]["fps"])
 

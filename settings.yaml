@@ -7,7 +7,7 @@ gen:
   height: 1080
   fps: 60
   title: Undervoid
-  tilesize: 48
+  tilesize: 64
   titledim: [535, 65]
   music: on
   sound: on
@@ -18,7 +18,7 @@ gen:
   mob_max: 8
 
 lvl:
-  pieces: 5
+  pieces: 3
   tiles_wide: 64
   tiles_high: 32
   rift_usable_distance: 100
@@ -55,7 +55,7 @@ weapon:
 
 mob:
   thrall:
-    speed: [11, 12, 13, 14]
+    speed: [13, 14, 15]
     hp: 75
     dmg: 15
     knockback: 20
@@ -63,7 +63,7 @@ mob:
     drop_chance: 0.75
     dmg_rate: 150
   sleeper:
-    speed: [10, 11, 12]
+    speed: [13, 14, 15]
     hp: 100
     dmg: 20
     knockback: 20
@@ -112,17 +112,17 @@ img:
       - pilgrimmove03.png
       - pilgrimmove04.png
       - pilgrimmove03.png
-    wizard:
+    lizardwizard:
       stance:
-        magic: wizard_magic.png
-        coachgun: wizard_coachgun.png
+        magic: lizardwizard_magic.png
+        coachgun: lizardwizard_coachgun.png
       move:
-      - wizardmove01.png
-      - wizardmove02.png
-      - wizardmove01.png
-      - wizardmove03.png
-      - wizardmove04.png
-      - wizardmove03.png
+      - lizardwizardmove01.png
+      - lizardwizardmove02.png
+      - lizardwizardmove01.png
+      - lizardwizardmove03.png
+      - lizardwizardmove04.png
+      - lizardwizardmove03.png
   mob:
     thrall:
       main: thrall.png
@@ -158,6 +158,12 @@ img:
     - dungeonfloor05.png
     grass:
     - grassfloor01.png
+    snow:
+    - snowfloor01.png
+    - snowfloor02.png
+    - snowfloor03.png
+    - snowfloor04.png
+    - snowfloor05.png
     void:
     - voidfloor01.png
     - voidfloor02.png
@@ -210,3 +216,5 @@ map:
   - map_gen02.txt
   - map_gen03.txt
   - map_gen04.txt
+  - map_gen05.txt
+  - map_gen06.txt
