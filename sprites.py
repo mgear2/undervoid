@@ -53,6 +53,8 @@ def draw_score(game):
 def collide_with_walls(sprite, group, dir):
     hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
     if hits:
+        if type(sprite) == Mob and not hits[0].stops_bullets:
+            return
         if dir == "x":
             if hits[0].rect.centerx > sprite.hit_rect.centerx:
                 sprite.pos.x = hits[0].rect.left - sprite.hit_rect.width / 2
@@ -332,10 +334,11 @@ class Wall(pg.sprite.Sprite):
         self._layer = game.settings["layer"]["wall"]
         if stops_bullets == "Rift":
             self.groups = game.walls, game.stops_bullets, game.all_sprites
-        elif stops_bullets:
+        elif stops_bullets == True:
             self.groups = game.walls, game.stops_bullets
         else:
             self.groups = game.walls
+        self.stops_bullets = stops_bullets
         pg.sprite.Sprite.__init__(self, self.groups)
         self.pos = pos
         self.rect = pg.Rect(

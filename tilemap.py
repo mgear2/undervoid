@@ -63,11 +63,17 @@ class Forge:
                     surface.blit(self.floor_img, (col, row + row_offset))
                 if tile == "1":
                     surface.blit(self.game.wall_img, (col, row + row_offset))
-                if tile == "0" or tile == "1":
+                if tile == "0":
                     Wall(
                         self.game,
                         vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
                         False,
+                    )
+                if tile == "1":
+                    Wall(
+                        self.game,
+                        vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
+                        True,
                     )
                 if tile == "y" and i == 0:
                     Wall(
@@ -79,7 +85,7 @@ class Forge:
                     Wall(
                         self.game,
                         vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
-                        False,
+                        True,
                     )
                     surface.blit(self.game.wall_img, (col, row + row_offset))
                 if tile == "R" and i == 0:
