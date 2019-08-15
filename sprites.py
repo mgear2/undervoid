@@ -255,7 +255,7 @@ class Mob(pg.sprite.Sprite):
         self._layer = game.settings["layer"]["mob"]
         self.groups = game.all_sprites, game.mobs
         pg.sprite.Sprite.__init__(self, self.groups)
-        self.image = game.mob_img[kind]
+        self.image = game.mob_img[kind].copy()
         self.rect = self.image.get_rect()
         self.rect.center = x, y
         self.hit_rect = pg.Rect(
