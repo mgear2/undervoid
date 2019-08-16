@@ -116,8 +116,8 @@ That being said, my formal testing for this project was sorely lacking, especial
 ## Acknowledgements  <a name="ack"></a>
 
 Big thanks to Chris Bradfield's excellent pygame tutorial, which helped me enormously in getting started.
-I have sought to cite this and other sources throughout my code where most appropriate.
-Youtube: <https://www.youtube.com/playlist?list=PLsk-HSGFjnaGQq7ybM8Lgkh5EMxUWPm2i>
+I have sought to cite this and other sources throughout my code where most appropriate.  
+Youtube: <https://www.youtube.com/playlist?list=PLsk-HSGFjnaGQq7ybM8Lgkh5EMxUWPm2i>  
 Github: <https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023>
 
 ### Music
