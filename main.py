@@ -3,8 +3,8 @@
 # Please see the file LICENSE in the source
 # distribution of this software for license terms.
 
-# Building off example code from
-# https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap
+# Originally built off example code from
+# https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023
 
 import pygame as pg
 import sys
@@ -18,6 +18,19 @@ yaml = ruamel.yaml.YAML()
 
 
 class Game:
+    """
+    Overarching Game class loads and manipulates game data and runs the main game loop.
+
+    Example:
+
+    g = Game()
+    g.show_start_screen()
+    while True:
+        g.new()
+        g.run()
+        g.show_go_screen()
+    """
+
     def __init__(self):
         pg.init()
         pg.mixer.init()
@@ -32,6 +45,9 @@ class Game:
         self.load_data()
 
     def init_game_window(self):
+        """
+        Initializes a centered game window either with windowed resolution or fullscreen.
+        """
         environ["SDL_VIDEO_CENTERED"] = "1"
         if self.settings["gen"]["fullscreen"] == "on":
             self.settings["gen"]["width"], self.settings["gen"]["height"] = (
@@ -47,6 +63,9 @@ class Game:
             )
 
     def build_path(self):
+        """
+        Builds a directory structure for the game. 
+        """
         self.game_folder = path.dirname(__file__)
         self.data_folder = path.join(self.game_folder, "data")
         self.img_folder = path.join(self.data_folder, "img")
@@ -56,6 +75,9 @@ class Game:
         self.fonts_folder = path.join(self.data_folder, "fonts")
 
     def load_img(self, source, scale, alpha):
+        """
+        Used to load images from source files, scale them, and convert() or convert_alpha() as specified. 
+        """
         img = pg.image.load(path.join(self.img_folder, source))
         img = pg.transform.scale(img, scale)
         if alpha:
@@ -65,6 +87,11 @@ class Game:
         return img
 
     def load_data(self):
+        """
+        Initializes and populates lists and dictionaries of game data. 
+        Initializes mouse settings and game icon. 
+        Still stands to be refactored and optimized further. 
+        """
         self.cursor_img = []
         self.weapon_vfx = []
         self.floor_img = {}
@@ -150,6 +177,11 @@ class Game:
         pg.display.set_icon(self.undervoid_icon)
 
     def level(self, level, biome):
+        """
+        Utilizes the Forge class to build and returns a level with the desired specifications. 
+        If the level is "gen", a new level will be generated. Otherwise, Forge will attempt to
+        load a map from the specified file.  
+        """
         for sprite in self.all_sprites:
             if sprite != self.player and sprite != self.pmove:
                 sprite.kill()
@@ -178,6 +210,10 @@ class Game:
         self.mob_max = self.settings["gen"]["mob_max"]
 
     def new(self):
+        """
+        Initializes sprite groups, builds inital level, 
+        specifies variables to be used for morphing background color. 
+        """
         self.all_sprites = pg.sprite.LayeredUpdates()
         self.walls = pg.sprite.Group()
         self.stops_bullets = pg.sprite.Group()
@@ -205,6 +241,9 @@ class Game:
             pg.mixer.music.play(-1, 0.0)
 
     def run(self):
+        """
+        Game loop; ticks the clock, checks for events, updates game state, draws game state
+        """
         self.playing = True
         while self.playing:
             # tick_busy_loop() uses more cpu but is more accurate
@@ -214,10 +253,23 @@ class Game:
             self.draw()
 
     def quit(self):
+        """
+        Quits pygame and exits the program
+        """
         pg.quit()
         sys.exit()
 
     def update(self):
+        """
+        Updates sprites, spawners and camera. 
+        Checks for player hitting items and resolves hits.
+        Checks for mobs hitting player and resolves hits. 
+        Checks for bullets hitting mobs and resolves hits. 
+        Morphs the background color one step. 
+
+        Drawn largely from:
+        https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023
+        """
         self.all_sprites.update()
         self.spawners.update()
         self.camera.update(self.player)
@@ -279,6 +331,14 @@ class Game:
         self.bg_color = self.current_color
 
     def draw(self):
+        """
+        Sets a caption on the game window for fps. 
+        Draws the map and all sprites. 
+        Draws Player health and gold coins.
+
+        Drawn largely from:
+        https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023
+        """
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
         self.screen.fill(self.bg_color)
         self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
@@ -310,6 +370,10 @@ class Game:
         pg.display.flip()
 
     def events(self):
+        """
+        Checks for key/mouse presses. 
+        Checks if the user is quitting the game. 
+        """
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.quit()
@@ -354,6 +418,10 @@ class Game:
                         self.menu_index += 1
 
     def update_settings(self):
+        """
+        Updates the settings.yaml file based on player changes 
+        in the settings menu. 
+        """
         with open("settings.yaml", "w") as f:
             yaml.dump(self.settings, f)
             f.close()
@@ -366,12 +434,18 @@ class Game:
 
     # Text Renderer https://www.sourcecodester.com/tutorials/python/11784/python-pygame-simple-main-menu-selection.html
     def text_format(self, message, textFont, textSize, textColor):
+        """
+        Returns a pygame text ready to be drawn to screen. 
+        """
         newFont = pg.font.SysFont(textFont, textSize)
         newText = newFont.render(message, 0, textColor)
 
         return newText
 
     def show_start_screen(self):
+        """
+        Initializes the menus, music, and starts menu loop. 
+        """
         self.font = "franklingothic"
         pg.mixer.music.load(
             path.join(self.music_folder, self.settings["music"]["voidwalk"])
@@ -386,9 +460,15 @@ class Game:
         self.menu_loop(self.menu_main)
 
     def show_go_screen(self):
+        """
+        pygame needs this method to be present. 
+        """
         pass
 
     def menu_loop(self, menu_items):
+        """
+        Menu loop: renders the menu options to screen and tracks which option the player has highlighted. 
+        """
         self.inmenu = True
         while self.inmenu:
             if self.events() == "break":
@@ -454,8 +534,16 @@ class Game:
             self.clock.tick_busy_loop(self.settings["gen"]["fps"])
 
     def show_credits(self):
+        """
+        Displayed upon selection of the credits menu. 
+        """
         credits = [
             "Copyright (c) 2019 Matthew Geary",
+            "",
+            "Big thanks to Chris Bradfield's excellent pygame tutorial, which helped me",
+            "enormously in getting started.",
+            "Youtube: https://www.youtube.com/playlist?list=PLsk-HSGFjnaGQq7ybM8Lgkh5EMxUWPm2i",
+            "Github: https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023",
             "",
             "Music:",
             '"Leaving Home" - Kevin MacLeod (incompetech.com)',
@@ -463,7 +551,7 @@ class Game:
             "The music for Undervoid is licensed under Creative Commons: By Attribution 4.0 License",
             "Found in `\data\music\MUSIC_LICENSE` or at http://creativecommons.org/licenses/by/4.0/",
             "",
-            "In-game artwork by Matthew Geary.",
+            "In-game artwork and sounds by Matthew Geary.",
             "Title Art generated at https://fontmeme.com/pixel-fonts/",
             "",
             "LICENSE",

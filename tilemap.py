@@ -3,9 +3,6 @@
 # Please see the file LICENSE in the source
 # distribution of this software for license terms.
 
-# Building off example code from
-# https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap
-
 import pygame as pg
 from random import choice, randint, random
 from os import sys, path
@@ -15,6 +12,11 @@ vec = pg.math.Vector2
 
 
 class Forge:
+    """
+    Forge class can be used to initalize and render map surfaces from text files.
+    Forge is capable of splicing together multiple preset dungeon pieces. 
+    """
+
     def __init__(self, game, size):
         self.game = game
         self.data = {}
@@ -23,6 +25,9 @@ class Forge:
         self.max_size = size
 
     def new_surface(self, tiles_wide, tiles_high):
+        """
+        Creates a new surface, sized according to game settings. 
+        """
         self.width = tiles_wide * self.game.settings["gen"]["tilesize"]
         self.height = tiles_high * self.game.settings["gen"]["tilesize"] * self.max_size
         # https://stackoverflow.com/questions/328061/how-to-make-a-surface-with-a-transparent-background-in-pygame#328067
@@ -31,16 +36,25 @@ class Forge:
         ).convert_alpha()
 
     def load_all(self):
+        """
+        Loads all textual data from map piece files. 
+        """
         for piece in self.game.settings["map"]["basic"]:
             self.load(piece)
 
     def load(self, piece):
+        """
+        Loads textual data from a given map piece file. 
+        """
         self.data[piece] = []
         with open(path.join(self.game.map_folder, piece), "rt") as f:
             for line in f:
                 self.data[piece].append(line.strip("\n"))
 
     def build_lvl(self, biome):
+        """
+        Randomly grabs dungeon pieces and renders them onto the map surface next to one another. 
+        """
         for i in range(0, self.max_size):
             # https://stackoverflow.com/questions/4859292/how-to-get-a-random-value-in-python-dictionary
             piece = choice(list(self.data.keys()))
@@ -48,6 +62,10 @@ class Forge:
             self.level_data.extend(self.data[piece])
 
     def render(self, surface, piece, biome, i):
+        """
+        Renders the map from the textual data onto the pygame surface tile by tile
+        and places sprites onto the map based on text flags. 
+        """
         y_offset = i * 32
         row_offset = y_offset * self.game.settings["gen"]["tilesize"]
         for row, tiles in enumerate(piece):
@@ -112,10 +130,21 @@ class Forge:
                     )
 
     def make_map(self):
+        """
+        Used to access the map surface after map creation. 
+        """
         return self.temp_surface
 
 
 class Camera:
+    """
+    Camera class is used to center the game window on the player 
+    and move the map and contained entities relative to the player. 
+    
+    Drawn largely from:
+    https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023
+    """
+
     def __init__(self, game, width, height, cursor):
         self.game = game
         self.camera = pg.Rect(0, 0, width, height)
@@ -139,6 +168,11 @@ class Camera:
 
 
 class Spawner(pg.sprite.Sprite):
+    """
+    Spawner objects are placed on the map; when the player is within a certain distance,
+    and if there are not already too many mobs present, the spawner will spawn mobs. 
+    """
+
     def __init__(self, game, col, row):
         self.game = game
         self.groups = game.spawners
@@ -147,6 +181,10 @@ class Spawner(pg.sprite.Sprite):
         self.pos = vec(col, row) * game.settings["gen"]["tilesize"]
 
     def update(self):
+        """
+        Tracks distance to player and calls spawn function
+        when appropriate. 
+        """
         self.target_dist = self.game.player.pos - self.pos
         if (
             self.game.settings["gen"]["spawn_min_dist"] ** 2
@@ -157,6 +195,10 @@ class Spawner(pg.sprite.Sprite):
             self.spawn()
 
     def spawn(self):
+        """
+        Spawns enemies pseudo-randomly in an 8x8 tile area
+        centered on the Spawner. 
+        """
         max_count = randint(
             self.game.settings["gen"]["spawn_min"],
             self.game.settings["gen"]["spawn_max"],

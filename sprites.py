@@ -3,9 +3,6 @@
 # Please see the file LICENSE in the source
 # distribution of this software for license terms.
 
-# Building off example code from
-# https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap
-
 import pygame as pg
 from os import path
 from random import uniform, choice, random
@@ -15,10 +12,22 @@ vec = pg.math.Vector2
 
 
 def collide_hit_rect(one, two):
+    """
+    Used for hit_rect collision:
+
+    Drawn largely from:
+    https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023
+    """
     return one.hit_rect.colliderect(two.rect)
 
 
 def draw_hp(game, surface, x, y, pct, b_len, b_height, player):
+    """
+    Used to draw mob and player health bars. 
+
+    Inspired by:
+    https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023
+    """
     if pct < 0:
         pct = 0
     if pct > 0.6:
@@ -36,6 +45,9 @@ def draw_hp(game, surface, x, y, pct, b_len, b_height, player):
 
 
 def draw_score(game):
+    """
+    Draws the players score and a coin image in the lower right corner of the screen.
+    """
     score = game.text_format(
         str(game.player.coins), game.font, 60, game.settings["colors"]["white"]
     )
@@ -51,6 +63,10 @@ def draw_score(game):
 
 
 def collide_with_walls(sprite, group, dir):
+    """
+    Used for collision detection between player/mobs and walls. Mobs are
+    currently set to not be restricted by Void (invisible) walls, while the player is. 
+    """
     hits = pg.sprite.spritecollide(sprite, group, False, collide_hit_rect)
     if hits:
         if type(sprite) == Mob and not hits[0].stops_bullets:
@@ -72,6 +88,11 @@ def collide_with_walls(sprite, group, dir):
 
 
 class Cursor(pg.sprite.Sprite):
+    """
+    Cursor class provides an animated cursor target image to 
+    replace the default cursor. 
+    """
+
     def __init__(self, game):
         self._layer = game.settings["layer"]["cursor"]
         self.groups = game.all_sprites
@@ -97,6 +118,13 @@ class Cursor(pg.sprite.Sprite):
 
 
 class pMove(pg.sprite.Sprite):
+    """
+    Sprite for player movement is currently separate from the player.
+    pMove must be initialized in the same location as the player; layering
+    ensures it is rendered underneath the player. 
+    Updating pMove cycles the image, providing an animation effect as the player walks. 
+    """
+
     def __init__(self, game, x, y):
         self.game = game
         self._layer = game.settings["layer"]["player_move"]
@@ -133,6 +161,12 @@ class pMove(pg.sprite.Sprite):
 
 
 class Player(pg.sprite.Sprite):
+    """
+    Player class provides the player sprite and tracks all player data.
+    Originally built off code from https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023,
+    but has evolved a lot since. 
+    """
+
     def __init__(self, game, x, y):
         self.game = game
         self._layer = game.settings["layer"]["player"]
@@ -220,6 +254,11 @@ class Player(pg.sprite.Sprite):
 
 
 class Bullet(pg.sprite.Sprite):
+    """
+    Bullet class provides bullet sprites with image, velocity and lifetime tracking. 
+    Originally built off code from https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023.
+    """
+
     def __init__(self, game, pos, dir, rot):
         self.game = game
         self._layer = game.settings["layer"]["bullet"]
@@ -249,6 +288,11 @@ class Bullet(pg.sprite.Sprite):
 
 
 class Mob(pg.sprite.Sprite):
+    """
+    Mob class provides mob sprites and tracks mob instance data. 
+    Originally built off code from https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023.
+    """
+
     def __init__(self, game, kind, x, y):
         self.game = game
         self.kind = kind
@@ -329,6 +373,13 @@ class Mob(pg.sprite.Sprite):
 
 
 class Wall(pg.sprite.Sprite):
+    """
+    Walls come in three flavors: 
+    stops_bullets=True: visible walls
+    stops_bullets=False: invisible walls
+    stops_bullets="Rift": Rift
+    """
+
     def __init__(self, game, pos, stops_bullets):
         self.game = game
         self._layer = game.settings["layer"]["wall"]
@@ -350,7 +401,47 @@ class Wall(pg.sprite.Sprite):
         self.rect.topleft = self.pos
 
 
+class Rift(Wall):
+    """
+    Rifts allow players to move between levels.
+    Rifts track distance to player to determine whether
+    the player is within distance to use. 
+    """
+
+    def __init__(self, game, pos):
+        Wall.__init__(self, game, pos, "Rift")
+        self.game.rift_usable = False
+        self.image = self.game.rift_img
+
+    def check_usable(self):
+        self.target_dist = self.game.player.pos - self.pos
+        if (
+            self.target_dist.length_squared()
+            < self.game.settings["lvl"]["rift_usable_distance"] ** 2
+        ):
+            self.game.rift_usable = True
+        else:
+            self.game.rift_usable = False
+
+    def update(self):
+        self.check_usable()
+        if self.game.rift_usable == True:
+            keys = pg.key.get_pressed()
+            if keys[pg.K_e]:
+                # current method of switching levels does not retain player data
+                self.game.level("gen", choice(self.game.biomes))
+            if keys[pg.K_r]:
+                self.game.level("temple.txt", "void")
+
+
 class Grave(pg.sprite.Sprite):
+    """
+    Graves are left behind when mobs are killed,
+    with rotation matched to the mob rotation on death. 
+    Grave images are a random choice from graves available
+    for that enemy kind. 
+    """
+
     def __init__(self, game, kind, pos, rot):
         self.game = game
         self._layer = game.settings["layer"]["grave"]
@@ -372,6 +463,15 @@ class Grave(pg.sprite.Sprite):
 
 
 class Weapon_VFX(pg.sprite.Sprite):
+    """
+    Weapon_VFX appear when the player is shooting.
+    Cycling between available img options provides
+    animation effect.
+
+    Drawn largely from:
+    https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023
+    """
+
     def __init__(self, game, pos):
         self._layer = game.settings["layer"]["vfx"]
         self.groups = game.all_sprites
@@ -398,6 +498,14 @@ class Weapon_VFX(pg.sprite.Sprite):
 
 
 class Item(pg.sprite.Sprite):
+    """
+    Item class is used to place items on the map. 
+    Items use tween animations from the pytweening library. 
+
+    Drawn largely from:
+    https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023
+    """
+
     def __init__(self, game, pos, img, kind):
         self.game = game
         self._layer = game.settings["layer"]["item"]
@@ -422,30 +530,3 @@ class Item(pg.sprite.Sprite):
         if self.step > self.bob_range:
             self.step = 0
             self.dir *= -1
-
-
-class Rift(Wall):
-    def __init__(self, game, pos):
-        Wall.__init__(self, game, pos, "Rift")
-        self.game.rift_usable = False
-        self.image = self.game.rift_img
-
-    def check_usable(self):
-        self.target_dist = self.game.player.pos - self.pos
-        if (
-            self.target_dist.length_squared()
-            < self.game.settings["lvl"]["rift_usable_distance"] ** 2
-        ):
-            self.game.rift_usable = True
-        else:
-            self.game.rift_usable = False
-
-    def update(self):
-        self.check_usable()
-        if self.game.rift_usable == True:
-            keys = pg.key.get_pressed()
-            if keys[pg.K_e]:
-                # current method of switching levels does not retain player data
-                self.game.level("gen", choice(self.game.biomes))
-            if keys[pg.K_r]:
-                self.game.level("temple.txt", "void")
