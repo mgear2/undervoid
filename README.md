@@ -65,7 +65,8 @@ The levels in Undervoid are randomly generated from a premade set of dungeon pie
 ### Points of Interest <a name="points"></a>
 
 ![rift](/data/img/rift01.png)  
-Rift - use these mystical doors to move around the Undervoid
+__Rift__
+> use these mystical doors to move around the Undervoid
 
 ### Playable Characters <a name="chars"></a>
 
