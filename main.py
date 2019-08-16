@@ -78,7 +78,7 @@ class Game:
         self.stances = ["magic", "coachgun"]
         self.characters = ["pilgrim", "voidwalker", "lizardwizard"]
         self.mob_kinds = ["thrall", "sleeper"]
-        self.biomes = ["dungeon", "dungeon", "snow", "void"]
+        self.biomes = ["dungeon", "dungeon", "void"]
         tilesize = (self.settings["gen"]["tilesize"], self.settings["gen"]["tilesize"])
 
         # System Images

@@ -9,8 +9,8 @@ gen:
   title: Undervoid
   tilesize: 64
   titledim: [535, 65]
-  music: on
-  sound: on
+  music: off
+  sound: off
   spawn_max_dist: 1000
   spawn_min_dist: 500
   spawn_max: 8
