@@ -86,11 +86,9 @@ class Game:
         self.cursor_img = []
         self.weapon_vfx = []
         self.floor_img = {}
-        self.thrall_grave = []
-        self.sleeper_grave = []
         self.player_img = {}
         self.mob_img = {}
-        self.grave_img = {}
+        self.mob_img["base"], self.mob_img["grave"] = {}, {}
         self.item_img = {}
         self.sounds = {}
         self.stances = ["magic", "coachgun"]
@@ -144,12 +142,12 @@ class Game:
             self.weapon_vfx.append(self.load_img(img, tilesize, True))
         # Mob Images
         for kind in self.mob_kinds:
-            self.mob_img[kind] = self.load_img(
+            self.mob_img["base"][kind] = self.load_img(
                 self.settings["img"]["mob"][kind]["main"], tilesize, True
             )
-            self.grave_img[kind] = []
+            self.mob_img["grave"][kind] = []
             for img in self.settings["img"]["mob"][kind]["grave"]:
-                self.grave_img[kind].append(self.load_img(img, tilesize, True))
+                self.mob_img["grave"][kind].append(self.load_img(img, tilesize, True))
         # Item Images
         for item in self.settings["img"]["items"]:
             self.item_img[item] = self.load_img(

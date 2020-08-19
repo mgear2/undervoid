@@ -297,7 +297,7 @@ class Mob(pg.sprite.Sprite):
         self._layer = game.settings["layer"]["mob"]
         self.groups = game.all_sprites, game.mobs
         pg.sprite.Sprite.__init__(self, self.groups)
-        self.image = game.mob_img[kind].copy()
+        self.image = game.mob_img["base"][kind].copy()
         self.rect = self.image.get_rect()
         self.rect.center = x, y
         self.hit_rect = pg.Rect(
@@ -331,7 +331,7 @@ class Mob(pg.sprite.Sprite):
     def update(self):
         self.target_dist = self.game.player.pos - self.pos
         self.rot = self.target_dist.angle_to(vec(1, 0))
-        self.image = pg.transform.rotate(self.game.mob_img[self.kind], self.rot)
+        self.image = pg.transform.rotate(self.game.mob_img["base"][self.kind], self.rot)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
         if (
@@ -448,7 +448,7 @@ class Grave(pg.sprite.Sprite):
         self.pos = pos
         self.image = pg.transform.rotate(
             pg.transform.scale(
-                choice(game.grave_img[kind]),
+                choice(game.mob_img["grave"][kind]),
                 (
                     self.game.settings["gen"]["tilesize"],
                     self.game.settings["gen"]["tilesize"],
