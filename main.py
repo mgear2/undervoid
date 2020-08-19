@@ -19,16 +19,7 @@ yaml = ruamel.yaml.YAML()
 
 class Game:
     """
-    Overarching Game class loads and manipulates game data and runs the main game loop.
-
-    Example:
-
-    g = Game()
-    g.show_start_screen()
-    while True:
-        g.new()
-        g.run()
-        g.show_go_screen()
+    Overarching Game class; loads and manipulates game data and runs the main game loop.
     """
 
     def __init__(self):
@@ -266,9 +257,6 @@ class Game:
         Checks for mobs hitting player and resolves hits. 
         Checks for bullets hitting mobs and resolves hits. 
         Morphs the background color one step. 
-
-        Drawn largely from:
-        https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023
         """
         self.all_sprites.update()
         self.spawners.update()
@@ -335,9 +323,6 @@ class Game:
         Sets a caption on the game window for fps. 
         Draws the map and all sprites. 
         Draws Player health and gold coins.
-
-        Drawn largely from:
-        https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023
         """
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
         self.screen.fill(self.bg_color)

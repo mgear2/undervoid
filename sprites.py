@@ -163,8 +163,6 @@ class pMove(pg.sprite.Sprite):
 class Player(pg.sprite.Sprite):
     """
     Player class provides the player sprite and tracks all player data.
-    Originally built off code from https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023,
-    but has evolved a lot since. 
     """
 
     def __init__(self, game, x, y):
@@ -467,9 +465,6 @@ class Weapon_VFX(pg.sprite.Sprite):
     Weapon_VFX appear when the player is shooting.
     Cycling between available img options provides
     animation effect.
-
-    Drawn largely from:
-    https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023
     """
 
     def __init__(self, game, pos):
@@ -501,9 +496,6 @@ class Item(pg.sprite.Sprite):
     """
     Item class is used to place items on the map. 
     Items use tween animations from the pytweening library. 
-
-    Drawn largely from:
-    https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023
     """
 
     def __init__(self, game, pos, img, kind):

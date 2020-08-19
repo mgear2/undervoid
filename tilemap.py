@@ -140,9 +140,6 @@ class Camera:
     """
     Camera class is used to center the game window on the player 
     and move the map and contained entities relative to the player. 
-    
-    Drawn largely from:
-    https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023
     """
 
     def __init__(self, game, width, height, cursor):
