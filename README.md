@@ -26,10 +26,8 @@ vi. [Items](#items)
 
 ## Requirements <a name="requirements"></a>
 
-python 3.7+  
-pipenv
-
-Refer to https://pipenv.readthedocs.io/en/latest/install/#installing-pipenv for more information on installing pipenv. 
+python 3.7+: https://www.python.org/downloads/  
+pipenv: https://pipenv.readthedocs.io/en/latest/install/#installing-pipenv
 
 ## Run <a name="run"></a>
 
