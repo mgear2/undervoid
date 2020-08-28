@@ -29,12 +29,12 @@ vi. [Items](#items)
 python 3.7+  
 pipenv
 
+Refer to https://pipenv.readthedocs.io/en/latest/install/#installing-pipenv for more information on installing pipenv. 
+
 ## Run <a name="run"></a>
 
 Undervoid is developed to utilize pipenv, which takes care of dependencies for you. To install pipenv, run:  
 `pip3 install --user pipenv`. 
-
-Refer to https://pipenv.readthedocs.io/en/latest/install/#installing-pipenv for more information on installing pipenv. 
 
 Once you've cloned the repository and installed pipenv, you can install dependencies with:  
 `pipenv install`
