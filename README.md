@@ -37,8 +37,11 @@ Undervoid is developed to utilize pipenv, which takes care of dependencies for y
 Once you've cloned the repository and installed pipenv, you can install dependencies with:  
 `pipenv install`
 
-Then, you can run Undervoid with:  
-`pipenv run python3 main.py`  
+Depending on platform and environment settings, you may run python3 on your system with one or more of the following keywords:
+`python` or `python3`
+
+Having verified this, you can run Undervoid with:  
+`pipenv run [your_python_keyword] main.py`  
 
 ## Gameplay <a name="gameplay"></a>
 
