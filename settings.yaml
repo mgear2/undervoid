@@ -1,16 +1,17 @@
 gen:
-  fullscreen: off
+  fullscreen: on
   winres:
     width: 1440
     height: 900
-  width: 1440
-  height: 900
+  width: 1920
+  height: 1080
   fps: 60
+  displayfps: on
   title: Undervoid
   tilesize: 64
   titledim: [535, 65]
-  music: on
-  sound: on
+  music: off
+  sound: off
   spawn_max_dist: 1000
   spawn_min_dist: 500
   spawn_max: 8

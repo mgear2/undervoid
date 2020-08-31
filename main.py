@@ -318,11 +318,10 @@ class Game:
 
     def draw(self):
         """
-        Sets a caption on the game window for fps. 
         Draws the map and all sprites. 
         Draws Player health and gold coins.
         """
-        pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
+        pg.display.set_caption("Undervoid")
         self.screen.fill(self.bg_color)
         self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
         # self.draw_grid()
@@ -350,6 +349,8 @@ class Game:
             True,
         )
         draw_score(self)
+        if self.settings["gen"]["displayfps"] == "on":
+            draw_fps(self)
         pg.display.flip()
 
     def events(self):
@@ -384,6 +385,7 @@ class Game:
                             self.selected == "fullscreen"
                             or self.selected == "music"
                             or self.selected == "sound"
+                            or self.selected == "displayfps"
                         ):
                             if self.settings["gen"][self.selected] == "on":
                                 self.settings["gen"][self.selected] = "off"
@@ -412,7 +414,8 @@ class Game:
             "fullscreen: {}".format(self.settings["gen"]["fullscreen"]),
             "music: {}".format(self.settings["gen"]["music"]),
             "sound: {}".format(self.settings["gen"]["sound"]),
-            "back",
+            "displayfps: {}".format(self.settings["gen"]["displayfps"]),
+            "back"
         ]
 
     # Text Renderer https://www.sourcecodester.com/tutorials/python/11784/python-pygame-simple-main-menu-selection.html
