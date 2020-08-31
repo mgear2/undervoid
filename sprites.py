@@ -66,8 +66,7 @@ def draw_fps(game):
     """
     Draws the fps in the upper left corner of the screen.
     """
-    fontsize = 20
-    line_y = 15
+    fontsize, line_y = 20, 15
     fps_text = game.text_format(
         "{:.2f}".format(game.clock.get_fps()),
         game.font,
@@ -77,7 +76,6 @@ def draw_fps(game):
     game.screen.blit(
         fps_text, (line_y, line_y,),
     )
-    line_y += fontsize
 
 
 def collide_with_walls(sprite, group, dir):

@@ -415,7 +415,7 @@ class Game:
             "music: {}".format(self.settings["gen"]["music"]),
             "sound: {}".format(self.settings["gen"]["sound"]),
             "displayfps: {}".format(self.settings["gen"]["displayfps"]),
-            "back"
+            "back",
         ]
 
     # Text Renderer https://www.sourcecodester.com/tutorials/python/11784/python-pygame-simple-main-menu-selection.html
