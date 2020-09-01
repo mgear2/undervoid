@@ -22,6 +22,7 @@ class Client:
     def __init__(self):
         pg.init()
         pg.mixer.init()
+        self.game, self.player, self.character = None, None, None
         with open("settings.yaml") as f:
             self.settings = yaml.load(f)
             f.close()
@@ -32,7 +33,6 @@ class Client:
         self.data = Loader(self.settings)
         self.data.build_path()
         self.data.load_data()
-        self.game = None
 
         pg.mouse.set_visible(False)
         pg.display.set_icon(self.data.undervoid_icon)
@@ -104,45 +104,7 @@ class Client:
                 if event.key == pg.K_ESCAPE:
                     self.quit()
                 if self.menu.inmenu:
-                    if event.key == pg.K_RETURN:
-                        self.menu.selected = self.menu.selected.split(" ")[0].strip(": ")
-                        if self.menu.selected == "new":
-                            self.menu.run(self.menu.menu_characters)
-                        if self.menu.selected in self.data.characters:
-                            self.character = self.menu.selected
-                            self.menu.inmenu = False
-                            return "break"
-                        elif self.menu.selected == "multiplayer":
-                            self.menu.run(self.menu.menu_multiplayer)
-                        elif self.menu.selected == "settings":
-                            self.menu.run(self.menu.menu_settings)
-                        elif self.menu.selected == "credits":
-                            self.menu.run(self.menu.menu_credits)
-                        elif self.menu.selected == "exit":
-                            self.quit()
-                        elif self.menu.selected == "back":
-                            self.menu.run(self.menu.menu_main)
-                        elif (
-                            self.menu.selected == "fullscreen"
-                            or self.menu.selected == "music"
-                            or self.menu.selected == "sound"
-                            or self.menu.selected == "displayfps"
-                        ):
-                            if self.settings["gen"][self.menu.selected] == "on":
-                                self.settings["gen"][self.menu.selected] = "off"
-                                if self.menu.selected == "music":
-                                    pg.mixer.music.pause()
-                            else:
-                                self.settings["gen"][self.menu.selected] = "on"
-                                if self.menu.selected == "music":
-                                    pg.mixer.music.play(-1, 0.0)
-                            self.menu.update_settings()
-                            self.menu.run(self.menu.menu_settings)
-                    if event.key == pg.K_UP:
-                        self.menu.menu_index -= 1
-                    elif event.key == pg.K_DOWN:
-                        self.menu.menu_index += 1
-
+                    self.menu.menu_event(event)
 
     # Text Renderer https://www.sourcecodester.com/tutorials/python/11784/python-pygame-simple-main-menu-selection.html
     def text_format(self, message, textFont, textSize, textColor):

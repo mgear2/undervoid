@@ -85,6 +85,46 @@ class Menu:
             pg.display.update()
             self.client.clock.tick_busy_loop(self.client.settings["gen"]["fps"])
 
+    def menu_event(self, event):
+        if event.key == pg.K_RETURN:
+            self.selected = self.selected.split(" ")[0].strip(": ")
+            if self.selected == "new":
+                self.run(self.menu_characters)
+            if self.selected in self.client.data.characters:
+                self.client.character = self.selected
+                self.inmenu = False
+                return "break"
+            elif self.selected == "multiplayer":
+                self.run(self.menu_multiplayer)
+            elif self.selected == "settings":
+                self.run(self.menu_settings)
+            elif self.selected == "credits":
+                self.run(self.menu_credits)
+            elif self.selected == "exit":
+                self.client.quit()
+            elif self.selected == "back":
+                self.run(self.menu_main)
+            elif (
+                self.selected == "fullscreen"
+                or self.selected == "music"
+                or self.selected == "sound"
+                or self.selected == "displayfps"
+            ):
+                if self.client.settings["gen"][self.selected] == "on":
+                    self.client.settings["gen"][self.selected] = "off"
+                    if self.selected == "music":
+                        pg.mixer.music.pause()
+                else:
+                    self.client.settings["gen"][self.selected] = "on"
+                    if self.selected == "music":
+                        pg.mixer.music.play(-1, 0.0)
+                self.update_settings()
+                self.run(self.menu_settings)
+        if event.key == pg.K_UP:
+            self.menu_index -= 1
+        elif event.key == pg.K_DOWN:
+            self.menu_index += 1
+
     def update_settings(self):
         """
         Updates the settings.yaml file based on player changes 
