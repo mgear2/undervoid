@@ -77,11 +77,11 @@ __Pilgrim__
 
 ![voidwalker](/data/img/voidwalker_magic.png)  
 __Voidwalker__
->"The further in you go, the more clearly you'll hear the All-Knowing whispering the truth most beautiful, which can only be conveyed in the ancient tongue..."
+>"Loathsomeness waits and dreams in the deep, and decay spreads over the tottering cities of men." [2](https://www.goodreads.com/quotes/557170-who-knows-the-end-what-has-risen-may-sink-and)
 
 ![lizardwizard](/data/img/lizardwizard_magic.png)  
 __Lizard Wizard__
->" I gave you the chance of aiding me willingly, but you have elected the way of pain!" [2](https://www.imdb.com/title/tt0120737/characters/nm0000489)
+>" I gave you the chance of aiding me willingly, but you have elected the way of pain!" [3](https://www.imdb.com/title/tt0120737/characters/nm0000489)
 
 ### Enemies <a name="mobs"></a>
 
