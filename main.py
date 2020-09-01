@@ -107,21 +107,21 @@ class Client:
                     if event.key == pg.K_RETURN:
                         self.menu.selected = self.menu.selected.split(" ")[0].strip(": ")
                         if self.menu.selected == "new":
-                            self.menu.menu_loop(self.menu.menu_characters)
+                            self.menu.run(self.menu.menu_characters)
                         if self.menu.selected in self.data.characters:
                             self.character = self.menu.selected
                             self.menu.inmenu = False
                             return "break"
                         elif self.menu.selected == "multiplayer":
-                            self.menu.menu_loop(self.menu.menu_multiplayer)
+                            self.menu.run(self.menu.menu_multiplayer)
                         elif self.menu.selected == "settings":
-                            self.menu.menu_loop(self.menu.menu_settings)
+                            self.menu.run(self.menu.menu_settings)
                         elif self.menu.selected == "credits":
-                            self.menu.menu_loop(self.menu.menu_credits)
+                            self.menu.run(self.menu.menu_credits)
                         elif self.menu.selected == "exit":
                             self.quit()
                         elif self.menu.selected == "back":
-                            self.menu.menu_loop(self.menu.menu_main)
+                            self.menu.run(self.menu.menu_main)
                         elif (
                             self.menu.selected == "fullscreen"
                             or self.menu.selected == "music"
@@ -137,7 +137,7 @@ class Client:
                                 if self.menu.selected == "music":
                                     pg.mixer.music.play(-1, 0.0)
                             self.menu.update_settings()
-                            self.menu.menu_loop(self.menu.menu_settings)
+                            self.menu.run(self.menu.menu_settings)
                     if event.key == pg.K_UP:
                         self.menu.menu_index -= 1
                     elif event.key == pg.K_DOWN:
@@ -166,7 +166,7 @@ class Client:
             pg.mixer.music.play(-1, 0.0)
         self.menu = Menu(self)
         self.menu.update_settings()
-        self.menu.menu_loop(self.menu.menu_main)
+        self.menu.run(self.menu.menu_main)
 
     def show_go_screen(self):
         """
@@ -208,7 +208,6 @@ class Client:
 if __name__ == "__main__":
     c = Client()
     c.show_start_screen()
-
     g = Game(c)
     while True:
         c.run(g)

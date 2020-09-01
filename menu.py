@@ -17,7 +17,7 @@ class Menu:
         self.menu_credits = ["back"]
         self.menu_characters = client.data.characters + ["back"]
 
-    def menu_loop(self, menu_items):
+    def run(self, menu_items):
         """
         Menu loop: renders the menu options to screen and tracks which option the player has highlighted. 
         """
