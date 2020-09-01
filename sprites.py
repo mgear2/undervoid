@@ -21,7 +21,7 @@ def collide_hit_rect(one, two):
     return one.hit_rect.colliderect(two.rect)
 
 
-def draw_hp(game, surface, x, y, pct, b_len, b_height, player):
+def draw_hp(client, surface, x, y, pct, b_len, b_height, player):
     """
     Used to draw mob and player health bars. 
 
@@ -31,49 +31,49 @@ def draw_hp(game, surface, x, y, pct, b_len, b_height, player):
     if pct < 0:
         pct = 0
     if pct > 0.6:
-        color = game.settings["colors"]["green"]
+        color = client.settings["colors"]["green"]
     elif pct > 0.3:
-        color = game.settings["colors"]["yellow"]
+        color = client.settings["colors"]["yellow"]
     else:
-        color = game.settings["colors"]["red"]
+        color = client.settings["colors"]["red"]
     fill = pct * b_len
     hp_bar = pg.Rect(x, y, fill, b_height)
     pg.draw.rect(surface, color, hp_bar)
     if player:
         outline_rect = pg.Rect(x, y, b_len, b_height)
-        pg.draw.rect(surface, game.settings["colors"]["white"], outline_rect, 2)
+        pg.draw.rect(surface, client.settings["colors"]["white"], outline_rect, 2)
 
 
-def draw_score(game):
+def draw_score(client):
     """
     Draws the players score and a coin image in the lower right corner of the screen.
     """
-    score = game.text_format(
-        str(game.player.coins), game.font, 60, game.settings["colors"]["white"]
+    score = client.text_format(
+        str(client.player.coins), client.font, 60, client.settings["colors"]["white"]
     )
-    game.screen.blit(
-        pg.transform.scale(game.item_img["coin"], (92, 92)),
-        (game.settings["gen"]["width"] - 100, game.settings["gen"]["height"] - 100),
+    client.screen.blit(
+        pg.transform.scale(client.data.item_img["coin"], (92, 92)),
+        (client.settings["gen"]["width"] - 100, client.settings["gen"]["height"] - 100),
     )
-    score_x = 75 + len(str(game.player.coins)) * 25
-    game.screen.blit(
+    score_x = 75 + len(str(client.player.coins)) * 25
+    client.screen.blit(
         score,
-        (game.settings["gen"]["width"] - score_x, game.settings["gen"]["height"] - 70),
+        (client.settings["gen"]["width"] - score_x, client.settings["gen"]["height"] - 70),
     )
 
 
-def draw_fps(game):
+def draw_fps(client):
     """
     Draws the fps in the upper left corner of the screen.
     """
     fontsize, line_y = 20, 15
-    fps_text = game.text_format(
-        "{:.2f}".format(game.clock.get_fps()),
-        game.font,
+    fps_text = client.text_format(
+        "{:.2f}".format(client.clock.get_fps()),
+        client.font,
         fontsize,
-        game.settings["colors"]["white"],
+        client.settings["colors"]["white"],
     )
-    game.screen.blit(
+    client.screen.blit(
         fps_text, (line_y, line_y,),
     )
 
@@ -114,7 +114,7 @@ class Cursor(pg.sprite.Sprite):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = game.cursor_img[0]
+        self.image = game.client.data.cursor_img[0]
         self.rect = self.image.get_rect()
         self.rect.center = pg.mouse.get_pos()
         self.pos = pg.mouse.get_pos()
@@ -128,7 +128,7 @@ class Cursor(pg.sprite.Sprite):
             self.last = now
         if self.counter > 5:
             self.counter = 0
-        self.image = self.game.cursor_img[self.counter]
+        self.image = self.game.client.data.cursor_img[self.counter]
         self.rect.center = pg.mouse.get_pos()
         self.pos = pg.mouse.get_pos()
 
@@ -146,7 +146,7 @@ class pMove(pg.sprite.Sprite):
         self._layer = game.settings["layer"]["player_move"]
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
-        self.images = game.player_img[game.character]["move"]
+        self.images = game.client.data.player_img[game.client.character]["move"]
         self.image = self.images[0]
         self.current = self.image
         self.rect = self.image.get_rect()
@@ -187,7 +187,7 @@ class Player(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.player_sprite
         pg.sprite.Sprite.__init__(self, self.groups)
         self.stance = "magic"
-        self.image = game.player_img[game.character][self.stance]
+        self.image = game.client.data.player_img[game.client.character][self.stance]
         self.rect = self.image.get_rect()
         self.rect.center = x, y
         self.hit_rect = pg.Rect(game.settings["player"]["hit_rect"])
@@ -250,11 +250,11 @@ class Player(pg.sprite.Sprite):
         self.get_keys()
         self.rot = (self.game.cursor.pos - self.pos).angle_to(vec(1, 0)) % 360
         self.image = pg.transform.rotate(
-            self.game.player_img[self.game.character][self.stance], self.rot
+            self.game.client.data.player_img[self.game.client.character][self.stance], self.rot
         )
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
-        self.pos += self.vel * self.game.dt
+        self.pos += self.vel * self.game.client.dt
         self.hit_rect.centerx = self.pos.x
         collide_with_walls(self, self.game.walls, "x")
         self.hit_rect.centery = self.pos.y
@@ -279,7 +279,7 @@ class Bullet(pg.sprite.Sprite):
         self.groups = game.all_sprites, game.bullets
         pg.sprite.Sprite.__init__(self, self.groups)
         self.rot = rot
-        self.image = pg.transform.rotate(game.vbullet_img, self.rot + 90)
+        self.image = pg.transform.rotate(game.client.data.vbullet_img, self.rot + 90)
         self.rect = self.image.get_rect()
         self.pos = vec(pos)
         self.rect.center = pos
@@ -291,7 +291,7 @@ class Bullet(pg.sprite.Sprite):
         self.spawn_time = pg.time.get_ticks()
 
     def update(self):
-        self.pos += self.vel * self.game.dt
+        self.pos += self.vel * self.game.client.dt
         self.rect.center = self.pos
         if (
             pg.sprite.spritecollideany(self, self.game.stops_bullets)
@@ -313,7 +313,7 @@ class Mob(pg.sprite.Sprite):
         self._layer = game.settings["layer"]["mob"]
         self.groups = game.all_sprites, game.mobs
         pg.sprite.Sprite.__init__(self, self.groups)
-        self.image = game.mob_img["base"][kind].copy()
+        self.image = game.client.data.mob_img["base"][kind].copy()
         self.rect = self.image.get_rect()
         self.rect.center = x, y
         self.hit_rect = pg.Rect(
@@ -347,7 +347,7 @@ class Mob(pg.sprite.Sprite):
     def update(self):
         self.target_dist = self.game.player.pos - self.pos
         self.rot = self.target_dist.angle_to(vec(1, 0))
-        self.image = pg.transform.rotate(self.game.mob_img["base"][self.kind], self.rot)
+        self.image = pg.transform.rotate(self.game.client.data.mob_img["base"][self.kind], self.rot)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
         if (
@@ -369,9 +369,9 @@ class Mob(pg.sprite.Sprite):
             except Exception as e:
                 print("{}".format(e))
             self.acc += self.vel * -1
-            self.vel += self.acc * self.game.dt
+            self.vel += self.acc * self.game.client.dt
             # Equations of motion
-            self.pos += self.vel * self.game.dt + 0.5 * self.acc * self.game.dt ** 1.025
+            self.pos += self.vel * self.game.client.dt + 0.5 * self.acc * self.game.client.dt ** 1.025
             self.hit_rect.centerx = self.pos.x
             collide_with_walls(self, self.game.walls, "x")
             self.hit_rect.centery = self.pos.y
@@ -425,7 +425,7 @@ class Rift(Wall):
     def __init__(self, game, pos):
         Wall.__init__(self, game, pos, "Rift")
         self.game.rift_usable = False
-        self.image = self.game.rift_img
+        self.image = self.game.client.data.rift_img
 
     def check_usable(self):
         self.target_dist = self.game.player.pos - self.pos
@@ -443,7 +443,7 @@ class Rift(Wall):
             keys = pg.key.get_pressed()
             if keys[pg.K_e]:
                 # current method of switching levels does not retain player data
-                self.game.level("gen", choice(self.game.biomes))
+                self.game.level("gen", choice(self.game.client.data.biomes))
             if keys[pg.K_r]:
                 self.game.level("temple.txt", "void")
 
@@ -464,7 +464,7 @@ class Grave(pg.sprite.Sprite):
         self.pos = pos
         self.image = pg.transform.rotate(
             pg.transform.scale(
-                choice(game.mob_img["grave"][kind]),
+                choice(game.client.data.mob_img["grave"][kind]),
                 (
                     self.game.settings["gen"]["tilesize"],
                     self.game.settings["gen"]["tilesize"],
@@ -489,7 +489,7 @@ class Weapon_VFX(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.transform.scale(
-            choice(game.weapon_vfx),
+            choice(game.client.data.weapon_vfx),
             (
                 self.game.settings["gen"]["tilesize"],
                 self.game.settings["gen"]["tilesize"],
@@ -521,7 +521,7 @@ class Item(pg.sprite.Sprite):
         self.bob_speed = game.settings["items"]["bob_speed"]
         self.groups = game.all_sprites, game.items
         pg.sprite.Sprite.__init__(self, self.groups)
-        self.image = game.item_img[img]
+        self.image = game.client.data.item_img[img]
         self.kind = kind
         self.rect = self.image.get_rect()
         self.pos = pos

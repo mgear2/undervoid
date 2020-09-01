@@ -3,23 +3,20 @@
 # Please see the file LICENSE in the source
 # distribution of this software for license terms.
 
-# Originally built off example code from
-# https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023
-
+import ruamel.yaml
 import pygame as pg
 import sys
-import ruamel.yaml
-from os import path, environ
 from sprites import *
-from tilemap import Camera, Spawner, Forge
-from random import random, randint
+from os import path, environ
+from game import Game
+from loader import Loader
+from menu import Menu
 
 yaml = ruamel.yaml.YAML()
 
-
-class Game:
+class Client:
     """
-    Overarching Game class; loads and manipulates game data and runs the main game loop.
+    Client Class
     """
 
     def __init__(self):
@@ -32,9 +29,14 @@ class Game:
         pg.display.set_caption(self.settings["gen"]["title"])
         self.clock = pg.time.Clock()
         pg.key.set_repeat(100, 100)
-        self.build_path()
-        self.load_data()
+        self.data = Loader(self.settings)
+        self.data.build_path()
+        self.data.load_data()
+        self.game = None
 
+        pg.mouse.set_visible(False)
+        pg.display.set_icon(self.data.undervoid_icon)
+        
     def init_game_window(self):
         """
         Initializes a centered game window either with windowed resolution or fullscreen.
@@ -53,279 +55,16 @@ class Game:
                 (self.settings["gen"]["width"], self.settings["gen"]["height"])
             )
 
-    def build_path(self):
-        """
-        Builds a directory structure for the game. 
-        """
-        self.game_folder = path.dirname(__file__)
-        self.data_folder = path.join(self.game_folder, "data")
-        self.img_folder = path.join(self.data_folder, "img")
-        self.map_folder = path.join(self.data_folder, "maps")
-        self.music_folder = path.join(self.data_folder, "music")
-        self.sound_folder = path.join(self.data_folder, "sounds")
-        self.fonts_folder = path.join(self.data_folder, "fonts")
-
-    def load_img(self, source, scale, alpha):
-        """
-        Used to load images from source files, scale them, and convert() or convert_alpha() as specified. 
-        """
-        img = pg.image.load(path.join(self.img_folder, source))
-        img = pg.transform.scale(img, scale)
-        if alpha:
-            img = img.convert_alpha()
-        else:
-            img = img.convert()
-        return img
-
-    def load_data(self):
-        """
-        Initializes and populates lists and dictionaries of game data. 
-        Initializes mouse settings and game icon. 
-        Still stands to be refactored and optimized further. 
-        """
-        self.cursor_img = []
-        self.weapon_vfx = []
-        self.floor_img = {}
-        self.player_img = {}
-        self.mob_img = {}
-        self.mob_img["base"], self.mob_img["grave"] = {}, {}
-        self.item_img = {}
-        self.sounds = {}
-        self.stances = ["magic", "coachgun"]
-        self.characters = ["pilgrim", "voidwalker", "lizardwizard"]
-        self.mob_kinds = ["thrall", "sleeper"]
-        self.biomes = ["dungeon", "dungeon", "void"]
-        tilesize = (self.settings["gen"]["tilesize"], self.settings["gen"]["tilesize"])
-
-        # System Images
-        self.undervoid_icon = self.load_img(
-            self.settings["img"]["icon"], (64, 64), True
-        )
-        self.title_art = self.load_img(
-            self.settings["img"]["title"],
-            tuple(self.settings["gen"]["titledim"]),
-            False,
-        )
-        self.rift_img = self.load_img(self.settings["img"]["rift"], tilesize, False)
-        for img in self.settings["img"]["cursor"]:
-            self.cursor_img.append(self.load_img(img, (64, 64), True))
-        # Environment Images
-        self.wall_img = self.load_img(
-            self.settings["img"]["wall"]["voidwall"], tilesize, False
-        )
-        for biome in self.biomes:
-            self.floor_img[biome] = []
-            for img in self.settings["img"]["floor"][biome]:
-                self.floor_img[biome].append(self.load_img(img, tilesize, False))
-
-        # for img in self.settings["img"]["floor"]["dungeon"]:
-        #    self.floor_img.append(self.load_img(img, tilesize, False))
-        # Player Images
-        for character in self.characters:
-            self.player_img[character] = {}
-            for stance in self.stances:
-                self.player_img[character][stance] = self.load_img(
-                    self.settings["img"]["player"][character]["stance"][stance],
-                    tuple((2 * x) for x in tilesize),
-                    True,
-                )
-            self.player_img[character]["move"] = []
-            for img in self.settings["img"]["player"][character]["move"]:
-                self.player_img[character]["move"].append(
-                    self.load_img(img, tuple((2 * x) for x in tilesize), True)
-                )
-        # Bullet Images
-        self.vbullet_img = self.load_img(
-            self.settings["img"]["bullets"]["void"]["bullet"], tilesize, True
-        )
-        for img in self.settings["img"]["bullets"]["void"]["fx"]:
-            self.weapon_vfx.append(self.load_img(img, tilesize, True))
-        # Mob Images
-        for kind in self.mob_kinds:
-            self.mob_img["base"][kind] = self.load_img(
-                self.settings["img"]["mob"][kind]["main"], tilesize, True
-            )
-            self.mob_img["grave"][kind] = []
-            for img in self.settings["img"]["mob"][kind]["grave"]:
-                self.mob_img["grave"][kind].append(self.load_img(img, tilesize, True))
-        # Item Images
-        for item in self.settings["img"]["items"]:
-            self.item_img[item] = self.load_img(
-                self.settings["img"]["items"][item],
-                # https://stackoverflow.com/questions/1781970/multiplying-a-tuple-by-a-scalar
-                tuple(int(0.75 * x) for x in tilesize),
-                True,
-            )
-
-        for sound in self.settings["sounds"]:
-            self.sounds[sound] = pg.mixer.Sound(
-                path.join(self.sound_folder, self.settings["sounds"][sound])
-            )
-
-        pg.mouse.set_visible(False)
-        pg.display.set_icon(self.undervoid_icon)
-
-    def level(self, level, biome):
-        """
-        Utilizes the Forge class to build and returns a level with the desired specifications. 
-        If the level is "gen", a new level will be generated. Otherwise, Forge will attempt to
-        load a map from the specified file.  
-        """
-        for sprite in self.all_sprites:
-            if sprite != self.player and sprite != self.pmove:
-                sprite.kill()
-        for wall in self.walls:
-            wall.kill()
-        for spawner in self.spawners:
-            spawner.kill()
-        if level == "gen":
-            self.map = Forge(self, self.settings["lvl"]["pieces"])
-            self.map.load_all()
-            self.map.new_surface(
-                self.settings["lvl"]["tiles_wide"], self.settings["lvl"]["tiles_high"]
-            )
-        else:
-            self.map = Forge(self, 1)
-            self.map.load(level)
-            self.map.new_surface(128, 128)
-            if level == "temple.txt" and not self.init_player:
-                self.player.hp = self.player.max_hp
-        self.map.build_lvl(biome)
-        self.map_img = self.map.make_map()
-        self.map_rect = self.map_img.get_rect()
-        self.cursor = Cursor(self)
-        self.camera = Camera(self, self.map.width, self.map.height, self.cursor)
-        self.mob_count = 0
-        self.mob_max = self.settings["gen"]["mob_max"]
-
-    def new(self):
-        """
-        Initializes sprite groups, builds inital level, 
-        specifies variables to be used for morphing background color. 
-        """
-        self.all_sprites = pg.sprite.LayeredUpdates()
-        self.walls = pg.sprite.Group()
-        self.stops_bullets = pg.sprite.Group()
-        self.mobs = pg.sprite.Group()
-        self.bullets = pg.sprite.Group()
-        self.graves = pg.sprite.Group()
-        self.items = pg.sprite.Group()
-        self.player_sprite = pg.sprite.Group()
-        self.cursor_sprite = pg.sprite.Group()
-        self.spawners = pg.sprite.Group()
-
-        self.init_player = True
-        self.level("temple.txt", "void")
-        # https://stackoverflow.com/questions/51973441/how-to-fade-from-one-colour-to-another-in-pygame
-        self.base_color = choice(self.settings["void_colors"])
-        self.next_color = choice(self.settings["void_colors"])
-        self.change_every_x_seconds = 2
-        self.number_of_steps = self.change_every_x_seconds * self.settings["gen"]["fps"]
-        self.step = 1
-
-        if self.settings["gen"]["music"] == "on":
-            pg.mixer.music.load(
-                path.join(self.music_folder, self.settings["music"]["leavinghome"])
-            )
-            pg.mixer.music.play(-1, 0.0)
-
-    def run(self):
-        """
-        Game loop; ticks the clock, checks for events, updates game state, draws game state
-        """
-        self.playing = True
-        while self.playing:
-            # tick_busy_loop() uses more cpu but is more accurate
-            self.dt = self.clock.tick_busy_loop(self.settings["gen"]["fps"]) / 1000
-            self.events()
-            self.update()
-            self.draw()
-
-    def quit(self):
-        """
-        Quits pygame and exits the program
-        """
-        pg.quit()
-        sys.exit()
-
-    def update(self):
-        """
-        Updates sprites, spawners and camera. 
-        Checks for player hitting items and resolves hits.
-        Checks for mobs hitting player and resolves hits. 
-        Checks for bullets hitting mobs and resolves hits. 
-        Morphs the background color one step. 
-        """
-        self.all_sprites.update()
-        self.spawners.update()
-        self.camera.update(self.player)
-        # player hits items
-        hits = pg.sprite.spritecollide(self.player, self.items, False, collide_hit_rect)
-        for hit in hits:
-            if hit.kind == "hp" and self.player.hp < self.settings["player"]["hp"]:
-                hit.kill()
-                if self.settings["gen"]["sound"] == "on":
-                    self.sounds["treasure02"].play()
-                self.player.add_hp(
-                    self.settings["items"]["potions"]["red"]["hp"] * self.player.max_hp
-                )
-            if hit.kind == "gp":
-                hit.kill()
-                if self.settings["gen"]["sound"] == "on":
-                    self.sounds["treasure03"].play()
-                self.player.coins += 1
-        # mobs hitting player
-        hits = pg.sprite.spritecollide(self.player, self.mobs, False, collide_hit_rect)
-        for hit in hits:
-            now = pg.time.get_ticks()
-            if now - hit.last_hit > self.settings["mob"]["thrall"]["dmg_rate"]:
-                hit.last_hit = now
-                self.player.hp -= self.settings["mob"]["thrall"]["dmg"]
-                hit.vel = vec(0, 0)
-                self.player.pos += vec(
-                    self.settings["mob"]["thrall"]["knockback"], 0
-                ).rotate(-hits[0].rot)
-                if self.settings["gen"]["sound"] == "on":
-                    self.sounds[(choice(self.settings["hit_sounds"]))].play()
-            elif random() < 0.5:  # enemies get bounced back on ~50% of failed hits
-                hit.pos += vec(self.settings["mob"]["thrall"]["knockback"], 0).rotate(
-                    hits[0].rot
-                )
-            if self.player.hp <= 0:
-                self.playing = False
-        # bullets hitting mobs
-        hits = pg.sprite.groupcollide(self.mobs, self.bullets, False, True)
-        for hit in hits:
-            hit.hp -= (
-                self.settings["weapon"]["vbullet"]["dmg"]
-                * self.settings["player"]["dmg_mult"]
-            )
-            # hit.vel = vec(0, 0)
-        # https://stackoverflow.com/questions/51973441/how-to-fade-from-one-colour-to-another-in-pygame
-        self.step += 1
-        if self.step < self.number_of_steps:
-            self.current_color = [
-                x + (((y - x) / self.number_of_steps) * self.step)
-                for x, y in zip(
-                    pg.color.Color(self.base_color), pg.color.Color(self.next_color)
-                )
-            ]
-        else:
-            self.step = 1
-            self.base_color = self.next_color
-            self.next_color = choice(self.settings["void_colors"])
-        self.bg_color = self.current_color
-
     def draw(self):
         """
         Draws the map and all sprites. 
         Draws Player health and gold coins.
         """
         pg.display.set_caption("Undervoid")
-        self.screen.fill(self.bg_color)
-        self.screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
+        self.screen.fill(self.game.bg_color)
+        self.screen.blit(self.game.map_img, self.game.camera.apply_rect(self.game.map_rect))
         # self.draw_grid()
-        for sprite in self.all_sprites:
+        for sprite in self.game.all_sprites:
             if isinstance(sprite, Mob) and sprite.hp < sprite.max_hp:
                 draw_hp(
                     self,
@@ -337,7 +76,7 @@ class Game:
                     int(self.settings["gen"]["tilesize"] / 10),
                     False,
                 )
-            self.screen.blit(sprite.image, self.camera.apply(sprite))
+            self.screen.blit(sprite.image, self.game.camera.apply(sprite))
         draw_hp(
             self,
             self.screen,
@@ -364,59 +103,46 @@ class Game:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     self.quit()
-                if self.inmenu:
+                if self.menu.inmenu:
                     if event.key == pg.K_RETURN:
-                        self.selected = self.selected.split(" ")[0].strip(": ")
-                        if self.selected == "new":
-                            self.menu_loop(self.menu_characters)
-                        if self.selected in self.characters:
-                            self.character = self.selected
-                            self.inmenu = False
+                        self.menu.selected = self.menu.selected.split(" ")[0].strip(": ")
+                        if self.menu.selected == "new":
+                            self.menu.menu_loop(self.menu.menu_characters)
+                        if self.menu.selected in self.data.characters:
+                            self.character = self.menu.selected
+                            self.menu.inmenu = False
                             return "break"
-                        elif self.selected == "settings":
-                            self.menu_loop(self.menu_settings)
-                        elif self.selected == "credits":
-                            self.menu_loop(self.menu_credits)
-                        elif self.selected == "exit":
+                        elif self.menu.selected == "multiplayer":
+                            self.menu.menu_loop(self.menu.menu_multiplayer)
+                        elif self.menu.selected == "settings":
+                            self.menu.menu_loop(self.menu.menu_settings)
+                        elif self.menu.selected == "credits":
+                            self.menu.menu_loop(self.menu.menu_credits)
+                        elif self.menu.selected == "exit":
                             self.quit()
-                        elif self.selected == "back":
-                            self.menu_loop(self.menu_main)
+                        elif self.menu.selected == "back":
+                            self.menu.menu_loop(self.menu.menu_main)
                         elif (
-                            self.selected == "fullscreen"
-                            or self.selected == "music"
-                            or self.selected == "sound"
-                            or self.selected == "displayfps"
+                            self.menu.selected == "fullscreen"
+                            or self.menu.selected == "music"
+                            or self.menu.selected == "sound"
+                            or self.menu.selected == "displayfps"
                         ):
-                            if self.settings["gen"][self.selected] == "on":
-                                self.settings["gen"][self.selected] = "off"
-                                if self.selected == "music":
+                            if self.settings["gen"][self.menu.selected] == "on":
+                                self.settings["gen"][self.menu.selected] = "off"
+                                if self.menu.selected == "music":
                                     pg.mixer.music.pause()
                             else:
-                                self.settings["gen"][self.selected] = "on"
-                                if self.selected == "music":
+                                self.settings["gen"][self.menu.selected] = "on"
+                                if self.menu.selected == "music":
                                     pg.mixer.music.play(-1, 0.0)
-                            self.update_settings()
-                            self.menu_loop(self.menu_settings)
+                            self.menu.update_settings()
+                            self.menu.menu_loop(self.menu.menu_settings)
                     if event.key == pg.K_UP:
-                        self.menu_index -= 1
+                        self.menu.menu_index -= 1
                     elif event.key == pg.K_DOWN:
-                        self.menu_index += 1
+                        self.menu.menu_index += 1
 
-    def update_settings(self):
-        """
-        Updates the settings.yaml file based on player changes 
-        in the settings menu. 
-        """
-        with open("settings.yaml", "w") as f:
-            yaml.dump(self.settings, f)
-            f.close()
-        self.menu_settings = [
-            "fullscreen: {}".format(self.settings["gen"]["fullscreen"]),
-            "music: {}".format(self.settings["gen"]["music"]),
-            "sound: {}".format(self.settings["gen"]["sound"]),
-            "displayfps: {}".format(self.settings["gen"]["displayfps"]),
-            "back",
-        ]
 
     # Text Renderer https://www.sourcecodester.com/tutorials/python/11784/python-pygame-simple-main-menu-selection.html
     def text_format(self, message, textFont, textSize, textColor):
@@ -434,138 +160,56 @@ class Game:
         """
         self.font = "franklingothic"
         pg.mixer.music.load(
-            path.join(self.music_folder, self.settings["music"]["voidwalk"])
+            path.join(self.data.music_folder, self.settings["music"]["voidwalk"])
         )
         if self.settings["gen"]["music"] == "on":
             pg.mixer.music.play(-1, 0.0)
-        self.menu_main = ["new", "settings", "credits", "exit"]
-        self.update_settings()
-        self.menu_credits = ["back"]
-        self.menu_characters = self.characters
-        self.menu_index = 0
-        self.menu_loop(self.menu_main)
+        self.menu = Menu(self)
+        self.menu.update_settings()
+        self.menu.menu_loop(self.menu.menu_main)
 
     def show_go_screen(self):
         """
         pygame needs this method to be present. 
         """
-        pass
+        self.show_start_screen()
+        g = Game(c)
+        self.run(g)
 
-    def menu_loop(self, menu_items):
+    def run(self, game):
         """
-        Menu loop: renders the menu options to screen and tracks which option the player has highlighted. 
+        Game loop; ticks the clock, checks for events, updates game state, draws game state
         """
-        self.inmenu = True
-        while self.inmenu:
-            if self.events() == "break":
+        self.game = game
+        if self.settings["gen"]["music"] == "on":
+            pg.mixer.music.load(
+                path.join(self.data.music_folder, self.settings["music"]["leavinghome"])
+            )
+            pg.mixer.music.play(-1, 0.0)
+
+        self.playing = True
+        while self.playing:
+            # tick_busy_loop() uses more cpu but is more accurate
+            self.dt = self.clock.tick_busy_loop(self.settings["gen"]["fps"]) / 1000
+            self.events()
+            game.update()
+            if self.player.hp <= 0:
+                self.playing = False
                 break
-            self.screen.fill(self.settings["colors"]["black"])
-            self.screen.blit(
-                self.title_art,
-                (
-                    (
-                        self.settings["gen"]["width"]
-                        - self.settings["gen"]["titledim"][0]
-                    )
-                    / 2,
-                    50,
-                ),
-            )
-            if self.menu_index > len(menu_items) - 1:
-                self.menu_index = 0
-            elif self.menu_index < 0:
-                self.menu_index = len(menu_items) - 1
-            self.selected = menu_items[self.menu_index]
-            if menu_items is self.menu_credits:
-                item_y = self.settings["gen"]["height"] - 100
-                self.show_credits()
-            else:
-                item_y = 300
-            fontsize = 80
-            for item in menu_items:
-                if item == self.selected:
-                    color = self.settings["colors"]["white"]
-                else:
-                    color = self.settings["colors"]["mediumvioletred"]
-                item_text = self.text_format(item.upper(), self.font, fontsize, color)
-                self.screen.blit(
-                    item_text,
-                    (
-                        self.settings["gen"]["width"] / 2
-                        - (item_text.get_rect()[2] / 2),
-                        item_y,
-                    ),
-                )
-                item_y += fontsize
-                if self.selected in self.menu_characters:
-                    self.screen.blit(
-                        pg.transform.scale(
-                            self.player_img[self.selected]["move"][0], (320, 320)
-                        ),
-                        (
-                            self.settings["gen"]["width"] / 2 - 170,
-                            self.settings["gen"]["height"] / 2 + 25,
-                        ),
-                    )
-                    self.screen.blit(
-                        pg.transform.scale(
-                            self.player_img[self.selected]["magic"], (320, 320)
-                        ),
-                        (
-                            self.settings["gen"]["width"] / 2 - 160,
-                            self.settings["gen"]["height"] / 2 + 25,
-                        ),
-                    )
-            pg.display.update()
-            self.clock.tick_busy_loop(self.settings["gen"]["fps"])
+            self.draw()
 
-    def show_credits(self):
+    def quit(self):
         """
-        Displayed upon selection of the credits menu. 
+        Quits pygame and exits the program
         """
-        credits = [
-            "Copyright (c) 2019 Matthew Geary",
-            "",
-            "Big thanks to Chris Bradfield's excellent pygame tutorial, which helped me",
-            "enormously in getting started.",
-            "Youtube: https://www.youtube.com/playlist?list=PLsk-HSGFjnaGQq7ybM8Lgkh5EMxUWPm2i",
-            "Github: https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023",
-            "",
-            "Music:",
-            '"Leaving Home" - Kevin MacLeod (incompetech.com)',
-            '"voidwalk" - Matthew Geary',
-            "The music for Undervoid is licensed under Creative Commons: By Attribution 4.0 License",
-            "Found in `\data\music\MUSIC_LICENSE` or at http://creativecommons.org/licenses/by/4.0/",
-            "",
-            "In-game artwork and sounds by Matthew Geary.",
-            "Title Art generated at https://fontmeme.com/pixel-fonts/",
-            "",
-            "LICENSE",
-            'This program is licensed under the "MIT License".  Please',
-            "see the file `LICENSE` in the source distribution of this",
-            "software for license terms.",
-        ]
-        fontsize = 30
-        line_y = 200
-        for line in credits:
-            credits_text = self.text_format(
-                line, self.font, fontsize, self.settings["colors"]["white"]
-            )
-            self.screen.blit(
-                credits_text,
-                (
-                    self.settings["gen"]["width"] / 2
-                    - (credits_text.get_rect()[2] / 2),
-                    line_y,
-                ),
-            )
-            line_y += fontsize
-
+        pg.quit()
+        sys.exit()
 
 if __name__ == "__main__":
-    g = Game()
-    g.show_start_screen()
+    c = Client()
+    c.show_start_screen()
+
+    g = Game(c)
     while True:
-        g.new()
-        g.run()
-        g.show_go_screen()
+        c.run(g)
+        c.show_go_screen()
