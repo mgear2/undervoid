@@ -58,7 +58,10 @@ def draw_score(client):
     score_x = 75 + len(str(client.player.coins)) * 25
     client.screen.blit(
         score,
-        (client.settings["gen"]["width"] - score_x, client.settings["gen"]["height"] - 70),
+        (
+            client.settings["gen"]["width"] - score_x,
+            client.settings["gen"]["height"] - 70,
+        ),
     )
 
 
@@ -250,7 +253,8 @@ class Player(pg.sprite.Sprite):
         self.get_keys()
         self.rot = (self.game.cursor.pos - self.pos).angle_to(vec(1, 0)) % 360
         self.image = pg.transform.rotate(
-            self.game.client.data.player_img[self.game.client.character][self.stance], self.rot
+            self.game.client.data.player_img[self.game.client.character][self.stance],
+            self.rot,
         )
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
@@ -347,7 +351,9 @@ class Mob(pg.sprite.Sprite):
     def update(self):
         self.target_dist = self.game.player.pos - self.pos
         self.rot = self.target_dist.angle_to(vec(1, 0))
-        self.image = pg.transform.rotate(self.game.client.data.mob_img["base"][self.kind], self.rot)
+        self.image = pg.transform.rotate(
+            self.game.client.data.mob_img["base"][self.kind], self.rot
+        )
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
         if (
@@ -371,7 +377,10 @@ class Mob(pg.sprite.Sprite):
             self.acc += self.vel * -1
             self.vel += self.acc * self.game.client.dt
             # Equations of motion
-            self.pos += self.vel * self.game.client.dt + 0.5 * self.acc * self.game.client.dt ** 1.025
+            self.pos += (
+                self.vel * self.game.client.dt
+                + 0.5 * self.acc * self.game.client.dt ** 1.025
+            )
             self.hit_rect.centerx = self.pos.x
             collide_with_walls(self, self.game.walls, "x")
             self.hit_rect.centery = self.pos.y

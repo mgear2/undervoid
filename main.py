@@ -14,6 +14,7 @@ from menu import Menu
 
 yaml = ruamel.yaml.YAML()
 
+
 class Client:
     """
     Client Class
@@ -36,7 +37,7 @@ class Client:
 
         pg.mouse.set_visible(False)
         pg.display.set_icon(self.data.undervoid_icon)
-        
+
     def init_game_window(self):
         """
         Initializes a centered game window either with windowed resolution or fullscreen.
@@ -62,7 +63,9 @@ class Client:
         """
         pg.display.set_caption("Undervoid")
         self.screen.fill(self.game.bg_color)
-        self.screen.blit(self.game.map_img, self.game.camera.apply_rect(self.game.map_rect))
+        self.screen.blit(
+            self.game.map_img, self.game.camera.apply_rect(self.game.map_rect)
+        )
         # self.draw_grid()
         for sprite in self.game.all_sprites:
             if isinstance(sprite, Mob) and sprite.hp < sprite.max_hp:
@@ -132,7 +135,7 @@ class Client:
 
     def show_go_screen(self):
         """
-        pygame needs this method to be present. 
+        This method is used upon player death to restart at the main menu. 
         """
         self.show_start_screen()
         g = Game(c)
@@ -157,7 +160,6 @@ class Client:
             game.update()
             if self.player.hp <= 0:
                 self.playing = False
-                break
             self.draw()
 
     def quit(self):
@@ -166,6 +168,7 @@ class Client:
         """
         pg.quit()
         sys.exit()
+
 
 if __name__ == "__main__":
     c = Client()

@@ -6,6 +6,7 @@
 import pygame as pg
 from os import path
 
+
 class Loader:
     def __init__(self, settings):
         self.settings = settings
@@ -66,6 +67,7 @@ class Loader:
         self.rift_img = self.load_img(self.settings["img"]["rift"], tilesize, False)
         for img in self.settings["img"]["cursor"]:
             self.cursor_img.append(self.load_img(img, (64, 64), True))
+
         # Environment Images
         self.wall_img = self.load_img(
             self.settings["img"]["wall"]["voidwall"], tilesize, False
@@ -89,12 +91,14 @@ class Loader:
                 self.player_img[character]["move"].append(
                     self.load_img(img, tuple((2 * x) for x in tilesize), True)
                 )
+
         # Bullet Images
         self.vbullet_img = self.load_img(
             self.settings["img"]["bullets"]["void"]["bullet"], tilesize, True
         )
         for img in self.settings["img"]["bullets"]["void"]["fx"]:
             self.weapon_vfx.append(self.load_img(img, tilesize, True))
+
         # Mob Images
         for kind in self.mob_kinds:
             self.mob_img["base"][kind] = self.load_img(
@@ -103,6 +107,7 @@ class Loader:
             self.mob_img["grave"][kind] = []
             for img in self.settings["img"]["mob"][kind]["grave"]:
                 self.mob_img["grave"][kind].append(self.load_img(img, tilesize, True))
+
         # Item Images
         for item in self.settings["img"]["items"]:
             self.item_img[item] = self.load_img(
@@ -112,8 +117,8 @@ class Loader:
                 True,
             )
 
+        # Sounds
         for sound in self.settings["sounds"]:
             self.sounds[sound] = pg.mixer.Sound(
                 path.join(self.sound_folder, self.settings["sounds"][sound])
             )
-            

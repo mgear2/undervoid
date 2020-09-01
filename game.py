@@ -40,7 +40,6 @@ class Game:
         self.player_sprite = pg.sprite.Group()
         self.cursor_sprite = pg.sprite.Group()
         self.spawners = pg.sprite.Group()
-
         self.init_player = True
         self.level("temple.txt", "void")
         # https://stackoverflow.com/questions/51973441/how-to-fade-from-one-colour-to-another-in-pygame
@@ -83,8 +82,6 @@ class Game:
         self.mob_count = 0
         self.mob_max = self.settings["gen"]["mob_max"]
 
-    
-
     def update(self):
         """
         Updates sprites, spawners and camera. 
@@ -97,14 +94,20 @@ class Game:
         self.spawners.update()
         self.camera.update(self.client.player)
         # player hits items
-        hits = pg.sprite.spritecollide(self.client.player, self.items, False, collide_hit_rect)
+        hits = pg.sprite.spritecollide(
+            self.client.player, self.items, False, collide_hit_rect
+        )
         for hit in hits:
-            if hit.kind == "hp" and self.client.player.hp < self.settings["player"]["hp"]:
+            if (
+                hit.kind == "hp"
+                and self.client.player.hp < self.settings["player"]["hp"]
+            ):
                 hit.kill()
                 if self.settings["gen"]["sound"] == "on":
                     self.client.sounds["treasure02"].play()
                 self.client.player.add_hp(
-                    self.settings["items"]["potions"]["red"]["hp"] * self.client.player.max_hp
+                    self.settings["items"]["potions"]["red"]["hp"]
+                    * self.client.player.max_hp
                 )
             if hit.kind == "gp":
                 hit.kill()
@@ -112,7 +115,9 @@ class Game:
                     self.client.sounds["treasure03"].play()
                 self.client.player.coins += 1
         # mobs hitting player
-        hits = pg.sprite.spritecollide(self.client.player, self.mobs, False, collide_hit_rect)
+        hits = pg.sprite.spritecollide(
+            self.client.player, self.mobs, False, collide_hit_rect
+        )
         for hit in hits:
             now = pg.time.get_ticks()
             if now - hit.last_hit > self.settings["mob"]["thrall"]["dmg_rate"]:

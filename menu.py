@@ -8,6 +8,7 @@ import ruamel.yaml
 
 yaml = ruamel.yaml.YAML()
 
+
 class Menu:
     def __init__(self, client):
         self.client = client
@@ -53,7 +54,9 @@ class Menu:
                     color = self.client.settings["colors"]["white"]
                 else:
                     color = self.client.settings["colors"]["mediumvioletred"]
-                item_text = self.client.text_format(item.upper(), self.client.font, fontsize, color)
+                item_text = self.client.text_format(
+                    item.upper(), self.client.font, fontsize, color
+                )
                 self.client.screen.blit(
                     item_text,
                     (
@@ -66,7 +69,8 @@ class Menu:
                 if self.selected in self.menu_characters and self.selected != "back":
                     self.client.screen.blit(
                         pg.transform.scale(
-                            self.client.data.player_img[self.selected]["move"][0], (320, 320)
+                            self.client.data.player_img[self.selected]["move"][0],
+                            (320, 320),
                         ),
                         (
                             self.client.settings["gen"]["width"] / 2 - 170,
@@ -75,7 +79,8 @@ class Menu:
                     )
                     self.client.screen.blit(
                         pg.transform.scale(
-                            self.client.data.player_img[self.selected]["magic"], (320, 320)
+                            self.client.data.player_img[self.selected]["magic"],
+                            (320, 320),
                         ),
                         (
                             self.client.settings["gen"]["width"] / 2 - 160,
@@ -171,7 +176,10 @@ class Menu:
         line_y = 200
         for line in credits:
             credits_text = self.client.text_format(
-                line, self.client.font, fontsize, self.client.settings["colors"]["white"]
+                line,
+                self.client.font,
+                fontsize,
+                self.client.settings["colors"]["white"],
             )
             self.client.screen.blit(
                 credits_text,
@@ -182,4 +190,3 @@ class Menu:
                 ),
             )
             line_y += fontsize
-    

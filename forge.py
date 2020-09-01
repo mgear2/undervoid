@@ -81,7 +81,9 @@ class Forge:
                     )
                     surface.blit(self.floor_img, (col, row + row_offset))
                 if tile == "1":
-                    surface.blit(self.game.client.data.wall_img, (col, row + row_offset))
+                    surface.blit(
+                        self.game.client.data.wall_img, (col, row + row_offset)
+                    )
                 if tile == "0":
                     Wall(
                         self.game,
@@ -106,7 +108,9 @@ class Forge:
                         vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
                         True,
                     )
-                    surface.blit(self.game.client.data.wall_img, (col, row + row_offset))
+                    surface.blit(
+                        self.game.client.data.wall_img, (col, row + row_offset)
+                    )
                 if tile == "R" and i == 0:
                     Rift(
                         self.game,
@@ -114,8 +118,12 @@ class Forge:
                     )
                 if tile == "P" and i == self.max_size - 1:
                     if self.game.init_player:
-                        self.game.player = self.game.client.player = Player(self.game, col, row + row_offset)
-                        self.game.pmove = self.game.client.pmove = pMove(self.game, col, row + row_offset)
+                        self.game.player = self.game.client.player = Player(
+                            self.game, col, row + row_offset
+                        )
+                        self.game.pmove = self.game.client.pmove = pMove(
+                            self.game, col, row + row_offset
+                        )
                         self.game.init_player = False
                     else:
                         self.game.player.place(col, row + row_offset)
