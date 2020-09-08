@@ -16,7 +16,7 @@ class Loader:
         Builds a directory structure for the game. 
         """
         self.game_folder = path.dirname(__file__)
-        self.data_folder = path.join(self.game_folder, "../data")
+        self.data_folder = path.join(self.game_folder, "data")
         self.img_folder = path.join(self.data_folder, "img")
         self.map_folder = path.join(self.data_folder, "maps")
         self.music_folder = path.join(self.data_folder, "music")
