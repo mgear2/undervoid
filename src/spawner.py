@@ -5,7 +5,7 @@
 
 import pygame as pg
 from random import randint, random
-from sprites import Mob, Player
+from src.sprites import Mob, Player
 
 vec = pg.math.Vector2
 

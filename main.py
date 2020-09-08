@@ -6,11 +6,11 @@
 import ruamel.yaml
 import pygame as pg
 import sys
-from sprites import *
+from src.sprites import *
 from os import path, environ
-from game import Game
-from loader import Loader
-from menu import Menu
+from src.game import Game
+from src.loader import Loader
+from src.menu import Menu
 
 yaml = ruamel.yaml.YAML()
 
