@@ -1,4 +1,4 @@
-![undervoidtitle](/data/img/undervoidtitle.png)
+![undervoidtitle](/src/src/data/img/undervoidtitle.png)
 
 # Undervoid
 
@@ -65,41 +65,41 @@ The levels in Undervoid are randomly generated from a premade set of dungeon pie
 
 ### Points of Interest <a name="points"></a>
 
-![rift](/data/img/rift01.png)  
+![rift](/src/data/img/rift01.png)  
 __Rift__
 > use these mystical doors to move around the Undervoid
 
 ### Playable Characters <a name="chars"></a>
 
-![pilgrim](/data/img/pilgrim_magic.png)  
+![pilgrim](/src/data/img/pilgrim_magic.png)  
 __Pilgrim__
 >"To go back is nothing but death; to go forward is fear of death, and life everlasting beyond it. I will yet go forward." [1](https://www.goodreads.com/work/quotes/1960084-the-pilgrim-s-progress)
 
-![voidwalker](/data/img/voidwalker_magic.png)  
+![voidwalker](/src/data/img/voidwalker_magic.png)  
 __Voidwalker__
 >"Loathsomeness waits and dreams in the deep, and decay spreads over the tottering cities of men." [2](https://www.goodreads.com/quotes/557170-who-knows-the-end-what-has-risen-may-sink-and)
 
-![lizardwizard](/data/img/lizardwizard_magic.png)  
+![lizardwizard](/src/data/img/lizardwizard_magic.png)  
 __Lizard Wizard__
 >" I gave you the chance of aiding me willingly, but you have elected the way of pain!" [3](https://www.imdb.com/title/tt0120737/characters/nm0000489)
 
 ### Enemies <a name="mobs"></a>
 
-![thrall](/data/img/thrall.png)  
+![thrall](/src/data/img/thrall.png)  
 __Thrall__
 >"*Snarl*"
 
-![sleeper](/data/img/sleeper.png)  
+![sleeper](/src/data/img/sleeper.png)  
 __Sleeper__
 >"*Yawn*"
 
 ### Items <a name="items"></a>
 
-![healthpotion](/data/img/potion01.png)  
+![healthpotion](/src/data/img/potion01.png)  
 __Health Potion__
 >"Water of life"
 
-![goldcoin](/data/img/coin01.png)  
+![goldcoin](/src/data/img/coin01.png)  
 __Gold Coin__
 >"A coin in the hand is worth two in the Void"
 

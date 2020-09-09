@@ -1,3 +1,0 @@
-2020.09.08 16:36:08 INFO  started: Metals version 0.9.3 in workspace '/home/nuyarralek/Jason/Projects/Games/Undervoid' for client vscode.
-2020.09.08 16:36:21 INFO  time: initialize in 13s
-2020.09.08 16:36:24 WARN  no build tool detected in workspace '/home/nuyarralek/Jason/Projects/Games/Undervoid'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. 
