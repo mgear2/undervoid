@@ -10,5 +10,6 @@ pygame = "*"
 pytweening = "*"
 pyyaml = "*"
 ruamel-yaml = "*"
+pytest = "*"
 
 [requires]
