@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Matthew Geary
+# Copyright (c) 2020
 # [This program is licensed under the "MIT License"]
 # Please see the file LICENSE in the source
 # distribution of this software for license terms.
@@ -14,9 +14,6 @@ vec = pg.math.Vector2
 def collide_hit_rect(one, two):
     """
     Used for hit_rect collision:
-
-    Drawn largely from:
-    https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023
     """
     return one.hit_rect.colliderect(two.rect)
 
@@ -24,9 +21,6 @@ def collide_hit_rect(one, two):
 def draw_hp(client, surface, x, y, pct, b_len, b_height, player):
     """
     Used to draw mob and player health bars. 
-
-    Inspired by:
-    https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023
     """
     if pct < 0:
         pct = 0
@@ -274,7 +268,6 @@ class Player(pg.sprite.Sprite):
 class Bullet(pg.sprite.Sprite):
     """
     Bullet class provides bullet sprites with image, velocity and lifetime tracking. 
-    Originally built off code from https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023.
     """
 
     def __init__(self, game, pos, dir, rot):
@@ -308,7 +301,6 @@ class Bullet(pg.sprite.Sprite):
 class Mob(pg.sprite.Sprite):
     """
     Mob class provides mob sprites and tracks mob instance data. 
-    Originally built off code from https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023.
     """
 
     def __init__(self, game, kind, x, y):

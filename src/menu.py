@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Matthew Geary
+# Copyright (c) 2020
 # [This program is licensed under the "MIT License"]
 # Please see the file LICENSE in the source
 # distribution of this software for license terms.
@@ -13,8 +13,7 @@ class Menu:
     def __init__(self, client):
         self.client = client
         self.menu_index = 0
-        self.menu_main = ["new", "multiplayer", "settings", "credits", "exit"]
-        self.menu_multiplayer = ["back"]
+        self.menu_main = ["new", "settings", "credits", "exit"]
         self.menu_credits = ["back"]
         self.menu_characters = client.data.characters + ["back"]
 
@@ -151,11 +150,10 @@ class Menu:
         Displayed upon selection of the credits menu. 
         """
         credits = [
-            "Copyright (c) 2019 Matthew Geary",
+            "Copyright (c) 2020",
+            "Home: https://github.com/mgear2/undervoid",
             "",
-            "Big thanks to Chris Bradfield's excellent pygame tutorial, which helped me",
-            "enormously in getting started.",
-            "Youtube: https://www.youtube.com/playlist?list=PLsk-HSGFjnaGQq7ybM8Lgkh5EMxUWPm2i",
+            "Shoutout to Chris Bradfield's excellent pygame tutorial:",
             "Github: https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023",
             "",
             "Music:",
