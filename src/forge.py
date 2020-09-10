@@ -6,8 +6,8 @@
 import pygame as pg
 from random import choice, random
 from os import path
-from sprites import Mob, Wall, Player, pMove, Item, Rift
-from spawner import Spawner
+from src.sprites import Mob, Wall, Player, pMove, Item, Rift
+from src.spawner import Spawner
 
 vec = pg.math.Vector2
 

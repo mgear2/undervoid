@@ -7,10 +7,10 @@ import pygame as pg
 import sys
 import ruamel.yaml
 from os import path, environ
-from sprites import *
-from forge import Forge
-from spawner import Spawner
-from camera import Camera
+from src.sprites import *
+from src.forge import Forge
+from src.spawner import Spawner
+from src.camera import Camera
 from random import random, randint
 
 yaml = ruamel.yaml.YAML()
