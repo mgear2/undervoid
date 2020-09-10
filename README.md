@@ -1,4 +1,4 @@
-![undervoidtitle](/src/src/data/img/undervoidtitle.png)
+![undervoidtitle](/src/data/img/undervoidtitle.png)
 
 # Undervoid
 
