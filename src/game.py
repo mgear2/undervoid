@@ -31,6 +31,7 @@ class Game:
             self.settings = yaml.load(f)
             f.close()
         self.all_sprites = pg.sprite.LayeredUpdates()
+        self.pmove = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.stops_bullets = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
@@ -77,7 +78,7 @@ class Game:
         self.map.build_lvl(biome)
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
-        self.cursor = Cursor(self)
+        self.cursor = Cursor(self.settings, self.all_sprites, self.client.data.cursor_img)
         self.camera = Camera(self, self.map.width, self.map.height, self.cursor)
         self.mob_count = 0
         self.mob_max = self.settings["gen"]["mob_max"]
@@ -91,6 +92,7 @@ class Game:
         Morphs the background color one step. 
         """
         self.all_sprites.update()
+        self.pmove.update(self.client.player.vel, self.client.player.pos)
         self.spawners.update()
         self.camera.update(self.client.player)
         # player hits items

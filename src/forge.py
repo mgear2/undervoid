@@ -18,14 +18,14 @@ class Forge:
     Forge is capable of splicing together multiple preset dungeon pieces. 
     """
 
-    def __init__(self, game, size):
+    def __init__(self, game, size: int):
         self.game = game
         self.data = {}
         self.level_data = []
         self.rot = [0, 90, 180, 270]
         self.max_size = size
 
-    def new_surface(self, tiles_wide, tiles_high):
+    def new_surface(self, tiles_wide: int, tiles_high: int):
         """
         Creates a new surface, sized according to game settings. 
         """
@@ -43,7 +43,7 @@ class Forge:
         for piece in self.game.settings["map"]["basic"]:
             self.load(piece)
 
-    def load(self, piece):
+    def load(self, piece: int):
         """
         Loads textual data from a given map piece file. 
         """
@@ -52,7 +52,7 @@ class Forge:
             for line in f:
                 self.data[piece].append(line.strip("\n"))
 
-    def build_lvl(self, biome):
+    def build_lvl(self, biome: int):
         """
         Randomly grabs dungeon pieces and renders them onto the map surface next to one another. 
         """
@@ -122,7 +122,7 @@ class Forge:
                             self.game, col, row + row_offset
                         )
                         self.game.pmove = self.game.client.pmove = pMove(
-                            self.game, col, row + row_offset
+                            self.game.settings, self.game.pmove, self.game.client.data.player_img[self.game.client.character]["move"], col, row + row_offset
                         )
                         self.game.init_player = False
                     else:
