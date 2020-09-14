@@ -112,9 +112,9 @@ class Cursor(pg.sprite.Sprite):
     replace the default cursor. 
     """
 
-    def __init__(self, settings, all_sprites, cursor_img):
+    def __init__(self, settings, all_sprites, cursor_sprite, cursor_img):
         self._layer = settings["layer"]["cursor"]
-        self.groups = all_sprites
+        self.groups = all_sprites, cursor_sprite
         pg.sprite.Sprite.__init__(self, self.groups)
         # self.game = game
         self.cursor_img = cursor_img
@@ -145,10 +145,10 @@ class pMove(pg.sprite.Sprite):
     Updating pMove cycles the image, providing an animation effect as the player walks. 
     """
 
-    def __init__(self, settings, pmove, player_img, x, y):
+    def __init__(self, settings, all_sprites, pmove_group, player_img, x, y):
         # self.game = game
         self._layer = settings["layer"]["player_move"]
-        self.groups = pmove
+        self.groups = all_sprites, pmove_group
         pg.sprite.Sprite.__init__(self, self.groups)
         self.images = player_img
         self.image = self.images[0]
@@ -495,7 +495,7 @@ class Weapon_VFX(pg.sprite.Sprite):
 
     def __init__(self, game, pos):
         self._layer = game.settings["layer"]["vfx"]
-        self.groups = game.all_sprites
+        self.groups = game.all_sprites, game.weaponvfx_sprite
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.transform.scale(

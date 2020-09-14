@@ -122,7 +122,7 @@ class Forge:
                             self.game, col, row + row_offset
                         )
                         self.game.pmove = self.game.client.pmove = pMove(
-                            self.game.settings, self.game.pmove, self.game.client.data.player_img[self.game.client.character]["move"], col, row + row_offset
+                            self.game.settings, self.game.all_sprites, self.game.pmove_sprite, self.game.client.data.player_img[self.game.client.character]["move"], col, row + row_offset
                         )
                         self.game.init_player = False
                     else:

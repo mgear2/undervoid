@@ -31,7 +31,7 @@ class Game:
             self.settings = yaml.load(f)
             f.close()
         self.all_sprites = pg.sprite.LayeredUpdates()
-        self.pmove = pg.sprite.Group()
+        self.pmove_sprite = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.stops_bullets = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
@@ -40,6 +40,7 @@ class Game:
         self.items = pg.sprite.Group()
         self.player_sprite = pg.sprite.Group()
         self.cursor_sprite = pg.sprite.Group()
+        self.weaponvfx_sprite = pg.sprite.Group()
         self.spawners = pg.sprite.Group()
         self.init_player = True
         self.level("temple.txt", "void")
@@ -78,7 +79,7 @@ class Game:
         self.map.build_lvl(biome)
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
-        self.cursor = Cursor(self.settings, self.all_sprites, self.client.data.cursor_img)
+        self.cursor = Cursor(self.settings, self.all_sprites, self.cursor_sprite, self.client.data.cursor_img)
         self.camera = Camera(self, self.map.width, self.map.height, self.cursor)
         self.mob_count = 0
         self.mob_max = self.settings["gen"]["mob_max"]
@@ -91,8 +92,20 @@ class Game:
         Checks for bullets hitting mobs and resolves hits. 
         Morphs the background color one step. 
         """
-        self.all_sprites.update()
-        self.pmove.update(self.client.player.vel, self.client.player.pos)
+        # self.all_sprites.update()
+
+        self.walls.update()
+        self.stops_bullets.update()
+        self.mobs.update()
+        self.bullets.update()
+        self.graves.update()
+        self.items.update()
+        self.player_sprite.update()
+        self.cursor_sprite.update()
+        self.weaponvfx_sprite.update()
+    
+
+        self.pmove_sprite.update(self.client.player.vel, self.client.player.pos)
         self.spawners.update()
         self.camera.update(self.client.player)
         # player hits items
