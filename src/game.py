@@ -9,7 +9,6 @@ import ruamel.yaml
 from os import path, environ
 from src.sprites.sprites import *
 from src.sprites.cursor import Cursor
-from src.sprites.pmove import pMove
 from src.forge import Forge
 from src.spawner import Spawner
 from src.camera import Camera
@@ -25,8 +24,8 @@ class Game:
 
     def __init__(self, client):
         """
-        Initializes sprite groups, builds initial level, 
-        specifies variables to be used for morphing background color. 
+        Initializes sprite groups, builds initial level,
+        specifies variables to be used for morphing background color.
         """
         self.client = client
         with open("settings.yaml") as f:
@@ -55,9 +54,9 @@ class Game:
 
     def level(self, level, biome):
         """
-        Utilizes the Forge class to build and returns a level with the desired specifications. 
+        Utilizes the Forge class to build and returns a level with the desired specifications.
         If the level is "gen", a new level will be generated. Otherwise, Forge will attempt to
-        load a map from the specified file.  
+        load a map from the specified file.
         """
         for sprite in self.all_sprites:
             if sprite != self.client.player and sprite != self.client.pmove:
@@ -81,31 +80,46 @@ class Game:
         self.map.build_lvl(biome)
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
-        self.cursor = Cursor(self.settings, self.all_sprites, self.cursor_sprite, self.client.data.cursor_img)
+        self.cursor = Cursor(
+            self.settings,
+            self.all_sprites,
+            self.cursor_sprite,
+            self.client.data.cursor_img,
+        )
         self.camera = Camera(self, self.map.width, self.map.height, self.cursor)
         self.mob_count = 0
         self.mob_max = self.settings["gen"]["mob_max"]
 
     def update(self):
         """
-        Updates sprites, spawners and camera. 
+        Updates sprites, spawners and camera.
         Checks for player hitting items and resolves hits.
-        Checks for mobs hitting player and resolves hits. 
-        Checks for bullets hitting mobs and resolves hits. 
-        Morphs the background color one step. 
+        Checks for mobs hitting player and resolves hits.
+        Checks for bullets hitting mobs and resolves hits.
+        Morphs the background color one step.
         """
         # self.all_sprites.update()
 
         self.walls.update()
         self.stops_bullets.update()
-        self.mobs.update()
-        self.bullets.update()
+        self.mobs.update(self.client.player.pos, self.client.data.mob_img, self.client.data.sounds, self.client.dt, self.walls, self.graves, self.items, self.client.data.item_img, self.mob_count)
+        self.bullets.update(self.client.dt)
         self.graves.update()
         self.items.update()
-        self.player_sprite.update()
+        self.player_sprite.update(
+            self.cursor.pos,
+            self.client.data.sounds["wave01"],
+            self.client.data.player_img[self.client.character]["magic"],
+            self.client.dt,
+            self.walls,
+            self.bullets,
+            self.client.data.vbullet_img,
+            self.stops_bullets,
+            self.weaponvfx_sprite,
+            self.client.data.weapon_vfx,
+        )
         self.cursor_sprite.update()
         self.weaponvfx_sprite.update()
-    
 
         self.pmove_sprite.update(self.client.player.vel, self.client.player.pos)
         self.spawners.update()

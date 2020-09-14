@@ -20,7 +20,7 @@ class Menu:
 
     def run(self, menu_items):
         """
-        Menu loop: renders the menu options to screen and tracks which option the player has highlighted. 
+        Menu loop: renders the menu options to screen and tracks which option the player has highlighted.
         """
         self.inmenu = True
         while self.inmenu:
@@ -132,8 +132,8 @@ class Menu:
 
     def update_settings(self):
         """
-        Updates the settings.yaml file based on player changes 
-        in the settings menu. 
+        Updates the settings.yaml file based on player changes
+        in the settings menu.
         """
         with open("settings.yaml", "w") as f:
             yaml.dump(self.client.settings, f)
@@ -148,7 +148,7 @@ class Menu:
 
     def show_credits(self):
         """
-        Displayed upon selection of the credits menu. 
+        Displayed upon selection of the credits menu.
         """
         credits = [
             "Copyright (c) 2019 Matthew Geary",

@@ -7,8 +7,8 @@ class pMove(pg.sprite.Sprite):
     """
     Sprite for player movement is currently separate from the player.
     pMove must be initialized in the same location as the player; layering
-    ensures it is rendered underneath the player. 
-    Updating pMove cycles the image, providing an animation effect as the player walks. 
+    ensures it is rendered underneath the player.
+    Updating pMove cycles the image, providing an animation effect as the player walks.
     """
 
     def __init__(self, settings, all_sprites, pmove_group, player_img, x, y):

@@ -8,8 +8,8 @@ import pygame as pg
 
 class Camera:
     """
-    Camera class is used to center the game window on the player 
-    and move the map and contained entities relative to the player. 
+    Camera class is used to center the game window on the player
+    and move the map and contained entities relative to the player.
     """
 
     def __init__(self, game, width, height, cursor):

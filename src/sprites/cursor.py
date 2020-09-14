@@ -1,9 +1,10 @@
 import pygame as pg
 
+
 class Cursor(pg.sprite.Sprite):
     """
-    Cursor class provides an animated cursor target image to 
-    replace the default cursor. 
+    Cursor class provides an animated cursor target image to
+    replace the default cursor.
     """
 
     def __init__(self, settings, all_sprites, cursor_sprite, cursor_img):

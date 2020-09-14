@@ -9,6 +9,7 @@ import sys
 from src.sprites.sprites import *
 from os import path, environ
 from src.game import Game
+from src.sprites.mob import Mob
 from src.loader import Loader
 from src.menu import Menu
 
