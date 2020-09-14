@@ -6,7 +6,7 @@
 import ruamel.yaml
 import pygame as pg
 import sys
-from src.sprites import *
+from src.sprites.sprites import *
 from os import path, environ
 from src.game import Game
 from src.loader import Loader

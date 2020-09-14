@@ -7,7 +7,9 @@ import pygame as pg
 import sys
 import ruamel.yaml
 from os import path, environ
-from src.sprites import *
+from src.sprites.sprites import *
+from src.sprites.cursor import Cursor
+from src.sprites.pmove import pMove
 from src.forge import Forge
 from src.spawner import Spawner
 from src.camera import Camera
