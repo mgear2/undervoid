@@ -100,9 +100,21 @@ class Game:
         """
         # self.all_sprites.update()
 
-        self.walls.update()
-        self.stops_bullets.update()
-        self.mobs.update(self.client.player.pos, self.client.data.mob_img, self.client.data.sounds, self.client.dt, self.walls, self.graves, self.items, self.client.data.item_img, self.mob_count)
+        self.walls.update(self.client.player.pos, self.level, self.client.data.biomes)
+        self.stops_bullets.update(
+            self.client.player.pos, self.level, self.client.data.biomes
+        )
+        self.mobs.update(
+            self.client.player.pos,
+            self.client.data.mob_img,
+            self.client.data.sounds,
+            self.client.dt,
+            self.walls,
+            self.graves,
+            self.items,
+            self.client.data.item_img,
+            self.mob_count,
+        )
         self.bullets.update(self.client.dt)
         self.graves.update()
         self.items.update()

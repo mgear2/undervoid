@@ -1,6 +1,7 @@
 import pygame as pg
 from random import choice
 
+
 class Grave(pg.sprite.Sprite):
     """
     Graves are left behind when mobs are killed,
@@ -9,7 +10,16 @@ class Grave(pg.sprite.Sprite):
     for that enemy kind.
     """
 
-    def __init__(self, settings, all_sprites, grave_group, game_client_data_mob_img, kind, pos, rot):
+    def __init__(
+        self,
+        settings,
+        all_sprites,
+        grave_group,
+        game_client_data_mob_img,
+        kind,
+        pos,
+        rot,
+    ):
         self.settings = settings
         self._layer = self.settings["layer"]["grave"]
         self.groups = all_sprites, grave_group

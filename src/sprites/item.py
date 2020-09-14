@@ -2,14 +2,22 @@ import pygame as pg
 import pytweening as tween
 
 
-
 class Item(pg.sprite.Sprite):
     """
     Item class is used to place items on the map.
     Items use tween animations from the pytweening library.
     """
 
-    def __init__(self, settings, all_sprites, item_group, game_client_data_item_img, pos, img, kind):
+    def __init__(
+        self,
+        settings,
+        all_sprites,
+        item_group,
+        game_client_data_item_img,
+        pos,
+        img,
+        kind,
+    ):
         self.settings = settings
         self._layer = self.settings["layer"]["item"]
         self.bob_range = self.settings["items"]["bob_range"]

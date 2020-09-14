@@ -9,6 +9,7 @@ with open("settings.yaml") as f:
     settings = yaml.load(f)
     f.close()
 
+
 def test_build_path():
     loader = Loader(settings)
     current_path = path.dirname(__file__)

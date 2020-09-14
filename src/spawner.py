@@ -55,9 +55,25 @@ class Spawner(pg.sprite.Sprite):
                         break
                     elif self.game.map.level_data[row][col] == "." and random() < 0.25:
                         if random() < 0.5:
-                            Mob(self.game.settings, self.game.all_sprites, self.game.mobs, self.game.client.data.mob_img, "sleeper", col, row)
+                            Mob(
+                                self.game.settings,
+                                self.game.all_sprites,
+                                self.game.mobs,
+                                self.game.client.data.mob_img,
+                                "sleeper",
+                                col,
+                                row,
+                            )
                         else:
-                            Mob(self.game.settings, self.game.all_sprites, self.game.mobs, self.game.client.data.mob_img, "thrall", col, row)
+                            Mob(
+                                self.game.settings,
+                                self.game.all_sprites,
+                                self.game.mobs,
+                                self.game.client.data.mob_img,
+                                "thrall",
+                                col,
+                                row,
+                            )
                         count += 1
         self.game.mob_count += count
         self.kill()

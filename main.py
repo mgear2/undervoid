@@ -59,7 +59,7 @@ class Client:
 
     def draw(self):
         """
-        Draws the map and all sprites. 
+        Draws the map and all sprites.
         Draws Player health and gold coins.
         """
         pg.display.set_caption("Undervoid")
@@ -98,8 +98,8 @@ class Client:
 
     def events(self):
         """
-        Checks for key/mouse presses. 
-        Checks if the user is quitting the game. 
+        Checks for key/mouse presses.
+        Checks if the user is quitting the game.
         """
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -113,7 +113,7 @@ class Client:
     # Text Renderer https://www.sourcecodester.com/tutorials/python/11784/python-pygame-simple-main-menu-selection.html
     def text_format(self, message, textFont, textSize, textColor):
         """
-        Returns a pygame text ready to be drawn to screen. 
+        Returns a pygame text ready to be drawn to screen.
         """
         newFont = pg.font.SysFont(textFont, textSize)
         newText = newFont.render(message, 0, textColor)
@@ -122,7 +122,7 @@ class Client:
 
     def show_start_screen(self):
         """
-        Initializes the menus, music, and starts menu loop. 
+        Initializes the menus, music, and starts menu loop.
         """
         self.font = "franklingothic"
         pg.mixer.music.load(
@@ -136,7 +136,7 @@ class Client:
 
     def show_go_screen(self):
         """
-        This method is used upon player death to restart at the main menu. 
+        This method is used upon player death to restart at the main menu.
         """
         self.show_start_screen()
         g = Game(c)

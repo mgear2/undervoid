@@ -6,10 +6,11 @@
 import pygame as pg
 from random import choice, random
 from os import path
-from src.sprites.sprites import Wall, Rift
+from src.sprites.sprites import *
 from src.sprites.pmove import pMove
 from src.sprites.player import Player
 from src.sprites.item import Item
+from src.sprites.wall import Wall, Rift
 from src.spawner import Spawner
 
 vec = pg.math.Vector2
@@ -89,25 +90,37 @@ class Forge:
                     )
                 if tile == "0":
                     Wall(
-                        self.game,
+                        self.game.settings,
+                        self.game.all_sprites,
+                        self.game.walls,
+                        self.game.stops_bullets,
                         vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
                         False,
                     )
                 if tile == "1":
                     Wall(
-                        self.game,
+                        self.game.settings,
+                        self.game.all_sprites,
+                        self.game.walls,
+                        self.game.stops_bullets,
                         vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
                         True,
                     )
                 if tile == "y" and i == 0:
                     Wall(
-                        self.game,
+                        self.game.settings,
+                        self.game.all_sprites,
+                        self.game.walls,
+                        self.game.stops_bullets,
                         vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
                         False,
                     )
                 if tile == "x" and i == self.max_size - 1:
                     Wall(
-                        self.game,
+                        self.game.settings,
+                        self.game.all_sprites,
+                        self.game.walls,
+                        self.game.stops_bullets,
                         vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
                         True,
                     )
@@ -116,7 +129,11 @@ class Forge:
                     )
                 if tile == "R" and i == 0:
                     Rift(
-                        self.game,
+                        self.game.settings,
+                        self.game.all_sprites,
+                        self.game.walls,
+                        self.game.stops_bullets,
+                        self.game.client.data.rift_img,
                         vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
                     )
                 if tile == "P" and i == self.max_size - 1:

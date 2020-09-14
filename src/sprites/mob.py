@@ -5,13 +5,16 @@ from src.sprites.item import Item
 
 vec = pg.math.Vector2
 
+
 class Mob(pg.sprite.Sprite):
     """
     Mob class provides mob sprites and tracks mob instance data.
     Originally built off code from https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023.
     """
 
-    def __init__(self, settings, all_sprites, mobs, game_client_data_mob_img, kind, x, y):
+    def __init__(
+        self, settings, all_sprites, mobs, game_client_data_mob_img, kind, x, y
+    ):
         # self.game = game
         self.settings = settings
         self.kind = kind
@@ -49,7 +52,18 @@ class Mob(pg.sprite.Sprite):
                 if 0 < dist.length() < self.settings["gen"]["tilesize"] * 2:
                     self.acc += dist.normalize()
 
-    def update(self, player_pos, game_client_data_mob_img, game_sounds, game_client_dt, game_walls, grave_group, item_group, game_client_data_item_img, mob_count):
+    def update(
+        self,
+        player_pos,
+        game_client_data_mob_img,
+        game_sounds,
+        game_client_dt,
+        game_walls,
+        grave_group,
+        item_group,
+        game_client_data_item_img,
+        mob_count,
+    ):
         self.target_dist = player_pos - self.pos
         self.rot = self.target_dist.angle_to(vec(1, 0))
         self.image = pg.transform.rotate(
@@ -79,8 +93,7 @@ class Mob(pg.sprite.Sprite):
             self.vel += self.acc * game_client_dt
             # Equations of motion
             self.pos += (
-                self.vel * game_client_dt
-                + 0.5 * self.acc * game_client_dt ** 1.025
+                self.vel * game_client_dt + 0.5 * self.acc * game_client_dt ** 1.025
             )
             self.hit_rect.centerx = self.pos.x
             self.collide_with_walls(self, game_walls, "x")
@@ -88,14 +101,29 @@ class Mob(pg.sprite.Sprite):
             self.collide_with_walls(self, game_walls, "y")
             self.rect.center = self.hit_rect.center
         if self.hp <= 0:
-            Grave(self.settings, self.groups[0], grave_group, game_client_data_mob_img, self.kind, self.pos, self.rot)
+            Grave(
+                self.settings,
+                self.groups[0],
+                grave_group,
+                game_client_data_mob_img,
+                self.kind,
+                self.pos,
+                self.rot,
+            )
             if random() < self.settings["mob"][self.kind]["drop_chance"]:
                 item = choice(self.items)
-                Item(self.settings, self.groups[0], item_group, game_client_data_item_img, self.pos, item[0], item[1])
+                Item(
+                    self.settings,
+                    self.groups[0],
+                    item_group,
+                    game_client_data_item_img,
+                    self.pos,
+                    item[0],
+                    item[1],
+                )
             # Test to see if this changes
             mob_count -= 1
             self.kill()
-
 
     def collide_with_walls(self, sprite, group, dir):
         """
@@ -129,4 +157,3 @@ class Mob(pg.sprite.Sprite):
         https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023
         """
         return one.hit_rect.colliderect(two.rect)
-
