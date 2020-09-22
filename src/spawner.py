@@ -5,7 +5,8 @@
 
 import pygame as pg
 from random import randint, random
-from src.sprites import Mob, Player
+from src.sprites.mob import Mob
+from src.sprites.player import Player
 
 vec = pg.math.Vector2
 
@@ -13,7 +14,7 @@ vec = pg.math.Vector2
 class Spawner(pg.sprite.Sprite):
     """
     Spawner objects are placed on the map; when the player is within a certain distance,
-    and if there are not already too many mobs present, the spawner will spawn mobs. 
+    and if there are not already too many mobs present, the spawner will spawn mobs.
     """
 
     def __init__(self, game, col, row):
@@ -26,7 +27,7 @@ class Spawner(pg.sprite.Sprite):
     def update(self):
         """
         Tracks distance to player and calls spawn function
-        when appropriate. 
+        when appropriate.
         """
         self.target_dist = self.game.player.pos - self.pos
         if (
@@ -40,7 +41,7 @@ class Spawner(pg.sprite.Sprite):
     def spawn(self):
         """
         Spawns enemies pseudo-randomly in an 8x8 tile area
-        centered on the Spawner. 
+        centered on the Spawner.
         """
         max_count = randint(
             self.game.settings["gen"]["spawn_min"],
@@ -54,9 +55,25 @@ class Spawner(pg.sprite.Sprite):
                         break
                     elif self.game.map.level_data[row][col] == "." and random() < 0.25:
                         if random() < 0.5:
-                            Mob(self.game, "sleeper", col, row)
+                            Mob(
+                                self.game.settings,
+                                self.game.all_sprites,
+                                self.game.mobs,
+                                self.game.client.data.mob_img,
+                                "sleeper",
+                                col,
+                                row,
+                            )
                         else:
-                            Mob(self.game, "thrall", col, row)
+                            Mob(
+                                self.game.settings,
+                                self.game.all_sprites,
+                                self.game.mobs,
+                                self.game.client.data.mob_img,
+                                "thrall",
+                                col,
+                                row,
+                            )
                         count += 1
         self.game.mob_count += count
         self.kill()
