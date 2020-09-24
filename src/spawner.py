@@ -38,7 +38,7 @@ class Spawner(pg.sprite.Sprite):
         self.cols, self.rows = col, row
         self.pos = vec(col, row) * settings["gen"]["tilesize"]
 
-    def update(self, player_pos: vec, mob_count: int, mob_max: int) -> int:
+    def update(self, player_pos: vec, mob_count, mob_max: int) -> int:
         """
         Tracks distance to player and calls spawn function
         when appropriate.
@@ -53,7 +53,7 @@ class Spawner(pg.sprite.Sprite):
             return self.spawn()
         return 0
 
-    def spawn(self):
+    def spawn(self) -> int:
         """
         Spawns enemies pseudo-randomly in an 8x8 tile area
         centered on the Spawner.

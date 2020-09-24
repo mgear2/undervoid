@@ -132,9 +132,10 @@ class Client:
         )
         if self.settings["gen"]["music"] == "on":
             pg.mixer.music.play(-1, 0.0)
-        self.menu = Menu(self)
-        self.menu.update_settings()
-        self.menu.run(self.menu.menu_main)
+        self.menu = Menu(
+            self.clock, self.screen, self.settings, self.data, self.font, self.character
+        )
+        self.character = self.menu.run(self.menu.menu_main)
 
     def show_go_screen(self):
         """

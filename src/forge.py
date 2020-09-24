@@ -74,13 +74,13 @@ class Forge:
         and places sprites onto the map based on text flags.
         """
         y_offset = i * 32
-        row_offset = y_offset * self.game.settings["gen"]["tilesize"]
+        row_offset = y_offset * self.settings["gen"]["tilesize"]
         for row, tiles in enumerate(piece):
             y = row
-            row *= self.game.settings["gen"]["tilesize"]
+            row *= self.settings["gen"]["tilesize"]
             for col, tile in enumerate(tiles):
                 x = col
-                col *= self.game.settings["gen"]["tilesize"]
+                col *= self.settings["gen"]["tilesize"]
                 if tile != " " and tile != "0":
                     self.floor_img = pg.transform.rotate(
                         choice(self.game.client.data.floor_img[biome]), choice(self.rot)
@@ -92,38 +92,38 @@ class Forge:
                     )
                 if tile == "0":
                     Wall(
-                        self.game.settings,
+                        self.settings,
                         self.game.all_sprites,
                         self.game.walls,
                         self.game.stops_bullets,
-                        vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
+                        vec(x, y + y_offset) * self.settings["gen"]["tilesize"],
                         False,
                     )
                 if tile == "1":
                     Wall(
-                        self.game.settings,
+                        self.settings,
                         self.game.all_sprites,
                         self.game.walls,
                         self.game.stops_bullets,
-                        vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
+                        vec(x, y + y_offset) * self.settings["gen"]["tilesize"],
                         True,
                     )
                 if tile == "y" and i == 0:
                     Wall(
-                        self.game.settings,
+                        self.settings,
                         self.game.all_sprites,
                         self.game.walls,
                         self.game.stops_bullets,
-                        vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
+                        vec(x, y + y_offset) * self.settings["gen"]["tilesize"],
                         False,
                     )
                 if tile == "x" and i == self.max_size - 1:
                     Wall(
-                        self.game.settings,
+                        self.settings,
                         self.game.all_sprites,
                         self.game.walls,
                         self.game.stops_bullets,
-                        vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
+                        vec(x, y + y_offset) * self.settings["gen"]["tilesize"],
                         True,
                     )
                     surface.blit(
@@ -131,17 +131,18 @@ class Forge:
                     )
                 if tile == "R" and i == 0:
                     Rift(
-                        self.game.settings,
+                        self.settings,
                         self.game.all_sprites,
                         self.game.walls,
                         self.game.stops_bullets,
                         self.game.client.data.rift_img,
-                        vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
+                        vec(x, y + y_offset) * self.settings["gen"]["tilesize"],
                     )
                 if tile == "P" and i == self.max_size - 1:
                     if self.game.init_player:
+                        print(self.game.client.character)
                         self.game.player = self.game.client.player = Player(
-                            self.game.settings,
+                            self.settings,
                             self.game.all_sprites,
                             self.game.player_sprite,
                             self.game.client.data.player_img[
@@ -151,7 +152,7 @@ class Forge:
                             row + row_offset,
                         )
                         self.game.pmove = self.game.client.pmove = pMove(
-                            self.game.settings,
+                            self.settings,
                             self.game.all_sprites,
                             self.game.pmove_sprite,
                             self.game.client.data.player_img[
@@ -177,7 +178,7 @@ class Forge:
                     )
                 if tile == "p":
                     Item(
-                        self.game.settings,
+                        self.settings,
                         self.game.all_sprites,
                         self.game.items,
                         self.game.client.data.item_img,
@@ -186,7 +187,7 @@ class Forge:
                         "hp",
                     )
 
-    def make_map(self):
+    def make_map(self) -> pg.Surface:
         """
         Used to access the map surface after map creation.
         """

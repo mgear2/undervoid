@@ -15,7 +15,6 @@ class Mob(pg.sprite.Sprite):
     def __init__(
         self, settings, all_sprites, mobs, game_client_data_mob_img, kind, x, y
     ):
-        # self.game = game
         self.settings = settings
         self.kind = kind
         self._layer = self.settings["layer"]["mob"]
@@ -63,7 +62,7 @@ class Mob(pg.sprite.Sprite):
         item_group,
         game_client_data_item_img,
         mob_count,
-    ):
+    ) -> int:
         self.target_dist = player_pos - self.pos
         self.rot = self.target_dist.angle_to(vec(1, 0))
         self.image = pg.transform.rotate(
@@ -121,7 +120,6 @@ class Mob(pg.sprite.Sprite):
                     item[0],
                     item[1],
                 )
-            # Test to see if this changes
             self.kill()
             return -1
         return 0
