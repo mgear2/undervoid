@@ -17,7 +17,7 @@ class Menu:
         self.menu_credits = ["back"]
         self.menu_characters = client.data.characters + ["back"]
 
-    def run(self, menu_items):
+    def run(self, menu_items: list):
         """
         Menu loop: renders the menu options to screen and tracks which option the player has highlighted.
         """
@@ -89,7 +89,7 @@ class Menu:
             pg.display.update()
             self.client.clock.tick_busy_loop(self.client.settings["gen"]["fps"])
 
-    def menu_event(self, event):
+    def menu_event(self, event: pg.event):
         if event.key == pg.K_RETURN:
             self.selected = self.selected.split(" ")[0].strip(": ")
             if self.selected == "new":

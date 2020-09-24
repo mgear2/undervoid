@@ -17,7 +17,7 @@ class Spawner(pg.sprite.Sprite):
     and if there are not already too many mobs present, the spawner will spawn mobs.
     """
 
-    def __init__(self, game, col, row):
+    def __init__(self, game, col: int, row: int):
         self.game = game
         self.groups = game.spawners
         pg.sprite.Sprite.__init__(self, self.groups)

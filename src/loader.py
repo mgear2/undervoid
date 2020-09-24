@@ -4,11 +4,12 @@
 # distribution of this software for license terms.
 
 import pygame as pg
+import ruamel.yaml
 from os import path
 
 
 class Loader:
-    def __init__(self, settings):
+    def __init__(self, settings: ruamel.yaml.comments.CommentedMap):
         self.settings = settings
 
     def build_path(self):
@@ -23,7 +24,7 @@ class Loader:
         self.sound_folder = path.join(self.data_folder, "sounds")
         self.fonts_folder = path.join(self.data_folder, "fonts")
 
-    def load_img(self, source, scale, alpha):
+    def load_img(self, source: str, scale: tuple, alpha: bool):
         """
         Used to load images from source files, scale them, and convert() or convert_alpha() as specified.
         """

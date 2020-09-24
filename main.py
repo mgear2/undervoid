@@ -111,7 +111,7 @@ class Client:
                     self.menu.menu_event(event)
 
     # Text Renderer https://www.sourcecodester.com/tutorials/python/11784/python-pygame-simple-main-menu-selection.html
-    def text_format(self, message: str, textFont: str, textSize: int, textColor=[0,0,0,0]) -> pg.font.Font:
+    def text_format(self, message: str, textFont: str, textSize: int, textColor=[0,0,0]) -> pg.font.Font:
         """
         Returns a pygame text ready to be drawn to screen.
         """

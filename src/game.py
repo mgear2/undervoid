@@ -86,7 +86,7 @@ class Game:
             self.cursor_sprite,
             self.client.data.cursor_img,
         )
-        self.camera = Camera(self, self.map.width, self.map.height, self.cursor)
+        self.camera = Camera(self.settings, self.map.width, self.map.height, self.cursor)
         self.mob_count = 0
         self.mob_max = self.settings["gen"]["mob_max"]
 

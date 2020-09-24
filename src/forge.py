@@ -56,7 +56,7 @@ class Forge:
             for line in f:
                 self.data[piece].append(line.strip("\n"))
 
-    def build_lvl(self, biome: int):
+    def build_lvl(self, biome: str):
         """
         Randomly grabs dungeon pieces and renders them onto the map surface next to one another.
         """
@@ -66,7 +66,7 @@ class Forge:
             self.render(self.temp_surface, self.data[piece], biome, i)
             self.level_data.extend(self.data[piece])
 
-    def render(self, surface, piece, biome, i):
+    def render(self, surface: pg.Surface, piece: list, biome: str, i: int):
         """
         Renders the map from the textual data onto the pygame surface tile by tile
         and places sprites onto the map based on text flags.
