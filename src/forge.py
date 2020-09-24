@@ -6,7 +6,11 @@
 import pygame as pg
 from random import choice, random
 from os import path
-from src.sprites import Mob, Wall, Player, pMove, Item, Rift
+from src.sprites.sprites import *
+from src.sprites.pmove import pMove
+from src.sprites.player import Player
+from src.sprites.item import Item
+from src.sprites.wall import Wall, Rift
 from src.spawner import Spawner
 
 vec = pg.math.Vector2
@@ -15,19 +19,19 @@ vec = pg.math.Vector2
 class Forge:
     """
     Forge class can be used to initalize and render map surfaces from text files.
-    Forge is capable of splicing together multiple preset dungeon pieces. 
+    Forge is capable of splicing together multiple preset dungeon pieces.
     """
 
-    def __init__(self, game, size):
+    def __init__(self, game, size: int):
         self.game = game
         self.data = {}
         self.level_data = []
         self.rot = [0, 90, 180, 270]
         self.max_size = size
 
-    def new_surface(self, tiles_wide, tiles_high):
+    def new_surface(self, tiles_wide: int, tiles_high: int):
         """
-        Creates a new surface, sized according to game settings. 
+        Creates a new surface, sized according to game settings.
         """
         self.width = tiles_wide * self.game.settings["gen"]["tilesize"]
         self.height = tiles_high * self.game.settings["gen"]["tilesize"] * self.max_size
@@ -38,23 +42,23 @@ class Forge:
 
     def load_all(self):
         """
-        Loads all textual data from map piece files. 
+        Loads all textual data from map piece files.
         """
         for piece in self.game.settings["map"]["basic"]:
             self.load(piece)
 
-    def load(self, piece):
+    def load(self, piece: int):
         """
-        Loads textual data from a given map piece file. 
+        Loads textual data from a given map piece file.
         """
         self.data[piece] = []
         with open(path.join(self.game.client.data.map_folder, piece), "rt") as f:
             for line in f:
                 self.data[piece].append(line.strip("\n"))
 
-    def build_lvl(self, biome):
+    def build_lvl(self, biome: int):
         """
-        Randomly grabs dungeon pieces and renders them onto the map surface next to one another. 
+        Randomly grabs dungeon pieces and renders them onto the map surface next to one another.
         """
         for i in range(0, self.max_size):
             # https://stackoverflow.com/questions/4859292/how-to-get-a-random-value-in-python-dictionary
@@ -65,7 +69,7 @@ class Forge:
     def render(self, surface, piece, biome, i):
         """
         Renders the map from the textual data onto the pygame surface tile by tile
-        and places sprites onto the map based on text flags. 
+        and places sprites onto the map based on text flags.
         """
         y_offset = i * 32
         row_offset = y_offset * self.game.settings["gen"]["tilesize"]
@@ -86,25 +90,37 @@ class Forge:
                     )
                 if tile == "0":
                     Wall(
-                        self.game,
+                        self.game.settings,
+                        self.game.all_sprites,
+                        self.game.walls,
+                        self.game.stops_bullets,
                         vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
                         False,
                     )
                 if tile == "1":
                     Wall(
-                        self.game,
+                        self.game.settings,
+                        self.game.all_sprites,
+                        self.game.walls,
+                        self.game.stops_bullets,
                         vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
                         True,
                     )
                 if tile == "y" and i == 0:
                     Wall(
-                        self.game,
+                        self.game.settings,
+                        self.game.all_sprites,
+                        self.game.walls,
+                        self.game.stops_bullets,
                         vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
                         False,
                     )
                 if tile == "x" and i == self.max_size - 1:
                     Wall(
-                        self.game,
+                        self.game.settings,
+                        self.game.all_sprites,
+                        self.game.walls,
+                        self.game.stops_bullets,
                         vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
                         True,
                     )
@@ -113,16 +129,34 @@ class Forge:
                     )
                 if tile == "R" and i == 0:
                     Rift(
-                        self.game,
+                        self.game.settings,
+                        self.game.all_sprites,
+                        self.game.walls,
+                        self.game.stops_bullets,
+                        self.game.client.data.rift_img,
                         vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
                     )
                 if tile == "P" and i == self.max_size - 1:
                     if self.game.init_player:
                         self.game.player = self.game.client.player = Player(
-                            self.game, col, row + row_offset
+                            self.game.settings,
+                            self.game.all_sprites,
+                            self.game.player_sprite,
+                            self.game.client.data.player_img[
+                                self.game.client.character
+                            ]["magic"],
+                            col,
+                            row + row_offset,
                         )
                         self.game.pmove = self.game.client.pmove = pMove(
-                            self.game, col, row + row_offset
+                            self.game.settings,
+                            self.game.all_sprites,
+                            self.game.pmove_sprite,
+                            self.game.client.data.player_img[
+                                self.game.client.character
+                            ]["move"],
+                            col,
+                            row + row_offset,
                         )
                         self.game.init_player = False
                     else:
@@ -132,7 +166,10 @@ class Forge:
                     Spawner(self.game, x, y + y_offset)
                 if tile == "p":
                     Item(
-                        self.game,
+                        self.game.settings,
+                        self.game.all_sprites,
+                        self.game.items,
+                        self.game.client.data.item_img,
                         vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
                         "redpotion",
                         "hp",
@@ -140,6 +177,6 @@ class Forge:
 
     def make_map(self):
         """
-        Used to access the map surface after map creation. 
+        Used to access the map surface after map creation.
         """
         return self.temp_surface

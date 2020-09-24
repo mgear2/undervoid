@@ -13,7 +13,7 @@ class Loader:
 
     def build_path(self):
         """
-        Builds a directory structure for the game. 
+        Builds a directory structure for the game.
         """
         self.game_folder = path.dirname(__file__)
         self.data_folder = path.join(self.game_folder, "data")
@@ -25,7 +25,7 @@ class Loader:
 
     def load_img(self, source, scale, alpha):
         """
-        Used to load images from source files, scale them, and convert() or convert_alpha() as specified. 
+        Used to load images from source files, scale them, and convert() or convert_alpha() as specified.
         """
         img = pg.image.load(path.join(self.img_folder, source))
         img = pg.transform.scale(img, scale)
@@ -37,9 +37,9 @@ class Loader:
 
     def load_data(self):
         """
-        Initializes and populates lists and dictionaries of game data. 
-        Initializes mouse settings and game icon. 
-        Still stands to be refactored and optimized further. 
+        Initializes and populates lists and dictionaries of game data.
+        Initializes mouse settings and game icon.
+        Still stands to be refactored and optimized further.
         """
         self.cursor_img = []
         self.weapon_vfx = []
