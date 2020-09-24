@@ -6,13 +6,20 @@
 import pygame as pg
 import ruamel.yaml
 
+
 class Camera:
     """
     Camera class is used to center the game window on the player
     and move the map and contained entities relative to the player.
     """
 
-    def __init__(self, settings: ruamel.yaml.comments.CommentedMap, width: int, height: int, cursor: pg.sprite.Sprite):
+    def __init__(
+        self,
+        settings: ruamel.yaml.comments.CommentedMap,
+        width: int,
+        height: int,
+        cursor: pg.sprite.Sprite,
+    ):
         self.settings = settings
         self.camera = pg.Rect(0, 0, width, height)
         self.width = width

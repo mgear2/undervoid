@@ -66,13 +66,13 @@ class Game:
         for spawner in self.spawners:
             spawner.kill()
         if level == "gen":
-            self.map = Forge(self, self.settings["lvl"]["pieces"])
+            self.map = Forge(self, self.settings, self.settings["lvl"]["pieces"])
             self.map.load_all()
             self.map.new_surface(
                 self.settings["lvl"]["tiles_wide"], self.settings["lvl"]["tiles_high"]
             )
         else:
-            self.map = Forge(self, 1)
+            self.map = Forge(self, self.settings)
             self.map.load(level)
             self.map.new_surface(128, 128)
             if level == "temple.txt" and not self.init_player:
@@ -86,7 +86,9 @@ class Game:
             self.cursor_sprite,
             self.client.data.cursor_img,
         )
-        self.camera = Camera(self.settings, self.map.width, self.map.height, self.cursor)
+        self.camera = Camera(
+            self.settings, self.map.width, self.map.height, self.cursor
+        )
         self.mob_count = 0
         self.mob_max = self.settings["gen"]["mob_max"]
 
@@ -104,17 +106,18 @@ class Game:
         self.stops_bullets.update(
             self.client.player.pos, self.level, self.client.data.biomes
         )
-        self.mobs.update(
-            self.client.player.pos,
-            self.client.data.mob_img,
-            self.client.data.sounds,
-            self.client.dt,
-            self.walls,
-            self.graves,
-            self.items,
-            self.client.data.item_img,
-            self.mob_count,
-        )
+        for mob in self.mobs:
+            self.mob_count += mob.update(
+                self.client.player.pos,
+                self.client.data.mob_img,
+                self.client.data.sounds,
+                self.client.dt,
+                self.walls,
+                self.graves,
+                self.items,
+                self.client.data.item_img,
+                self.mob_count,
+            )
         self.bullets.update(self.client.dt)
         self.graves.update()
         self.items.update()
@@ -132,9 +135,11 @@ class Game:
         )
         self.cursor_sprite.update()
         self.weaponvfx_sprite.update()
-
         self.pmove_sprite.update(self.client.player.vel, self.client.player.pos)
-        self.spawners.update()
+        for spawner in self.spawners:
+            self.mob_count += spawner.update(
+                self.player.pos, self.mob_count, self.mob_max
+            )
         self.camera.update(self.client.player)
         # player hits items
         hits = pg.sprite.spritecollide(

@@ -4,6 +4,7 @@
 # distribution of this software for license terms.
 
 import pygame as pg
+import ruamel.yaml
 from random import choice, random
 from os import path
 from src.sprites.sprites import *
@@ -22,8 +23,9 @@ class Forge:
     Forge is capable of splicing together multiple preset dungeon pieces.
     """
 
-    def __init__(self, game, size: int):
+    def __init__(self, game, settings: ruamel.yaml.comments.CommentedMap, size=1):
         self.game = game
+        self.settings = settings
         self.data = {}
         self.level_data = []
         self.rot = [0, 90, 180, 270]
@@ -33,8 +35,8 @@ class Forge:
         """
         Creates a new surface, sized according to game settings.
         """
-        self.width = tiles_wide * self.game.settings["gen"]["tilesize"]
-        self.height = tiles_high * self.game.settings["gen"]["tilesize"] * self.max_size
+        self.width = tiles_wide * self.settings["gen"]["tilesize"]
+        self.height = tiles_high * self.settings["gen"]["tilesize"] * self.max_size
         # https://stackoverflow.com/questions/328061/how-to-make-a-surface-with-a-transparent-background-in-pygame#328067
         self.temp_surface = pg.Surface(
             (self.width, self.height), pg.SRCALPHA, 32
@@ -44,7 +46,7 @@ class Forge:
         """
         Loads all textual data from map piece files.
         """
-        for piece in self.game.settings["map"]["basic"]:
+        for piece in self.settings["map"]["basic"]:
             self.load(piece)
 
     def load(self, piece: int):
@@ -163,14 +165,23 @@ class Forge:
                         self.game.player.place(col, row + row_offset)
                         self.game.pmove.place(col, row + row_offset)
                 if tile == "M":
-                    Spawner(self.game, x, y + y_offset)
+                    Spawner(
+                        self.game.map.level_data,
+                        self.game.client.data.mob_img,
+                        self.game.all_sprites,
+                        self.game.spawners,
+                        self.game.mobs,
+                        self.settings,
+                        x,
+                        y + y_offset,
+                    )
                 if tile == "p":
                     Item(
                         self.game.settings,
                         self.game.all_sprites,
                         self.game.items,
                         self.game.client.data.item_img,
-                        vec(x, y + y_offset) * self.game.settings["gen"]["tilesize"],
+                        vec(x, y + y_offset) * self.settings["gen"]["tilesize"],
                         "redpotion",
                         "hp",
                     )

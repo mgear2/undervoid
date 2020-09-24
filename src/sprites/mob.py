@@ -122,8 +122,9 @@ class Mob(pg.sprite.Sprite):
                     item[1],
                 )
             # Test to see if this changes
-            mob_count -= 1
             self.kill()
+            return -1
+        return 0
 
     def collide_with_walls(self, sprite, group, dir):
         """
