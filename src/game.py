@@ -28,6 +28,12 @@ class Game:
         specifies variables to be used for morphing background color.
         """
         self.client = client
+        self.player, self.pmove, self.character, self.map = (
+            self.client.player,
+            None,
+            self.client.character,
+            None,
+        )
         with open("settings.yaml") as f:
             self.settings = yaml.load(f)
             f.close()
@@ -52,7 +58,7 @@ class Game:
         self.number_of_steps = self.change_every_x_seconds * self.settings["gen"]["fps"]
         self.step = 1
 
-    def level(self, level, biome):
+    def level(self, target_lvl, biome):
         """
         Utilizes the Forge class to build and returns a level with the desired specifications.
         If the level is "gen", a new level will be generated. Otherwise, Forge will attempt to
@@ -65,18 +71,40 @@ class Game:
             wall.kill()
         for spawner in self.spawners:
             spawner.kill()
-        if level == "gen":
-            self.map = Forge(self, self.settings, self.settings["lvl"]["pieces"])
-            self.map.load_all()
-            self.map.new_surface(
-                self.settings["lvl"]["tiles_wide"], self.settings["lvl"]["tiles_high"]
+        if target_lvl == "gen":
+            lvl_pieces, surf_w, surf_h = (
+                self.settings["lvl"]["pieces"],
+                self.settings["lvl"]["tiles_wide"],
+                self.settings["lvl"]["tiles_high"],
             )
         else:
-            self.map = Forge(self, self.settings)
-            self.map.load(level)
-            self.map.new_surface(128, 128)
-            if level == "temple.txt" and not self.init_player:
+            lvl_pieces, surf_w, surf_h = 1, 128, 128
+        self.map = Forge(
+            self.client.data,
+            self.all_sprites,
+            self.walls,
+            self.stops_bullets,
+            self.character,
+            self.player_sprite,
+            self.pmove_sprite,
+            self.init_player,
+            self.player,
+            self.pmove,
+            self.items,
+            self.spawners,
+            self.mobs,
+            self.settings,
+            lvl_pieces,
+        )
+        if target_lvl == "gen":
+            self.map.load_all()
+        else:
+            self.map.load(target_lvl)
+            if target_lvl == "temple.txt" and not self.init_player:
                 self.client.player.hp = self.client.player.max_hp
+        self.map.new_surface(surf_w, surf_h)
+        if self.init_player:
+            self.init_player = False
         self.map.build_lvl(biome)
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
@@ -89,6 +117,8 @@ class Game:
         self.camera = Camera(
             self.settings, self.map.width, self.map.height, self.cursor
         )
+        self.player = self.client.player = self.map.player
+        self.pmove = self.client.pmove = self.map.pmove
         self.mob_count = 0
         self.mob_max = self.settings["gen"]["mob_max"]
 
