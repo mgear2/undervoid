@@ -13,7 +13,6 @@ vec = pg.math.Vector2
 class Bullet(pg.sprite.Sprite):
     """
     Bullet class provides bullet sprites with image, velocity and lifetime tracking.
-    Originally built off code from https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023.
     """
 
     def __init__(

@@ -16,9 +16,6 @@ vec = pg.math.Vector2
 def collide_hit_rect(one: pg.sprite.Sprite, two: pg.sprite.Sprite):
     """
     Used for hit_rect collision:
-
-    Drawn largely from:
-    https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023
     """
     return one.hit_rect.colliderect(two.rect)
 
@@ -35,9 +32,6 @@ def draw_hp(
 ):
     """
     Used to draw mob and player health bars.
-
-    Inspired by:
-    https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023
     """
     if pct < 0:
         pct = 0

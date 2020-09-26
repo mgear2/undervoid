@@ -15,7 +15,6 @@ vec = pg.math.Vector2
 class Mob(pg.sprite.Sprite):
     """
     Mob class provides mob sprites and tracks mob instance data.
-    Originally built off code from https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023.
     """
 
     def __init__(
@@ -166,8 +165,5 @@ class Mob(pg.sprite.Sprite):
     def collide_hit_rect(self, one: pg.sprite.Sprite, two: pg.sprite.Sprite):
         """
         Used for hit_rect collision:
-
-        Drawn largely from:
-        https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023
         """
         return one.hit_rect.colliderect(two.rect)
