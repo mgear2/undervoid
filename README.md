@@ -111,7 +111,7 @@ That being said, my formal testing for this project was sorely lacking, especial
 
 ### Known Issues
 
-* general screentearing: some monitors exhibit screen tearing when moving around. Research suggests this is largely a pygame issue. Considering a switch to the godot engine, which would solve this issue. 
+* general screentearing: some monitors exhibit screen tearing when moving around. Research suggests this is largely a pygame issue. 
 * somewhat rare: the player spawns into a level a few tiles away from where they are supposed to and gets stuck in a wall, requiring a game restart. 
 
 ## Acknowledgements  <a name="ack"></a>
