@@ -1,5 +1,13 @@
+# Copyright (c) 2020
+# [This program is licensed under the "MIT License"]
+# Please see the file LICENSE in the source
+# distribution of this software for license terms.
+
 import pygame as pg
+import ruamel.yaml
 import pytweening as tween
+
+vec = pg.math.Vector2
 
 
 class Item(pg.sprite.Sprite):
@@ -10,13 +18,13 @@ class Item(pg.sprite.Sprite):
 
     def __init__(
         self,
-        settings,
-        all_sprites,
-        item_group,
-        game_client_data_item_img,
-        pos,
+        settings: ruamel.yaml.comments.CommentedMap,
+        all_sprites: pg.sprite.LayeredUpdates,
+        item_group: pg.sprite.Group,
+        game_client_data_item_img: pg.Surface,
+        pos: vec,
         img,
-        kind,
+        kind: str,
     ):
         self.settings = settings
         self._layer = self.settings["layer"]["item"]

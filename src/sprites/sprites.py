@@ -1,4 +1,4 @@
-# Copyright (c) 2019 Matthew Geary
+# Copyright (c) 2020
 # [This program is licensed under the "MIT License"]
 # Please see the file LICENSE in the source
 # distribution of this software for license terms.
@@ -13,7 +13,7 @@ from src.sprites.mob import Mob
 vec = pg.math.Vector2
 
 
-def collide_hit_rect(one, two):
+def collide_hit_rect(one: pg.sprite.Sprite, two: pg.sprite.Sprite):
     """
     Used for hit_rect collision:
 
@@ -23,7 +23,16 @@ def collide_hit_rect(one, two):
     return one.hit_rect.colliderect(two.rect)
 
 
-def draw_hp(client, surface, x, y, pct, b_len, b_height, player):
+def draw_hp(
+    client,
+    surface: pg.Surface,
+    x,
+    y: int,
+    pct: float,
+    b_len,
+    b_height: int,
+    player: bool,
+):
     """
     Used to draw mob and player health bars.
 
@@ -87,7 +96,7 @@ def draw_fps(client):
     )
 
 
-def collide_with_walls(sprite, group, dir):
+def collide_with_walls(sprite: pg.sprite.Sprite, group: pg.sprite.Group, dir: str):
     """
     Used for collision detection between player/mobs and walls. Mobs are
     currently set to not be restricted by Void (invisible) walls, while the player is.

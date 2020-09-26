@@ -1,5 +1,13 @@
+# Copyright (c) 2020
+# [This program is licensed under the "MIT License"]
+# Please see the file LICENSE in the source
+# distribution of this software for license terms.
+
 import pygame as pg
+import ruamel.yaml
 from random import choice
+
+vec = pg.math.Vector2
 
 
 class Weapon_VFX(pg.sprite.Sprite):
@@ -10,7 +18,12 @@ class Weapon_VFX(pg.sprite.Sprite):
     """
 
     def __init__(
-        self, settings, all_sprites, weaponvfx_sprite, game_client_data_weaponvfx, pos
+        self,
+        settings: ruamel.yaml.comments.CommentedMap,
+        all_sprites: pg.sprite.LayeredUpdates,
+        weaponvfx_sprite: pg.sprite.Group,
+        game_client_data_weaponvfx: list,
+        pos: vec,
     ):
         self.settings = settings
         self._layer = self.settings["layer"]["vfx"]
@@ -25,8 +38,7 @@ class Weapon_VFX(pg.sprite.Sprite):
             ),
         )
         self.rect = self.image.get_rect()
-        self.pos = pos
-        self.rect.center = pos
+        self.pos = self.rect.center = pos
         self.spawn_time = pg.time.get_ticks()
 
     def update(self):

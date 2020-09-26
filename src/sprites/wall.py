@@ -1,5 +1,13 @@
+# Copyright (c) 2020
+# [This program is licensed under the "MIT License"]
+# Please see the file LICENSE in the source
+# distribution of this software for license terms.
+
 import pygame as pg
+import ruamel.yaml
 from random import choice
+
+vec = pg.math.Vector2
 
 
 class Wall(pg.sprite.Sprite):
@@ -12,12 +20,12 @@ class Wall(pg.sprite.Sprite):
 
     def __init__(
         self,
-        settings,
-        all_sprites,
+        settings: ruamel.yaml.comments.CommentedMap,
+        all_sprites: pg.sprite.LayeredUpdates,
         walls_group,
-        stops_bullets_group,
-        pos,
-        stops_bullets,
+        stops_bullets_group: pg.sprite.Group,
+        pos: vec,
+        stops_bullets: bool,
     ):
         self.settings = settings
         self._layer = self.settings["layer"]["wall"]
@@ -48,12 +56,12 @@ class Rift(Wall):
 
     def __init__(
         self,
-        settings,
-        all_sprites,
+        settings: ruamel.yaml.comments.CommentedMap,
+        all_sprites: pg.sprite.LayeredUpdates,
         walls_group,
-        stops_bullets_group,
-        game_client_data_rift_img,
-        pos,
+        stops_bullets_group: pg.sprite.Group,
+        game_client_data_rift_img: pg.Surface,
+        pos: vec,
     ):
         Wall.__init__(
             self, settings, all_sprites, walls_group, stops_bullets_group, pos, "Rift"
@@ -70,7 +78,9 @@ class Rift(Wall):
             return True
         return False
 
-    def update(self, player_pos, game_level, game_client_data_biomes):
+    def update(
+        self, player_pos: vec, game_level: "Game.level()", game_client_data_biomes: list
+    ):
         if self.check_usable(player_pos):
             keys = pg.key.get_pressed()
             if keys[pg.K_e]:
