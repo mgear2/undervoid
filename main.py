@@ -24,7 +24,7 @@ class Client:
     def __init__(self):
         pg.init()
         pg.mixer.init()
-        self.game = self.character = self.coins = self.dt = self.sounds = None
+        self.game = self.character = self.coins = self.dt = None
         with open("settings.yaml") as f:
             self.settings = yaml.load(f)
             f.close()
@@ -143,7 +143,7 @@ class Client:
         This method is used upon player death to restart at the main menu.
         """
         self.show_start_screen()
-        g = Game(c.data, c.character, c.dt, c.sounds)
+        g = Game(c.data, c.character, c.dt)
         self.run(g)
 
     def run(self, game: Game):
@@ -178,7 +178,7 @@ class Client:
 if __name__ == "__main__":
     c = Client()
     c.show_start_screen()
-    g = Game(c.data, c.character, c.dt, c.sounds)
+    g = Game(c.data, c.character, c.dt)
     while True:
         c.run(g)
         c.show_go_screen()

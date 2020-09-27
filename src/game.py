@@ -14,6 +14,7 @@ from src.sprites.cursor import Cursor
 from src.forge import Forge
 from src.spawner import Spawner
 from src.camera import Camera
+from src.loader import Loader
 from random import random, randint
 
 yaml = ruamel.yaml.YAML()
@@ -24,12 +25,12 @@ class Game:
     Overarching Game class; loads and manipulates game data and runs the main game loop.
     """
 
-    def __init__(self, data, character, dt, sounds):
+    def __init__(self, data: Loader, character: str, dt: float):
         """
         Initializes sprite groups, builds initial level,
         specifies variables to be used for morphing background color.
         """
-        self.data, self.character, self.dt, self.sounds = data, character, dt, sounds
+        self.data, self.character, self.dt = data, character, dt
         self.player, self.pmove, self.map = (
             None,
             None,
@@ -59,7 +60,7 @@ class Game:
         self.number_of_steps = self.change_every_x_seconds * self.settings["gen"]["fps"]
         self.step = 1
 
-    def level(self, target_lvl, biome):
+    def level(self, target_lvl, biome: str):
         """
         Utilizes the Forge class to build and returns a level with the desired specifications.
         If the level is "gen", a new level will be generated. Otherwise, Forge will attempt to
@@ -134,7 +135,7 @@ class Game:
         self.player, self.pmove = self.map.player, self.map.pmove
         self.mob_count, self.mob_max = 0, self.settings["gen"]["mob_max"]
 
-    def update(self, dt) -> (int, int):
+    def update(self, dt: float) -> (int, int):
         """
         Updates sprites, spawners and camera.
         Checks for player hitting items and resolves hits.
@@ -143,8 +144,6 @@ class Game:
         Morphs the background color one step.
         Returns player hp and coins.
         """
-        # self.all_sprites.update()
-
         self.walls.update(self.player.pos, self.level, self.data.biomes)
         self.stops_bullets.update(self.player.pos, self.level, self.data.biomes)
         for mob in self.mobs:
@@ -188,14 +187,14 @@ class Game:
             if hit.kind == "hp" and self.player.hp < self.settings["player"]["hp"]:
                 hit.kill()
                 if self.settings["gen"]["sound"] == "on":
-                    self.sounds["treasure02"].play()
+                    self.data.sounds["treasure02"].play()
                 self.player.add_hp(
                     self.settings["items"]["potions"]["red"]["hp"] * self.player.max_hp
                 )
             if hit.kind == "gp":
                 hit.kill()
                 if self.settings["gen"]["sound"] == "on":
-                    self.sounds["treasure03"].play()
+                    self.data.sounds["treasure03"].play()
                 self.player.coins += 1
         # mobs hitting player
         hits = pg.sprite.spritecollide(self.player, self.mobs, False, collide_hit_rect)
@@ -209,7 +208,7 @@ class Game:
                     self.settings["mob"]["thrall"]["knockback"], 0
                 ).rotate(-hits[0].rot)
                 if self.settings["gen"]["sound"] == "on":
-                    self.sounds[(choice(self.settings["hit_sounds"]))].play()
+                    self.data.sounds[(choice(self.settings["hit_sounds"]))].play()
             elif random() < 0.5:  # enemies get bounced back on ~50% of failed hits
                 hit.pos += vec(self.settings["mob"]["thrall"]["knockback"], 0).rotate(
                     hits[0].rot
