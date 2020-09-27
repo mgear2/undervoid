@@ -23,8 +23,8 @@ class pMove(pg.sprite.Sprite):
         settings: ruamel.yaml.comments.CommentedMap,
         sprite_groups: Grouping,
         player_img: pg.Surface,
-        x,
-        y: int,
+        x=0,
+        y=0,
     ):
         self._layer = settings["layer"]["player_move"]
         self.groups = sprite_groups.all_sprites, sprite_groups.pmove_sprite

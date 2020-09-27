@@ -77,15 +77,11 @@ class Game:
                 self.settings,
                 self.sprite_groups,
                 self.data.player_img[self.character]["magic"],
-                0,
-                0,
             )
             self.pmove = pMove(
                 self.settings,
                 self.sprite_groups,
                 self.data.player_img[self.character]["move"],
-                0,
-                0,
             )
         self.map = Forge(
             self.settings,

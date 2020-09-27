@@ -24,8 +24,8 @@ class Player(pg.sprite.Sprite):
         settings: ruamel.yaml.comments.CommentedMap,
         sprite_groups: Grouping,
         player_img: pg.Surface,
-        x,
-        y: int,
+        x=0,
+        y=0,
     ):
         self.settings, self._layer, self.sprite_groups = (
             settings,
