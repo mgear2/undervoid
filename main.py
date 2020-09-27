@@ -25,18 +25,17 @@ class Client:
         pg.init()
         pg.mixer.init()
         self.character = self.coins = self.dt = None
+        self.clock = pg.time.Clock()
         with open("settings.yaml") as f:
             self.settings = yaml.load(f)
             f.close()
         self.init_game_window()
         pg.display.set_caption(self.settings["gen"]["title"])
-        self.clock = pg.time.Clock()
         pg.key.set_repeat(100, 100)
         self.data = Loader(self.settings)
         self.data.build_path()
         self.data.load_data()
         self.hp = self.max_hp = self.settings["player"]["hp"]
-
         pg.mouse.set_visible(False)
         pg.display.set_icon(self.data.undervoid_icon)
 

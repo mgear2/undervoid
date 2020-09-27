@@ -19,8 +19,7 @@ class Item(pg.sprite.Sprite):
     def __init__(
         self,
         settings: ruamel.yaml.comments.CommentedMap,
-        all_sprites: pg.sprite.LayeredUpdates,
-        item_group: pg.sprite.Group,
+        sprite_groups: (pg.sprite.Group),
         game_client_data_item_img: pg.Surface,
         pos: vec,
         img,
@@ -30,7 +29,7 @@ class Item(pg.sprite.Sprite):
         self._layer = self.settings["layer"]["item"]
         self.bob_range = self.settings["items"]["bob_range"]
         self.bob_speed = self.settings["items"]["bob_speed"]
-        self.groups = all_sprites, item_group
+        self.groups = sprite_groups
         pg.sprite.Sprite.__init__(self, self.groups)
         self.image = game_client_data_item_img[img]
         self.kind = kind

@@ -123,8 +123,7 @@ class Mob(pg.sprite.Sprite):
                 item = choice(self.items)
                 Item(
                     self.settings,
-                    self.groups[0],
-                    self.sprite_grouping.items,
+                    (self.sprite_grouping.all_sprites, self.sprite_grouping.items),
                     game_client_data_item_img,
                     self.pos,
                     item[0],

@@ -10,6 +10,7 @@ from src.sprites.sprites import *
 from src.sprites.grouping import Grouping
 from src.sprites.bullet import Bullet
 from src.sprites.weapon_vfx import Weapon_VFX
+from src.sprites.legs import Legs
 
 vec = pg.math.Vector2
 
@@ -24,6 +25,7 @@ class Player(pg.sprite.Sprite):
         settings: ruamel.yaml.comments.CommentedMap,
         sprite_groups: Grouping,
         player_img: pg.Surface,
+        legs_img: pg.Surface,
         x=0,
         y=0,
     ):
@@ -50,11 +52,17 @@ class Player(pg.sprite.Sprite):
             self.settings["gen"]["tilesize"] * self.settings["player"]["speed_mult"]
         )
         self.coins = 0
+        self.legs = Legs(
+            self.settings,
+            self.sprite_groups,
+            legs_img,
+        )
 
     def place(self, x, y: int):
         self.pos = vec(x, y)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
+        self.legs.place(x, y)
 
     def get_keys(
         self,

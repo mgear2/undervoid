@@ -9,7 +9,6 @@ from random import choice, random
 from os import path
 from src.sprites.sprites import *
 from src.sprites.grouping import Grouping
-from src.sprites.legs import Legs
 from src.sprites.player import Player
 from src.sprites.item import Item
 from src.sprites.wall import Wall, Rift
@@ -32,7 +31,6 @@ class Forge:
         client_data: Loader,
         character: str,
         player: Player,
-        legs: Legs,
         lvl_pieces=1,
     ):
         (
@@ -40,14 +38,12 @@ class Forge:
             self.sprite_groups,
             self.character,
             self.player,
-            self.legs,
             self.settings,
         ) = (
             client_data,
             sprite_groups,
             character,
             player,
-            legs,
             settings,
         )
         self.forge_data, self.level_data, self.rot, self.max_size = (
@@ -162,7 +158,7 @@ class Forge:
                 if tile == "p":
                     Item(
                         self.settings,
-                        self.sprite_groups,
+                        (self.sprite_groups.all_sprites, self.sprite_groups.items),
                         self.client_data.item_img,
                         vec(x, y + y_offset) * self.settings["gen"]["tilesize"],
                         "redpotion",
@@ -170,7 +166,6 @@ class Forge:
                     )
                 if tile == "P" and i == self.max_size - 1:
                     self.player.place(col, row + row_offset)
-                    self.legs.place(col, row + row_offset)
 
     def make_map(self) -> pg.Surface:
         """

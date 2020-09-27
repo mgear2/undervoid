@@ -7,7 +7,6 @@ import pygame as pg
 import sys
 import ruamel.yaml
 from os import path, environ
-from src.sprites.legs import Legs
 from src.sprites.player import Player
 from src.sprites.sprites import *
 from src.sprites.cursor import Cursor
@@ -31,12 +30,7 @@ class Game:
         Initializes sprite groups, builds initial level,
         specifies variables to be used for morphing background color.
         """
-        self.data, self.character,  = data, character
-        self.player, self.legs, self.map = (
-            None,
-            None,
-            None,
-        )
+        self.data, self.character, self.player, self.map = data, character, None, None
         with open("settings.yaml") as f:
             self.settings = yaml.load(f)
             f.close()
@@ -57,7 +51,7 @@ class Game:
         load a map from the specified file.
         """
         for sprite in self.sprite_groups.all_sprites:
-            if sprite != self.player and sprite != self.legs:
+            if sprite != self.player and sprite != self.player.legs:
                 sprite.kill()
         for wall in self.sprite_groups.walls:
             wall.kill()
@@ -77,10 +71,6 @@ class Game:
                 self.settings,
                 self.sprite_groups,
                 self.data.player_img[self.character]["magic"],
-            )
-            self.legs = Legs(
-                self.settings,
-                self.sprite_groups,
                 self.data.player_img[self.character]["move"],
             )
         self.map = Forge(
@@ -89,7 +79,6 @@ class Game:
             self.data,
             self.character,
             self.player,
-            self.legs,
             lvl_pieces,
         )
         if target_lvl == "gen":
@@ -110,7 +99,7 @@ class Game:
         self.camera = Camera(
             self.settings, self.map.width, self.map.height, self.cursor
         )
-        self.player, self.legs = self.map.player, self.map.legs
+        self.player = self.map.player
         self.mob_count, self.mob_max = 0, self.settings["gen"]["mob_max"]
 
     def update(self, dt: float) -> (int, int):
