@@ -12,7 +12,7 @@ from src.sprites.grouping import Grouping
 from src.sprites.player import Player
 from src.sprites.item import Item
 from src.sprites.wall import Wall, Rift
-from src.spawner import Spawner
+from src.sprites.spawner import Spawner
 from src.loader import Loader
 
 vec = pg.math.Vector2

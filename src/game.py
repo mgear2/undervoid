@@ -12,7 +12,7 @@ from src.sprites.sprites import *
 from src.sprites.cursor import Cursor
 from src.sprites.grouping import Grouping
 from src.forge import Forge
-from src.spawner import Spawner
+from src.sprites.spawner import Spawner
 from src.camera import Camera
 from src.loader import Loader
 from random import random, randint
