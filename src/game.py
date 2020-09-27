@@ -7,7 +7,7 @@ import pygame as pg
 import sys
 import ruamel.yaml
 from os import path, environ
-from src.sprites.pmove import pMove
+from src.sprites.legs import Legs
 from src.sprites.player import Player
 from src.sprites.sprites import *
 from src.sprites.cursor import Cursor
@@ -32,7 +32,7 @@ class Game:
         specifies variables to be used for morphing background color.
         """
         self.data, self.character, self.dt = data, character, dt
-        self.player, self.pmove, self.map = (
+        self.player, self.legs, self.map = (
             None,
             None,
             None,
@@ -57,7 +57,7 @@ class Game:
         load a map from the specified file.
         """
         for sprite in self.sprite_groups.all_sprites:
-            if sprite != self.player and sprite != self.pmove:
+            if sprite != self.player and sprite != self.legs:
                 sprite.kill()
         for wall in self.sprite_groups.walls:
             wall.kill()
@@ -78,7 +78,7 @@ class Game:
                 self.sprite_groups,
                 self.data.player_img[self.character]["magic"],
             )
-            self.pmove = pMove(
+            self.legs = Legs(
                 self.settings,
                 self.sprite_groups,
                 self.data.player_img[self.character]["move"],
@@ -89,7 +89,7 @@ class Game:
             self.data,
             self.character,
             self.player,
-            self.pmove,
+            self.legs,
             lvl_pieces,
         )
         if target_lvl == "gen":
@@ -110,7 +110,7 @@ class Game:
         self.camera = Camera(
             self.settings, self.map.width, self.map.height, self.cursor
         )
-        self.player, self.pmove = self.map.player, self.map.pmove
+        self.player, self.legs = self.map.player, self.map.legs
         self.mob_count, self.mob_max = 0, self.settings["gen"]["mob_max"]
 
     def update(self, dt: float) -> (int, int):
@@ -148,7 +148,7 @@ class Game:
         )
         self.sprite_groups.cursor_sprite.update()
         self.sprite_groups.weaponvfx_sprite.update()
-        self.sprite_groups.pmove_sprite.update(self.player.vel, self.player.pos)
+        self.sprite_groups.legs_sprite.update(self.player.vel, self.player.pos)
         for spawner in self.sprite_groups.spawners:
             self.mob_count += spawner.update(
                 self.player.pos, self.mob_count, self.mob_max

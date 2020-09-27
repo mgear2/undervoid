@@ -9,7 +9,7 @@ from random import choice, random
 from os import path
 from src.sprites.sprites import *
 from src.sprites.grouping import Grouping
-from src.sprites.pmove import pMove
+from src.sprites.legs import Legs
 from src.sprites.player import Player
 from src.sprites.item import Item
 from src.sprites.wall import Wall, Rift
@@ -32,7 +32,7 @@ class Forge:
         client_data: Loader,
         character: str,
         player: Player,
-        pmove: pMove,
+        legs: Legs,
         lvl_pieces=1,
     ):
         (
@@ -40,14 +40,14 @@ class Forge:
             self.sprite_groups,
             self.character,
             self.player,
-            self.pmove,
+            self.legs,
             self.settings,
         ) = (
             client_data,
             sprite_groups,
             character,
             player,
-            pmove,
+            legs,
             settings,
         )
         self.forge_data, self.level_data, self.rot, self.max_size = (
@@ -170,7 +170,7 @@ class Forge:
                     )
                 if tile == "P" and i == self.max_size - 1:
                     self.player.place(col, row + row_offset)
-                    self.pmove.place(col, row + row_offset)
+                    self.legs.place(col, row + row_offset)
 
     def make_map(self) -> pg.Surface:
         """

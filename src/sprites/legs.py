@@ -10,12 +10,12 @@ from src.sprites.grouping import Grouping
 vec = pg.math.Vector2
 
 
-class pMove(pg.sprite.Sprite):
+class Legs(pg.sprite.Sprite):
     """
     Sprite for player movement is currently separate from the player.
-    pMove must be initialized in the same location as the player; layering
+    Legs must be initialized in the same location as the player; layering
     ensures it is rendered underneath the player.
-    Updating pMove cycles the image, providing an animation effect as the player walks.
+    Updating Legs cycles the image, providing an animation effect as the player walks.
     """
 
     def __init__(
@@ -27,7 +27,7 @@ class pMove(pg.sprite.Sprite):
         y=0,
     ):
         self._layer = settings["layer"]["player_move"]
-        self.groups = sprite_groups.all_sprites, sprite_groups.pmove_sprite
+        self.groups = sprite_groups.all_sprites, sprite_groups.legs_sprite
         pg.sprite.Sprite.__init__(self, self.groups)
         self.images = player_img
         self.image = self.images[0]

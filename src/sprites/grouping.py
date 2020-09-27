@@ -9,7 +9,7 @@ import pygame as pg
 class Grouping:
     def __init__(self):
         self.all_sprites = pg.sprite.LayeredUpdates()
-        self.pmove_sprite = pg.sprite.Group()
+        self.legs_sprite = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.stops_bullets = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
