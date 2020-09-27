@@ -24,7 +24,7 @@ class Client:
     def __init__(self):
         pg.init()
         pg.mixer.init()
-        self.game = self.character = self.coins = self.dt = None
+        self.character = self.coins = self.dt = None
         with open("settings.yaml") as f:
             self.settings = yaml.load(f)
             f.close()
@@ -58,18 +58,18 @@ class Client:
                 (self.settings["gen"]["width"], self.settings["gen"]["height"])
             )
 
-    def draw(self):
+    def draw(self, game):
         """
         Draws the map and all sprites.
         Draws Player health and gold coins.
         """
         pg.display.set_caption("Undervoid")
-        self.screen.fill(self.game.bg_color)
+        self.screen.fill(game.bg_color)
         self.screen.blit(
-            self.game.map_img, self.game.camera.apply_rect(self.game.map_rect)
+            game.map_img, game.camera.apply_rect(game.map_rect)
         )
         # self.draw_grid()
-        for sprite in self.game.all_sprites:
+        for sprite in game.all_sprites:
             if isinstance(sprite, Mob) and sprite.hp < sprite.max_hp:
                 draw_hp(
                     self,
@@ -81,7 +81,7 @@ class Client:
                     int(self.settings["gen"]["tilesize"] / 10),
                     False,
                 )
-            self.screen.blit(sprite.image, self.game.camera.apply(sprite))
+            self.screen.blit(sprite.image, game.camera.apply(sprite))
         draw_hp(
             self,
             self.screen,
@@ -150,7 +150,6 @@ class Client:
         """
         Game loop; ticks the clock, checks for events, updates game state, draws game state
         """
-        self.game = game
         if self.settings["gen"]["music"] == "on":
             pg.mixer.music.load(
                 path.join(self.data.music_folder, self.settings["music"]["leavinghome"])
@@ -165,7 +164,7 @@ class Client:
             self.hp, self.coins = game.update(self.dt)
             if self.hp <= 0:
                 self.playing = False
-            self.draw()
+            self.draw(game)
 
     def quit(self):
         """
