@@ -7,6 +7,8 @@ import pygame as pg
 import sys
 import ruamel.yaml
 from os import path, environ
+from src.sprites.pmove import pMove
+from src.sprites.player import Player
 from src.sprites.sprites import *
 from src.sprites.cursor import Cursor
 from src.forge import Forge
@@ -22,16 +24,15 @@ class Game:
     Overarching Game class; loads and manipulates game data and runs the main game loop.
     """
 
-    def __init__(self, client):
+    def __init__(self, data, character, dt, sounds):
         """
         Initializes sprite groups, builds initial level,
         specifies variables to be used for morphing background color.
         """
-        self.client = client
-        self.player, self.pmove, self.character, self.map = (
-            self.client.player,
+        self.data, self.character, self.dt, self.sounds = data, character, dt, sounds
+        self.player, self.pmove, self.map = (
             None,
-            self.client.character,
+            None,
             None,
         )
         with open("settings.yaml") as f:
@@ -65,7 +66,7 @@ class Game:
         load a map from the specified file.
         """
         for sprite in self.all_sprites:
-            if sprite != self.client.player and sprite != self.client.pmove:
+            if sprite != self.player and sprite != self.pmove:
                 sprite.kill()
         for wall in self.walls:
             wall.kill()
@@ -79,15 +80,30 @@ class Game:
             )
         else:
             lvl_pieces, surf_w, surf_h = 1, 128, 128
+        if self.init_player:
+            self.init_player = False
+            self.player = Player(
+                self.settings,
+                self.all_sprites,
+                self.player_sprite,
+                self.data.player_img[self.character]["magic"],
+                0,
+                0,
+            )
+            self.pmove = pMove(
+                self.settings,
+                self.all_sprites,
+                self.pmove_sprite,
+                self.data.player_img[self.character]["move"],
+                0,
+                0,
+            )
         self.map = Forge(
-            self.client.data,
+            self.data,
             self.all_sprites,
             self.walls,
             self.stops_bullets,
             self.character,
-            self.player_sprite,
-            self.pmove_sprite,
-            self.init_player,
             self.player,
             self.pmove,
             self.items,
@@ -101,10 +117,8 @@ class Game:
         else:
             self.map.load(target_lvl)
             if target_lvl == "temple.txt" and not self.init_player:
-                self.client.player.hp = self.client.player.max_hp
+                self.player.hp = self.player.max_hp
         self.map.new_surface(surf_w, surf_h)
-        if self.init_player:
-            self.init_player = False
         self.map.build_lvl(biome)
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
@@ -112,101 +126,90 @@ class Game:
             self.settings,
             self.all_sprites,
             self.cursor_sprite,
-            self.client.data.cursor_img,
+            self.data.cursor_img,
         )
         self.camera = Camera(
             self.settings, self.map.width, self.map.height, self.cursor
         )
-        self.player = self.client.player = self.map.player
-        self.pmove = self.client.pmove = self.map.pmove
-        self.mob_count = 0
-        self.mob_max = self.settings["gen"]["mob_max"]
+        self.player, self.pmove = self.map.player, self.map.pmove
+        self.mob_count, self.mob_max = 0, self.settings["gen"]["mob_max"]
 
-    def update(self):
+    def update(self, dt) -> (int, int):
         """
         Updates sprites, spawners and camera.
         Checks for player hitting items and resolves hits.
         Checks for mobs hitting player and resolves hits.
         Checks for bullets hitting mobs and resolves hits.
         Morphs the background color one step.
+        Returns player hp and coins.
         """
         # self.all_sprites.update()
 
-        self.walls.update(self.client.player.pos, self.level, self.client.data.biomes)
-        self.stops_bullets.update(
-            self.client.player.pos, self.level, self.client.data.biomes
-        )
+        self.walls.update(self.player.pos, self.level, self.data.biomes)
+        self.stops_bullets.update(self.player.pos, self.level, self.data.biomes)
         for mob in self.mobs:
             self.mob_count += mob.update(
-                self.client.player.pos,
-                self.client.data.mob_img,
-                self.client.data.sounds,
-                self.client.dt,
+                self.player.pos,
+                self.data.mob_img,
+                self.data.sounds,
+                dt,
                 self.walls,
                 self.graves,
                 self.items,
-                self.client.data.item_img,
+                self.data.item_img,
                 self.mob_count,
             )
-        self.bullets.update(self.client.dt)
+        self.bullets.update(dt)
         self.graves.update()
         self.items.update()
         self.player_sprite.update(
             self.cursor.pos,
-            self.client.data.sounds["wave01"],
-            self.client.data.player_img[self.client.character]["magic"],
-            self.client.dt,
+            self.data.sounds["wave01"],
+            self.data.player_img[self.character]["magic"],
+            dt,
             self.walls,
             self.bullets,
-            self.client.data.vbullet_img,
+            self.data.vbullet_img,
             self.stops_bullets,
             self.weaponvfx_sprite,
-            self.client.data.weapon_vfx,
+            self.data.weapon_vfx,
         )
         self.cursor_sprite.update()
         self.weaponvfx_sprite.update()
-        self.pmove_sprite.update(self.client.player.vel, self.client.player.pos)
+        self.pmove_sprite.update(self.player.vel, self.player.pos)
         for spawner in self.spawners:
             self.mob_count += spawner.update(
                 self.player.pos, self.mob_count, self.mob_max
             )
-        self.camera.update(self.client.player)
+        self.camera.update(self.player)
         # player hits items
-        hits = pg.sprite.spritecollide(
-            self.client.player, self.items, False, collide_hit_rect
-        )
+        hits = pg.sprite.spritecollide(self.player, self.items, False, collide_hit_rect)
         for hit in hits:
-            if (
-                hit.kind == "hp"
-                and self.client.player.hp < self.settings["player"]["hp"]
-            ):
+            if hit.kind == "hp" and self.player.hp < self.settings["player"]["hp"]:
                 hit.kill()
                 if self.settings["gen"]["sound"] == "on":
-                    self.client.sounds["treasure02"].play()
-                self.client.player.add_hp(
-                    self.settings["items"]["potions"]["red"]["hp"]
-                    * self.client.player.max_hp
+                    self.sounds["treasure02"].play()
+                self.player.add_hp(
+                    self.settings["items"]["potions"]["red"]["hp"] * self.player.max_hp
                 )
             if hit.kind == "gp":
                 hit.kill()
                 if self.settings["gen"]["sound"] == "on":
-                    self.client.sounds["treasure03"].play()
-                self.client.player.coins += 1
+                    self.sounds["treasure03"].play()
+                self.player.coins += 1
         # mobs hitting player
-        hits = pg.sprite.spritecollide(
-            self.client.player, self.mobs, False, collide_hit_rect
-        )
+        hits = pg.sprite.spritecollide(self.player, self.mobs, False, collide_hit_rect)
         for hit in hits:
             now = pg.time.get_ticks()
             if now - hit.last_hit > self.settings["mob"]["thrall"]["dmg_rate"]:
                 hit.last_hit = now
-                self.client.player.hp -= self.settings["mob"]["thrall"]["dmg"]
+                self.player.hp -= self.settings["mob"]["thrall"]["dmg"]
                 hit.vel = vec(0, 0)
-                self.client.player.pos += vec(
+                self.player.pos += vec(
                     self.settings["mob"]["thrall"]["knockback"], 0
                 ).rotate(-hits[0].rot)
                 if self.settings["gen"]["sound"] == "on":
-                    self.client.sounds[(choice(self.settings["hit_sounds"]))].play()
+                    self.sounds[(choice(self.settings["hit_sounds"]))].play()
             elif random() < 0.5:  # enemies get bounced back on ~50% of failed hits
                 hit.pos += vec(self.settings["mob"]["thrall"]["knockback"], 0).rotate(
                     hits[0].rot
@@ -233,3 +236,4 @@ class Game:
             self.base_color = self.next_color
             self.next_color = choice(self.settings["void_colors"])
         self.bg_color = self.current_color
+        return self.player.hp, self.player.coins

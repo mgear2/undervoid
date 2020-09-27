@@ -31,9 +31,6 @@ class Forge:
         walls,
         stops_bullets: pg.sprite.Group,
         character: str,
-        player_sprite,
-        pmove_sprite: pg.sprite.Group,
-        init_player: bool,
         player: Player,
         pmove: pMove,
         items,
@@ -48,9 +45,6 @@ class Forge:
             self.walls,
             self.stops_bullets,
             self.character,
-            self.player_sprite,
-            self.pmove_sprite,
-            self.init_player,
             self.player,
             self.pmove,
             self.items,
@@ -63,9 +57,6 @@ class Forge:
             walls,
             stops_bullets,
             character,
-            player_sprite,
-            pmove_sprite,
-            init_player,
             player,
             pmove,
             items,
@@ -205,28 +196,8 @@ class Forge:
                         "hp",
                     )
                 if tile == "P" and i == self.max_size - 1:
-                    if self.init_player:
-                        # print(self.character)
-                        self.player = Player(
-                            self.settings,
-                            self.all_sprites,
-                            self.player_sprite,
-                            self.client_data.player_img[self.character]["magic"],
-                            col,
-                            row + row_offset,
-                        )
-                        self.pmove = pMove(
-                            self.settings,
-                            self.all_sprites,
-                            self.pmove_sprite,
-                            self.client_data.player_img[self.character]["move"],
-                            col,
-                            row + row_offset,
-                        )
-                        self.init_player = False
-                    else:
-                        self.player.place(col, row + row_offset)
-                        self.pmove.place(col, row + row_offset)
+                    self.player.place(col, row + row_offset)
+                    self.pmove.place(col, row + row_offset)
 
     def make_map(self) -> pg.Surface:
         """

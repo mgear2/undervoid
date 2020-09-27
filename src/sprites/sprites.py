@@ -54,13 +54,13 @@ def draw_score(client):
     Draws the players score and a coin image in the lower right corner of the screen.
     """
     score = client.text_format(
-        str(client.player.coins), client.font, 60, client.settings["colors"]["white"]
+        str(client.coins), client.font, 60, client.settings["colors"]["white"]
     )
     client.screen.blit(
         pg.transform.scale(client.data.item_img["coin"], (92, 92)),
         (client.settings["gen"]["width"] - 100, client.settings["gen"]["height"] - 100),
     )
-    score_x = 75 + len(str(client.player.coins)) * 25
+    score_x = 75 + len(str(client.coins)) * 25
     client.screen.blit(
         score,
         (

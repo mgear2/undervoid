@@ -24,7 +24,7 @@ class Client:
     def __init__(self):
         pg.init()
         pg.mixer.init()
-        self.game, self.player, self.character = None, None, None
+        self.game = self.character = self.coins = self.dt = self.sounds = None
         with open("settings.yaml") as f:
             self.settings = yaml.load(f)
             f.close()
@@ -35,6 +35,7 @@ class Client:
         self.data = Loader(self.settings)
         self.data.build_path()
         self.data.load_data()
+        self.hp = self.max_hp = self.settings["player"]["hp"]
 
         pg.mouse.set_visible(False)
         pg.display.set_icon(self.data.undervoid_icon)
@@ -86,7 +87,7 @@ class Client:
             self.screen,
             10,
             self.settings["gen"]["height"] - 30,
-            self.player.hp / self.player.max_hp,
+            self.hp / self.max_hp,
             200,
             15,
             True,
@@ -142,7 +143,7 @@ class Client:
         This method is used upon player death to restart at the main menu.
         """
         self.show_start_screen()
-        g = Game(c)
+        g = Game(c.data, c.character, c.dt, c.sounds)
         self.run(g)
 
     def run(self, game: Game):
@@ -161,8 +162,8 @@ class Client:
             # tick_busy_loop() uses more cpu but is more accurate
             self.dt = self.clock.tick_busy_loop(self.settings["gen"]["fps"]) / 1000
             self.events()
-            game.update()
-            if self.player.hp <= 0:
+            self.hp, self.coins = game.update(self.dt)
+            if self.hp <= 0:
                 self.playing = False
             self.draw()
 
@@ -177,7 +178,7 @@ class Client:
 if __name__ == "__main__":
     c = Client()
     c.show_start_screen()
-    g = Game(c)
+    g = Game(c.data, c.character, c.dt, c.sounds)
     while True:
         c.run(g)
         c.show_go_screen()
