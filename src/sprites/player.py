@@ -1,4 +1,10 @@
+# Copyright (c) 2020
+# [This program is licensed under the "MIT License"]
+# Please see the file LICENSE in the source
+# distribution of this software for license terms.
+
 import pygame as pg
+import ruamel.yaml
 from random import uniform, choice, random
 from src.sprites.sprites import *
 from src.sprites.bullet import Bullet
@@ -12,8 +18,15 @@ class Player(pg.sprite.Sprite):
     Player class provides the player sprite and tracks all player data.
     """
 
-    def __init__(self, settings, all_sprites, player_sprite, player_img, x, y):
-        # self.game = game
+    def __init__(
+        self,
+        settings: ruamel.yaml.comments.CommentedMap,
+        all_sprites: pg.sprite.LayeredUpdates,
+        player_sprite: pg.sprite.Group,
+        player_img: pg.Surface,
+        x,
+        y: int,
+    ):
         self.settings = settings
         self._layer = settings["layer"]["player"]
         self.groups = all_sprites, player_sprite
@@ -35,20 +48,20 @@ class Player(pg.sprite.Sprite):
         )
         self.coins = 0
 
-    def place(self, x, y):
+    def place(self, x, y: int):
         self.pos = vec(x, y)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
 
     def get_keys(
         self,
-        game_cursor_pos,
-        game_sound,
-        bullets,
-        game_client_data_bullet_img,
+        game_cursor_pos: tuple,
+        game_sound: pg.mixer.Sound,
+        bullets: pg.sprite.Group,
+        game_client_data_bullet_img: pg.Surface,
         stops_bullets,
-        weapon_vfx_sprite,
-        game_client_data_weaponvfx,
+        weapon_vfx_sprite: pg.sprite.Group,
+        game_client_data_weaponvfx: list,
     ):
         self.rot_speed = 0
         self.vel = vec(0, 0)
@@ -99,16 +112,16 @@ class Player(pg.sprite.Sprite):
 
     def update(
         self,
-        game_cursor_pos,
-        game_sound,
-        game_client_data_player_img,
-        game_client_dt,
+        game_cursor_pos: tuple,
+        game_sound: pg.mixer.Sound,
+        game_client_data_player_img: pg.Surface,
+        game_client_dt: float,
         game_walls,
-        bullets,
-        game_client_data_bullet_img,
-        stops_bullets,
-        weapon_vfx_sprite,
-        game_client_data_weaponvfx,
+        bullets: pg.sprite.Group,
+        game_client_data_bullet_img: pg.Surface,
+        stops_bullets: bool,
+        weapon_vfx_sprite: pg.sprite.Group,
+        game_client_data_weaponvfx: list,
     ):
         self.get_keys(
             game_cursor_pos,
@@ -133,7 +146,7 @@ class Player(pg.sprite.Sprite):
         collide_with_walls(self, game_walls, "y")
         self.rect.center = self.hit_rect.center
 
-    def add_hp(self, amount):
+    def add_hp(self, amount: int):
         self.hp += amount
         if self.hp > self.max_hp:
             self.hp = self.max_hp

@@ -3,8 +3,8 @@
 # Please see the file LICENSE in the source
 # distribution of this software for license terms.
 
-import ruamel.yaml
 import pygame as pg
+import ruamel.yaml
 import sys
 from src.sprites.sprites import *
 from os import path, environ
@@ -111,7 +111,9 @@ class Client:
                     self.menu.menu_event(event)
 
     # Text Renderer https://www.sourcecodester.com/tutorials/python/11784/python-pygame-simple-main-menu-selection.html
-    def text_format(self, message, textFont, textSize, textColor):
+    def text_format(
+        self, message: str, textFont: str, textSize: int, textColor=[0, 0, 0]
+    ) -> pg.font.Font:
         """
         Returns a pygame text ready to be drawn to screen.
         """
@@ -130,9 +132,10 @@ class Client:
         )
         if self.settings["gen"]["music"] == "on":
             pg.mixer.music.play(-1, 0.0)
-        self.menu = Menu(self)
-        self.menu.update_settings()
-        self.menu.run(self.menu.menu_main)
+        self.menu = Menu(
+            self.clock, self.screen, self.settings, self.data, self.font, self.character
+        )
+        self.character = self.menu.run(self.menu.menu_main)
 
     def show_go_screen(self):
         """
@@ -142,7 +145,7 @@ class Client:
         g = Game(c)
         self.run(g)
 
-    def run(self, game):
+    def run(self, game: Game):
         """
         Game loop; ticks the clock, checks for events, updates game state, draws game state
         """

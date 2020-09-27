@@ -1,4 +1,10 @@
+# Copyright (c) 2020
+# [This program is licensed under the "MIT License"]
+# Please see the file LICENSE in the source
+# distribution of this software for license terms.
+
 import pygame as pg
+import ruamel.yaml
 
 
 class Cursor(pg.sprite.Sprite):
@@ -7,7 +13,13 @@ class Cursor(pg.sprite.Sprite):
     replace the default cursor.
     """
 
-    def __init__(self, settings, all_sprites, cursor_sprite, cursor_img):
+    def __init__(
+        self,
+        settings: ruamel.yaml.comments.CommentedMap,
+        all_sprites: pg.sprite.LayeredUpdates,
+        cursor_sprite: pg.sprite.Group,
+        cursor_img: list,
+    ):
         self._layer = settings["layer"]["cursor"]
         self.groups = all_sprites, cursor_sprite
         pg.sprite.Sprite.__init__(self, self.groups)

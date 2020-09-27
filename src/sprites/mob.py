@@ -1,4 +1,10 @@
+# Copyright (c) 2020
+# [This program is licensed under the "MIT License"]
+# Please see the file LICENSE in the source
+# distribution of this software for license terms.
+
 import pygame as pg
+import ruamel.yaml
 from random import choice, random
 from src.sprites.grave import Grave
 from src.sprites.item import Item
@@ -9,13 +15,18 @@ vec = pg.math.Vector2
 class Mob(pg.sprite.Sprite):
     """
     Mob class provides mob sprites and tracks mob instance data.
-    Originally built off code from https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023.
     """
 
     def __init__(
-        self, settings, all_sprites, mobs, game_client_data_mob_img, kind, x, y
+        self,
+        settings: ruamel.yaml.comments.CommentedMap,
+        all_sprites: pg.sprite.LayeredUpdates,
+        mobs: pg.sprite.Group,
+        game_client_data_mob_img: pg.Surface,
+        kind: str,
+        x,
+        y: int,
     ):
-        # self.game = game
         self.settings = settings
         self.kind = kind
         self._layer = self.settings["layer"]["mob"]
@@ -54,16 +65,16 @@ class Mob(pg.sprite.Sprite):
 
     def update(
         self,
-        player_pos,
-        game_client_data_mob_img,
-        game_sounds,
-        game_client_dt,
+        player_pos: vec,
+        game_client_data_mob_img: dict,
+        game_sounds: dict,
+        game_client_dt: float,
         game_walls,
         grave_group,
-        item_group,
-        game_client_data_item_img,
-        mob_count,
-    ):
+        item_group: pg.sprite.Group,
+        game_client_data_item_img: dict,
+        mob_count: int,
+    ) -> int:
         self.target_dist = player_pos - self.pos
         self.rot = self.target_dist.angle_to(vec(1, 0))
         self.image = pg.transform.rotate(
@@ -121,11 +132,13 @@ class Mob(pg.sprite.Sprite):
                     item[0],
                     item[1],
                 )
-            # Test to see if this changes
-            mob_count -= 1
             self.kill()
+            return -1
+        return 0
 
-    def collide_with_walls(self, sprite, group, dir):
+    def collide_with_walls(
+        self, sprite: pg.sprite.Sprite, group: pg.sprite.Group, dir: str
+    ):
         """
         Used for collision detection between player/mobs and walls. Mobs are
         currently set to not be restricted by Void (invisible) walls, while the player is.
@@ -149,11 +162,8 @@ class Mob(pg.sprite.Sprite):
                 sprite.vel.y = 0
                 sprite.hit_rect.centery = sprite.pos.y
 
-    def collide_hit_rect(self, one, two):
+    def collide_hit_rect(self, one: pg.sprite.Sprite, two: pg.sprite.Sprite):
         """
         Used for hit_rect collision:
-
-        Drawn largely from:
-        https://github.com/kidscancode/pygame_tutorials/tree/master/tilemap/part%2023
         """
         return one.hit_rect.colliderect(two.rect)

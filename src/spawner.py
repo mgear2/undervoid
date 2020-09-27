@@ -4,6 +4,7 @@
 # distribution of this software for license terms.
 
 import pygame as pg
+import ruamel.yaml
 from random import randint, random
 from src.sprites.mob import Mob
 from src.sprites.player import Player
@@ -17,63 +18,77 @@ class Spawner(pg.sprite.Sprite):
     and if there are not already too many mobs present, the spawner will spawn mobs.
     """
 
-    def __init__(self, game, col, row):
-        self.game = game
-        self.groups = game.spawners
+    def __init__(
+        self,
+        level_data,
+        img: list,
+        all_sprites,
+        spawners,
+        mobs: pg.sprite.Group,
+        settings: ruamel.yaml.comments.CommentedMap,
+        col,
+        row: int,
+    ):
+        self.level_data = level_data
+        self.img = img
+        self.settings = settings
+        self.groups = spawners
+        self.all_sprites, self.mobs = all_sprites, mobs
         pg.sprite.Sprite.__init__(self, self.groups)
         self.cols, self.rows = col, row
-        self.pos = vec(col, row) * game.settings["gen"]["tilesize"]
+        self.pos = vec(col, row) * settings["gen"]["tilesize"]
 
-    def update(self):
+    def update(self, player_pos: vec, mob_count, mob_max: int) -> int:
         """
         Tracks distance to player and calls spawn function
         when appropriate.
         """
-        self.target_dist = self.game.player.pos - self.pos
+        self.target_dist = player_pos - self.pos
         if (
-            self.game.settings["gen"]["spawn_min_dist"] ** 2
+            self.settings["gen"]["spawn_min_dist"] ** 2
             < self.target_dist.length_squared()
-            < self.game.settings["gen"]["spawn_max_dist"] ** 2
-            and self.game.mob_count < self.game.mob_max
+            < self.settings["gen"]["spawn_max_dist"] ** 2
+            and mob_count < mob_max
         ):
-            self.spawn()
+            return self.spawn()
+        return 0
 
-    def spawn(self):
+    def spawn(self) -> int:
         """
         Spawns enemies pseudo-randomly in an 8x8 tile area
         centered on the Spawner.
         """
         max_count = randint(
-            self.game.settings["gen"]["spawn_min"],
-            self.game.settings["gen"]["spawn_max"],
+            self.settings["gen"]["spawn_min"],
+            self.settings["gen"]["spawn_max"],
         )
         count = 0
         for row in range(self.rows - 4, self.rows + 4):
             for col in range(self.cols - 4, self.cols + 4):
-                if col <= self.game.settings["lvl"]["tiles_wide"]:
+                if col <= self.settings["lvl"]["tiles_wide"]:
                     if count >= max_count:
                         break
-                    elif self.game.map.level_data[row][col] == "." and random() < 0.25:
+                    elif self.level_data[row][col] == "." and random() < 0.25:
                         if random() < 0.5:
                             Mob(
-                                self.game.settings,
-                                self.game.all_sprites,
-                                self.game.mobs,
-                                self.game.client.data.mob_img,
+                                self.settings,
+                                self.all_sprites,
+                                self.mobs,
+                                self.img,
                                 "sleeper",
                                 col,
                                 row,
                             )
                         else:
                             Mob(
-                                self.game.settings,
-                                self.game.all_sprites,
-                                self.game.mobs,
-                                self.game.client.data.mob_img,
+                                self.settings,
+                                self.all_sprites,
+                                self.mobs,
+                                self.img,
                                 "thrall",
                                 col,
                                 row,
                             )
                         count += 1
-        self.game.mob_count += count
         self.kill()
+        return count

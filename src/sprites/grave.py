@@ -1,5 +1,13 @@
+# Copyright (c) 2020
+# [This program is licensed under the "MIT License"]
+# Please see the file LICENSE in the source
+# distribution of this software for license terms.
+
 import pygame as pg
+import ruamel.yaml
 from random import choice
+
+vec = pg.math.Vector2
 
 
 class Grave(pg.sprite.Sprite):
@@ -12,13 +20,13 @@ class Grave(pg.sprite.Sprite):
 
     def __init__(
         self,
-        settings,
-        all_sprites,
-        grave_group,
-        game_client_data_mob_img,
-        kind,
-        pos,
-        rot,
+        settings: ruamel.yaml.comments.CommentedMap,
+        all_sprites: pg.sprite.LayeredUpdates,
+        grave_group: pg.sprite.Group,
+        game_client_data_mob_img: pg.Surface,
+        kind: str,
+        pos: vec,
+        rot: float,
     ):
         self.settings = settings
         self._layer = self.settings["layer"]["grave"]
