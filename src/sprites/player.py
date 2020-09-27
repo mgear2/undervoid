@@ -21,15 +21,14 @@ class Player(pg.sprite.Sprite):
     def __init__(
         self,
         settings: ruamel.yaml.comments.CommentedMap,
-        all_sprites: pg.sprite.LayeredUpdates,
-        player_sprite: pg.sprite.Group,
+        all_groups: dict,
         player_img: pg.Surface,
         x,
         y: int,
     ):
         self.settings = settings
         self._layer = settings["layer"]["player"]
-        self.groups = all_sprites, player_sprite
+        self.groups = all_groups["all_sprites"], all_groups["player_sprite"]
         pg.sprite.Sprite.__init__(self, self.groups)
         self.stance = "magic"
         self.image = player_img

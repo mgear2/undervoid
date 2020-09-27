@@ -39,18 +39,19 @@ class Game:
         with open("settings.yaml") as f:
             self.settings = yaml.load(f)
             f.close()
-        self.all_sprites = pg.sprite.LayeredUpdates()
-        self.pmove_sprite = pg.sprite.Group()
-        self.walls = pg.sprite.Group()
-        self.stops_bullets = pg.sprite.Group()
-        self.mobs = pg.sprite.Group()
-        self.bullets = pg.sprite.Group()
-        self.graves = pg.sprite.Group()
-        self.items = pg.sprite.Group()
-        self.player_sprite = pg.sprite.Group()
-        self.cursor_sprite = pg.sprite.Group()
-        self.weaponvfx_sprite = pg.sprite.Group()
-        self.spawners = pg.sprite.Group()
+        self.all_groups = {}
+        self.all_groups["all_sprites"] = self.all_sprites = pg.sprite.LayeredUpdates()
+        self.all_groups["pmove_sprite"] = self.pmove_sprite = pg.sprite.Group()
+        self.all_groups["walls"] = self.walls = pg.sprite.Group()
+        self.all_groups["stops_bullets"] = self.stops_bullets = pg.sprite.Group()
+        self.all_groups["mobs"] = self.mobs = pg.sprite.Group()
+        self.all_groups["bullets"] = self.bullets = pg.sprite.Group()
+        self.all_groups["graves"] = self.graves = pg.sprite.Group()
+        self.all_groups["items"] = self.items = pg.sprite.Group()
+        self.all_groups["player_sprite"] = self.player_sprite = pg.sprite.Group()
+        self.all_groups["cursor_sprite"] = self.cursor_sprite = pg.sprite.Group()
+        self.all_groups["weaponvfx_sprite"] = self.weaponvfx_sprite = pg.sprite.Group()
+        self.all_groups["spawners"] = self.spawners = pg.sprite.Group()
         self.init_player = True
         self.level("temple.txt", "void")
         # https://stackoverflow.com/questions/51973441/how-to-fade-from-one-colour-to-another-in-pygame
@@ -85,31 +86,24 @@ class Game:
             self.init_player = False
             self.player = Player(
                 self.settings,
-                self.all_sprites,
-                self.player_sprite,
+                self.all_groups,
                 self.data.player_img[self.character]["magic"],
                 0,
                 0,
             )
             self.pmove = pMove(
                 self.settings,
-                self.all_sprites,
-                self.pmove_sprite,
+                self.all_groups,
                 self.data.player_img[self.character]["move"],
                 0,
                 0,
             )
         self.map = Forge(
+            self.all_groups,
             self.data,
-            self.all_sprites,
-            self.walls,
-            self.stops_bullets,
             self.character,
             self.player,
             self.pmove,
-            self.items,
-            self.spawners,
-            self.mobs,
             self.settings,
             lvl_pieces,
         )
@@ -125,8 +119,7 @@ class Game:
         self.map_rect = self.map_img.get_rect()
         self.cursor = Cursor(
             self.settings,
-            self.all_sprites,
-            self.cursor_sprite,
+            self.all_groups,
             self.data.cursor_img,
         )
         self.camera = Camera(

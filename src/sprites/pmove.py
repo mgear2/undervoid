@@ -20,14 +20,13 @@ class pMove(pg.sprite.Sprite):
     def __init__(
         self,
         settings: ruamel.yaml.comments.CommentedMap,
-        all_sprites: pg.sprite.LayeredUpdates,
-        pmove_group: pg.sprite.Group,
+        all_groups: dict,
         player_img: pg.Surface,
         x,
         y: int,
     ):
         self._layer = settings["layer"]["player_move"]
-        self.groups = all_sprites, pmove_group
+        self.groups = all_groups["all_sprites"], all_groups["pmove_sprite"]
         pg.sprite.Sprite.__init__(self, self.groups)
         self.images = player_img
         self.image = self.images[0]
