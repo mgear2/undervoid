@@ -56,6 +56,7 @@ class Spawner(pg.sprite.Sprite):
         """
         Spawns enemies pseudo-randomly in an 8x8 tile area
         centered on the Spawner.
+        Returns count of enemies spawned.
         """
         max_count = randint(
             self.settings["gen"]["spawn_min"],

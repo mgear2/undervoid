@@ -141,7 +141,7 @@ class Client:
         This method is used upon player death to restart at the main menu.
         """
         self.show_start_screen()
-        g = Game(c.data, c.character, c.dt)
+        g = Game(c.data, c.character)
         self.run(g)
 
     def run(self, game: Game):
@@ -175,7 +175,7 @@ class Client:
 if __name__ == "__main__":
     c = Client()
     c.show_start_screen()
-    g = Game(c.data, c.character, c.dt)
+    g = Game(c.data, c.character)
     while True:
         c.run(g)
         c.show_go_screen()

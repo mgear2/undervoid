@@ -26,12 +26,12 @@ class Game:
     Overarching Game class; loads and manipulates game data and runs the main game loop.
     """
 
-    def __init__(self, data: Loader, character: str, dt: float):
+    def __init__(self, data: Loader, character: str):
         """
         Initializes sprite groups, builds initial level,
         specifies variables to be used for morphing background color.
         """
-        self.data, self.character, self.dt = data, character, dt
+        self.data, self.character,  = data, character
         self.player, self.legs, self.map = (
             None,
             None,
