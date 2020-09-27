@@ -8,6 +8,7 @@ import ruamel.yaml
 from random import randint, random
 from src.sprites.mob import Mob
 from src.sprites.player import Player
+from src.sprites.grouping import Grouping
 
 vec = pg.math.Vector2
 
@@ -22,9 +23,7 @@ class Spawner(pg.sprite.Sprite):
         self,
         level_data,
         img: list,
-        all_sprites,
-        spawners,
-        mobs: pg.sprite.Group,
+        sprite_grouping: Grouping,
         settings: ruamel.yaml.comments.CommentedMap,
         col,
         row: int,
@@ -32,8 +31,8 @@ class Spawner(pg.sprite.Sprite):
         self.level_data = level_data
         self.img = img
         self.settings = settings
-        self.groups = spawners
-        self.all_sprites, self.mobs = all_sprites, mobs
+        self.sprite_grouping = sprite_grouping
+        self.groups = sprite_grouping.spawners
         pg.sprite.Sprite.__init__(self, self.groups)
         self.cols, self.rows = col, row
         self.pos = vec(col, row) * settings["gen"]["tilesize"]
@@ -72,8 +71,7 @@ class Spawner(pg.sprite.Sprite):
                         if random() < 0.5:
                             Mob(
                                 self.settings,
-                                self.all_sprites,
-                                self.mobs,
+                                self.sprite_grouping,
                                 self.img,
                                 "sleeper",
                                 col,
@@ -82,8 +80,7 @@ class Spawner(pg.sprite.Sprite):
                         else:
                             Mob(
                                 self.settings,
-                                self.all_sprites,
-                                self.mobs,
+                                self.sprite_grouping,
                                 self.img,
                                 "thrall",
                                 col,

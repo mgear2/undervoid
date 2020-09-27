@@ -7,6 +7,7 @@ import pygame as pg
 import ruamel.yaml
 from random import uniform, choice, random
 from src.sprites.sprites import *
+from src.sprites.grouping import Grouping
 from src.sprites.bullet import Bullet
 from src.sprites.weapon_vfx import Weapon_VFX
 
@@ -21,14 +22,17 @@ class Player(pg.sprite.Sprite):
     def __init__(
         self,
         settings: ruamel.yaml.comments.CommentedMap,
-        all_groups: dict,
+        sprite_groups: Grouping,
         player_img: pg.Surface,
         x,
         y: int,
     ):
-        self.settings = settings
-        self._layer = settings["layer"]["player"]
-        self.groups = all_groups["all_sprites"], all_groups["player_sprite"]
+        self.settings, self._layer, self.sprite_groups = (
+            settings,
+            settings["layer"]["player"],
+            sprite_groups,
+        )
+        self.groups = sprite_groups.all_sprites, sprite_groups.player_sprite
         pg.sprite.Sprite.__init__(self, self.groups)
         self.stance = "magic"
         self.image = player_img
@@ -56,10 +60,7 @@ class Player(pg.sprite.Sprite):
         self,
         game_cursor_pos: tuple,
         game_sound: pg.mixer.Sound,
-        bullets: pg.sprite.Group,
         game_client_data_bullet_img: pg.Surface,
-        stops_bullets,
-        weapon_vfx_sprite: pg.sprite.Group,
         game_client_data_weaponvfx: list,
     ):
         self.rot_speed = 0
@@ -85,10 +86,8 @@ class Player(pg.sprite.Sprite):
                 )
                 Bullet(
                     self.settings,
-                    self.groups[0],
-                    bullets,
+                    self.sprite_groups,
                     game_client_data_bullet_img,
-                    stops_bullets,
                     pos,
                     dir,
                     self.rot,
@@ -97,8 +96,10 @@ class Player(pg.sprite.Sprite):
                     game_sound.play()
                 Weapon_VFX(
                     self.settings,
-                    self.groups[0],
-                    weapon_vfx_sprite,
+                    (
+                        self.sprite_groups.all_sprites,
+                        self.sprite_groups.weaponvfx_sprite,
+                    ),
                     game_client_data_weaponvfx,
                     self.pos
                     + vec(self.settings["player"]["hand_offset"]).rotate(-self.rot),
@@ -115,20 +116,13 @@ class Player(pg.sprite.Sprite):
         game_sound: pg.mixer.Sound,
         game_client_data_player_img: pg.Surface,
         game_client_dt: float,
-        game_walls,
-        bullets: pg.sprite.Group,
         game_client_data_bullet_img: pg.Surface,
-        stops_bullets: bool,
-        weapon_vfx_sprite: pg.sprite.Group,
         game_client_data_weaponvfx: list,
     ):
         self.get_keys(
             game_cursor_pos,
             game_sound,
-            bullets,
             game_client_data_bullet_img,
-            stops_bullets,
-            weapon_vfx_sprite,
             game_client_data_weaponvfx,
         )
         self.rot = (game_cursor_pos - self.pos).angle_to(vec(1, 0)) % 360
@@ -140,9 +134,9 @@ class Player(pg.sprite.Sprite):
         self.rect.center = self.pos
         self.pos += self.vel * game_client_dt
         self.hit_rect.centerx = self.pos.x
-        collide_with_walls(self, game_walls, "x")
+        collide_with_walls(self, self.sprite_groups.walls, "x")
         self.hit_rect.centery = self.pos.y
-        collide_with_walls(self, game_walls, "y")
+        collide_with_walls(self, self.sprite_groups.walls, "y")
         self.rect.center = self.hit_rect.center
 
     def add_hp(self, amount: int):

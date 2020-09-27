@@ -5,6 +5,7 @@
 
 import pygame as pg
 import ruamel.yaml
+from src.sprites.grouping import Grouping
 
 vec = pg.math.Vector2
 
@@ -20,13 +21,13 @@ class pMove(pg.sprite.Sprite):
     def __init__(
         self,
         settings: ruamel.yaml.comments.CommentedMap,
-        all_groups: dict,
+        sprite_groups: Grouping,
         player_img: pg.Surface,
         x,
         y: int,
     ):
         self._layer = settings["layer"]["player_move"]
-        self.groups = all_groups["all_sprites"], all_groups["pmove_sprite"]
+        self.groups = sprite_groups.all_sprites, sprite_groups.pmove_sprite
         pg.sprite.Sprite.__init__(self, self.groups)
         self.images = player_img
         self.image = self.images[0]

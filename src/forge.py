@@ -8,6 +8,7 @@ import ruamel.yaml
 from random import choice, random
 from os import path
 from src.sprites.sprites import *
+from src.sprites.grouping import Grouping
 from src.sprites.pmove import pMove
 from src.sprites.player import Player
 from src.sprites.item import Item
@@ -26,34 +27,24 @@ class Forge:
 
     def __init__(
         self,
-        all_groups: dict,
+        settings: ruamel.yaml.comments.CommentedMap,
+        sprite_groups: Grouping,
         client_data: Loader,
         character: str,
         player: Player,
         pmove: pMove,
-        settings: ruamel.yaml.comments.CommentedMap,
         lvl_pieces=1,
     ):
         (
             self.client_data,
-            self.all_sprites,
-            self.walls,
-            self.stops_bullets,
-            self.items,
-            self.spawners,
-            self.mobs,
+            self.sprite_groups,
             self.character,
             self.player,
             self.pmove,
             self.settings,
         ) = (
             client_data,
-            all_groups["all_sprites"],
-            all_groups["walls"],
-            all_groups["stops_bullets"],
-            all_groups["items"],
-            all_groups["spawners"],
-            all_groups["mobs"],
+            sprite_groups,
             character,
             player,
             pmove,
@@ -126,36 +117,28 @@ class Forge:
                 if tile == "0":
                     Wall(
                         self.settings,
-                        self.all_sprites,
-                        self.walls,
-                        self.stops_bullets,
+                        self.sprite_groups,
                         vec(x, y + y_offset) * self.settings["gen"]["tilesize"],
                         False,
                     )
                 if tile == "1":
                     Wall(
                         self.settings,
-                        self.all_sprites,
-                        self.walls,
-                        self.stops_bullets,
+                        self.sprite_groups,
                         vec(x, y + y_offset) * self.settings["gen"]["tilesize"],
                         True,
                     )
                 if tile == "y" and i == 0:
                     Wall(
                         self.settings,
-                        self.all_sprites,
-                        self.walls,
-                        self.stops_bullets,
+                        self.sprite_groups,
                         vec(x, y + y_offset) * self.settings["gen"]["tilesize"],
                         False,
                     )
                 if tile == "x" and i == self.max_size - 1:
                     Wall(
                         self.settings,
-                        self.all_sprites,
-                        self.walls,
-                        self.stops_bullets,
+                        self.sprite_groups,
                         vec(x, y + y_offset) * self.settings["gen"]["tilesize"],
                         True,
                     )
@@ -163,9 +146,7 @@ class Forge:
                 if tile == "R" and i == 0:
                     Rift(
                         self.settings,
-                        self.all_sprites,
-                        self.walls,
-                        self.stops_bullets,
+                        self.sprite_groups,
                         self.client_data.rift_img,
                         vec(x, y + y_offset) * self.settings["gen"]["tilesize"],
                     )
@@ -173,9 +154,7 @@ class Forge:
                     Spawner(
                         self.level_data,
                         self.client_data.mob_img,
-                        self.all_sprites,
-                        self.spawners,
-                        self.mobs,
+                        self.sprite_groups,
                         self.settings,
                         x,
                         y + y_offset,
@@ -183,8 +162,7 @@ class Forge:
                 if tile == "p":
                     Item(
                         self.settings,
-                        self.all_sprites,
-                        self.items,
+                        self.sprite_groups,
                         self.client_data.item_img,
                         vec(x, y + y_offset) * self.settings["gen"]["tilesize"],
                         "redpotion",

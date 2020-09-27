@@ -5,6 +5,7 @@
 
 import pygame as pg
 import ruamel.yaml
+from src.sprites.grouping import Grouping
 from random import uniform
 
 vec = pg.math.Vector2
@@ -18,18 +19,16 @@ class Bullet(pg.sprite.Sprite):
     def __init__(
         self,
         settings: ruamel.yaml.comments.CommentedMap,
-        all_sprites: pg.sprite.LayeredUpdates,
-        bullets: pg.sprite.Group,
+        sprite_grouping: Grouping,
         game_client_data_vbullet_img: pg.Surface,
-        stops_bullets: bool,
         pos: vec,
         dir: vec,
         rot: float,
     ):
         self.settings = settings
-        self.stops_bullets = stops_bullets
         self._layer = self.settings["layer"]["bullet"]
-        self.groups = all_sprites, bullets
+        self.sprite_grouping = sprite_grouping
+        self.groups = sprite_grouping.all_sprites, sprite_grouping.bullets
         pg.sprite.Sprite.__init__(self, self.groups)
         self.rot = rot
         self.image = pg.transform.rotate(game_client_data_vbullet_img, self.rot + 90)
@@ -47,7 +46,7 @@ class Bullet(pg.sprite.Sprite):
         self.pos += self.vel * game_client_dt
         self.rect.center = self.pos
         if (
-            pg.sprite.spritecollideany(self, self.stops_bullets)
+            pg.sprite.spritecollideany(self, self.sprite_grouping.stops_bullets)
             or pg.time.get_ticks() - self.spawn_time
             > self.settings["weapon"]["vbullet"]["life"]
         ):

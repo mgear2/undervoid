@@ -5,6 +5,7 @@
 
 import pygame as pg
 import ruamel.yaml
+from src.sprites.grouping import Grouping
 from random import choice
 
 vec = pg.math.Vector2
@@ -21,20 +22,22 @@ class Wall(pg.sprite.Sprite):
     def __init__(
         self,
         settings: ruamel.yaml.comments.CommentedMap,
-        all_sprites: pg.sprite.LayeredUpdates,
-        walls_group,
-        stops_bullets_group: pg.sprite.Group,
+        sprite_groups: Grouping,
         pos: vec,
         stops_bullets: bool,
     ):
         self.settings = settings
         self._layer = self.settings["layer"]["wall"]
         if stops_bullets == "Rift":
-            self.groups = all_sprites, walls_group, stops_bullets_group
+            self.groups = (
+                sprite_groups.all_sprites,
+                sprite_groups.walls,
+                sprite_groups.stops_bullets,
+            )
         elif stops_bullets == True:
-            self.groups = walls_group, stops_bullets_group
+            self.groups = sprite_groups.walls, sprite_groups.stops_bullets
         else:
-            self.groups = walls_group
+            self.groups = sprite_groups.walls
         self.stops_bullets = stops_bullets
         pg.sprite.Sprite.__init__(self, self.groups)
         self.pos = pos
@@ -57,16 +60,11 @@ class Rift(Wall):
     def __init__(
         self,
         settings: ruamel.yaml.comments.CommentedMap,
-        all_sprites: pg.sprite.LayeredUpdates,
-        walls_group,
-        stops_bullets_group: pg.sprite.Group,
+        sprite_groups: Grouping,
         game_client_data_rift_img: pg.Surface,
         pos: vec,
     ):
-        Wall.__init__(
-            self, settings, all_sprites, walls_group, stops_bullets_group, pos, "Rift"
-        )
-        # self.game.rift_usable = False
+        Wall.__init__(self, settings, sprite_groups, pos, "Rift")
         self.image = game_client_data_rift_img
 
     def check_usable(self, player_pos):

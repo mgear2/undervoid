@@ -8,6 +8,7 @@ import ruamel.yaml
 from random import choice, random
 from src.sprites.grave import Grave
 from src.sprites.item import Item
+from src.sprites.grouping import Grouping
 
 vec = pg.math.Vector2
 
@@ -20,8 +21,7 @@ class Mob(pg.sprite.Sprite):
     def __init__(
         self,
         settings: ruamel.yaml.comments.CommentedMap,
-        all_sprites: pg.sprite.LayeredUpdates,
-        mobs: pg.sprite.Group,
+        sprite_grouping: Grouping,
         game_client_data_mob_img: pg.Surface,
         kind: str,
         x,
@@ -30,7 +30,8 @@ class Mob(pg.sprite.Sprite):
         self.settings = settings
         self.kind = kind
         self._layer = self.settings["layer"]["mob"]
-        self.groups = all_sprites, mobs
+        self.sprite_grouping = sprite_grouping
+        self.groups = sprite_grouping.all_sprites, sprite_grouping.mobs
         pg.sprite.Sprite.__init__(self, self.groups)
         self.image = game_client_data_mob_img["base"][kind].copy()
         self.rect = self.image.get_rect()
@@ -69,9 +70,6 @@ class Mob(pg.sprite.Sprite):
         game_client_data_mob_img: dict,
         game_sounds: dict,
         game_client_dt: float,
-        game_walls,
-        grave_group,
-        item_group: pg.sprite.Group,
         game_client_data_item_img: dict,
         mob_count: int,
     ) -> int:
@@ -107,15 +105,15 @@ class Mob(pg.sprite.Sprite):
                 self.vel * game_client_dt + 0.5 * self.acc * game_client_dt ** 1.025
             )
             self.hit_rect.centerx = self.pos.x
-            self.collide_with_walls(self, game_walls, "x")
+            self.collide_with_walls(self, self.sprite_grouping.walls, "x")
             self.hit_rect.centery = self.pos.y
-            self.collide_with_walls(self, game_walls, "y")
+            self.collide_with_walls(self, self.sprite_grouping.walls, "y")
             self.rect.center = self.hit_rect.center
         if self.hp <= 0:
             Grave(
                 self.settings,
                 self.groups[0],
-                grave_group,
+                self.sprite_grouping.graves,
                 game_client_data_mob_img,
                 self.kind,
                 self.pos,
@@ -126,7 +124,7 @@ class Mob(pg.sprite.Sprite):
                 Item(
                     self.settings,
                     self.groups[0],
-                    item_group,
+                    self.sprite_grouping.items,
                     game_client_data_item_img,
                     self.pos,
                     item[0],
