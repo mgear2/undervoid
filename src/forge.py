@@ -27,7 +27,7 @@ class Forge:
     def __init__(
         self,
         settings: ruamel.yaml.comments.CommentedMap,
-        sprite_groups: Grouping,
+        sprite_grouping: Grouping,
         client_data: Loader,
         character: str,
         player: Player,
@@ -35,13 +35,13 @@ class Forge:
     ):
         (
             self.client_data,
-            self.sprite_groups,
+            self.sprite_grouping,
             self.character,
             self.player,
             self.settings,
         ) = (
             client_data,
-            sprite_groups,
+            sprite_grouping,
             character,
             player,
             settings,
@@ -113,28 +113,28 @@ class Forge:
                 if tile == "0":
                     Wall(
                         self.settings,
-                        self.sprite_groups,
+                        self.sprite_grouping,
                         vec(x, y + y_offset) * self.settings["gen"]["tilesize"],
                         False,
                     )
                 if tile == "1":
                     Wall(
                         self.settings,
-                        self.sprite_groups,
+                        self.sprite_grouping,
                         vec(x, y + y_offset) * self.settings["gen"]["tilesize"],
                         True,
                     )
                 if tile == "y" and i == 0:
                     Wall(
                         self.settings,
-                        self.sprite_groups,
+                        self.sprite_grouping,
                         vec(x, y + y_offset) * self.settings["gen"]["tilesize"],
                         False,
                     )
                 if tile == "x" and i == self.max_size - 1:
                     Wall(
                         self.settings,
-                        self.sprite_groups,
+                        self.sprite_grouping,
                         vec(x, y + y_offset) * self.settings["gen"]["tilesize"],
                         True,
                     )
@@ -142,23 +142,23 @@ class Forge:
                 if tile == "R" and i == 0:
                     Rift(
                         self.settings,
-                        self.sprite_groups,
+                        self.sprite_grouping,
                         self.client_data.rift_img,
                         vec(x, y + y_offset) * self.settings["gen"]["tilesize"],
                     )
                 if tile == "M":
                     Spawner(
+                        self.settings,
+                        self.sprite_grouping,
                         self.level_data,
                         self.client_data.mob_img,
-                        self.sprite_groups,
-                        self.settings,
                         x,
                         y + y_offset,
                     )
                 if tile == "p":
                     Item(
                         self.settings,
-                        (self.sprite_groups.all_sprites, self.sprite_groups.items),
+                        (self.sprite_grouping.all_sprites, self.sprite_grouping.items),
                         self.client_data.item_img,
                         vec(x, y + y_offset) * self.settings["gen"]["tilesize"],
                         "redpotion",

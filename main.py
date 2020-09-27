@@ -66,7 +66,7 @@ class Client:
         self.screen.fill(game.bg_color)
         self.screen.blit(game.map_img, game.camera.apply_rect(game.map_rect))
         # self.draw_grid()
-        for sprite in game.sprite_groups.all_sprites:
+        for sprite in game.sprite_grouping.all_sprites:
             if isinstance(sprite, Mob) and sprite.hp < sprite.max_hp:
                 draw_hp(
                     self,

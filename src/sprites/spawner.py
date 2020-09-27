@@ -21,10 +21,10 @@ class Spawner(pg.sprite.Sprite):
 
     def __init__(
         self,
+        settings: ruamel.yaml.comments.CommentedMap,
+        sprite_grouping: Grouping,
         level_data,
         img: list,
-        sprite_grouping: Grouping,
-        settings: ruamel.yaml.comments.CommentedMap,
         col,
         row: int,
     ):

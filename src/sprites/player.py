@@ -23,18 +23,18 @@ class Player(pg.sprite.Sprite):
     def __init__(
         self,
         settings: ruamel.yaml.comments.CommentedMap,
-        sprite_groups: Grouping,
+        sprite_grouping: Grouping,
         player_img: pg.Surface,
         legs_img: pg.Surface,
         x=0,
         y=0,
     ):
-        self.settings, self._layer, self.sprite_groups = (
+        self.settings, self._layer, self.sprite_grouping = (
             settings,
             settings["layer"]["player"],
-            sprite_groups,
+            sprite_grouping,
         )
-        self.groups = sprite_groups.all_sprites, sprite_groups.player_sprite
+        self.groups = sprite_grouping.all_sprites, sprite_grouping.player_sprite
         pg.sprite.Sprite.__init__(self, self.groups)
         self.stance = "magic"
         self.image = player_img
@@ -54,7 +54,7 @@ class Player(pg.sprite.Sprite):
         self.coins = 0
         self.legs = Legs(
             self.settings,
-            self.sprite_groups,
+            (self.sprite_grouping.all_sprites, self.sprite_grouping.legs_sprite),
             legs_img,
         )
 
@@ -94,7 +94,7 @@ class Player(pg.sprite.Sprite):
                 )
                 Bullet(
                     self.settings,
-                    self.sprite_groups,
+                    (self.sprite_grouping.all_sprites, self.sprite_grouping.bullets),
                     game_client_data_bullet_img,
                     pos,
                     dir,
@@ -105,8 +105,8 @@ class Player(pg.sprite.Sprite):
                 Weapon_VFX(
                     self.settings,
                     (
-                        self.sprite_groups.all_sprites,
-                        self.sprite_groups.weaponvfx_sprite,
+                        self.sprite_grouping.all_sprites,
+                        self.sprite_grouping.weaponvfx_sprite,
                     ),
                     game_client_data_weaponvfx,
                     self.pos
@@ -142,9 +142,9 @@ class Player(pg.sprite.Sprite):
         self.rect.center = self.pos
         self.pos += self.vel * game_client_dt
         self.hit_rect.centerx = self.pos.x
-        collide_with_walls(self, self.sprite_groups.walls, "x")
+        collide_with_walls(self, self.sprite_grouping.walls, "x")
         self.hit_rect.centery = self.pos.y
-        collide_with_walls(self, self.sprite_groups.walls, "y")
+        collide_with_walls(self, self.sprite_grouping.walls, "y")
         self.rect.center = self.hit_rect.center
 
     def add_hp(self, amount: int):

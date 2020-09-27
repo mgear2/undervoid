@@ -20,8 +20,7 @@ class Cursor(pg.sprite.Sprite):
         cursor_img: list,
     ):
         self._layer = settings["layer"]["cursor"]
-        self.groups = sprite_groups
-        pg.sprite.Sprite.__init__(self, self.groups)
+        pg.sprite.Sprite.__init__(self, sprite_groups)
         self.cursor_img = cursor_img
         self.image = cursor_img[0]
         self.rect = self.image.get_rect()

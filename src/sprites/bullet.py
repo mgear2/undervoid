@@ -19,7 +19,7 @@ class Bullet(pg.sprite.Sprite):
     def __init__(
         self,
         settings: ruamel.yaml.comments.CommentedMap,
-        sprite_grouping: Grouping,
+        sprite_groups: (pg.sprite.Group),
         game_client_data_vbullet_img: pg.Surface,
         pos: vec,
         dir: vec,
@@ -27,9 +27,7 @@ class Bullet(pg.sprite.Sprite):
     ):
         self.settings = settings
         self._layer = self.settings["layer"]["bullet"]
-        self.sprite_grouping = sprite_grouping
-        self.groups = sprite_grouping.all_sprites, sprite_grouping.bullets
-        pg.sprite.Sprite.__init__(self, self.groups)
+        pg.sprite.Sprite.__init__(self, sprite_groups)
         self.rot = rot
         self.image = pg.transform.rotate(game_client_data_vbullet_img, self.rot + 90)
         self.rect = self.image.get_rect()
@@ -46,8 +44,7 @@ class Bullet(pg.sprite.Sprite):
         self.pos += self.vel * game_client_dt
         self.rect.center = self.pos
         if (
-            pg.sprite.spritecollideany(self, self.sprite_grouping.stops_bullets)
-            or pg.time.get_ticks() - self.spawn_time
+            pg.time.get_ticks() - self.spawn_time
             > self.settings["weapon"]["vbullet"]["life"]
         ):
             self.kill()
