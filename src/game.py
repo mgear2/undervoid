@@ -9,6 +9,8 @@ import ruamel.yaml
 from os import path, environ
 from src.sprites.player import Player
 from src.sprites.sprites import *
+from src.sprites.item import Item
+from src.sprites.grave import Grave
 from src.sprites.cursor import Cursor
 from src.sprites.grouping import Grouping
 from src.forge import Forge
@@ -115,21 +117,13 @@ class Game:
         self.sprite_grouping.stops_bullets.update(
             self.player.pos, self.level, self.data.biomes
         )
-        for mob in self.sprite_grouping.mobs:
-            self.mob_count += mob.update(
-                self.player.pos,
-                self.data.mob_img,
-                self.data.sounds,
-                dt,
-                self.data.item_img,
-                self.mob_count,
-            )
+        self.handle_mobs(dt)
         self.sprite_grouping.bullets.update(dt)
-        hits = pg.sprite.groupcollide(
+        pg.sprite.groupcollide(
             self.sprite_grouping.bullets,
             self.sprite_grouping.stops_bullets,
-            True,
-            False,
+            True,  # destroys sprites from the first group (bullets)
+            False,  # but not the second (stops_bullets) if they collided
         )
         self.sprite_grouping.graves.update()
         self.sprite_grouping.items.update()
@@ -149,7 +143,52 @@ class Game:
                 self.player.pos, self.mob_count, self.mob_max
             )
         self.camera.update(self.player)
-        # player hits items
+        self.handle_item_hits()
+        self.handle_mob_hits()
+        self.handle_bullet_hits()
+        self.handle_background_fade()
+        return self.player.hp, self.player.coins
+
+    def handle_mobs(self, dt: float):
+        """
+        Helper function which handles mob updates, grave placement, and item drops.
+        """
+        for mob in self.sprite_grouping.mobs:
+            alive, dropped_item = mob.update(
+                self.player.pos,
+                self.data.mob_img,
+                self.data.sounds,
+                dt,
+                self.mob_count,
+                self.sprite_grouping.mobs,
+                self.sprite_grouping.walls,
+            )
+            if not alive:
+                self.mob_count -= 1
+                Grave(
+                    self.settings,
+                    self.sprite_grouping.all_sprites,
+                    self.sprite_grouping.graves,
+                    self.data.mob_img,
+                    mob.kind,
+                    mob.pos,
+                    mob.rot,
+                )
+                if dropped_item:
+                    Item(
+                        self.settings,
+                        (self.sprite_grouping.all_sprites, self.sprite_grouping.items),
+                        self.data.item_img,
+                        mob.pos,
+                        dropped_item[0],
+                        dropped_item[1],
+                    )
+                mob.kill()
+
+    def handle_item_hits(self):
+        """
+        Helper function which handles instances of the player hitting items.
+        """
         hits = pg.sprite.spritecollide(
             self.player, self.sprite_grouping.items, False, collide_hit_rect
         )
@@ -166,7 +205,11 @@ class Game:
                 if self.settings["gen"]["sound"] == "on":
                     self.data.sounds["treasure03"].play()
                 self.player.coins += 1
-        # mobs hitting player
+
+    def handle_mob_hits(self):
+        """
+        Helper function which handles instances of mobs hitting the player.
+        """
         hits = pg.sprite.spritecollide(
             self.player, self.sprite_grouping.mobs, False, collide_hit_rect
         )
@@ -185,7 +228,11 @@ class Game:
                 hit.pos += vec(self.settings["mob"]["thrall"]["knockback"], 0).rotate(
                     hits[0].rot
                 )
-        # bullets hitting mobs
+
+    def handle_bullet_hits(self):
+        """
+        Helper function which handles instances of bullets hitting mobs.
+        """
         hits = pg.sprite.groupcollide(
             self.sprite_grouping.mobs, self.sprite_grouping.bullets, False, True
         )
@@ -195,7 +242,12 @@ class Game:
                 * self.settings["player"]["dmg_mult"]
             )
             # hit.vel = vec(0, 0)
-        # https://stackoverflow.com/questions/51973441/how-to-fade-from-one-colour-to-another-in-pygame
+
+    def handle_background_fade(self):
+        """
+        Helper function which handles a single step of the continuous background color fade.
+        Also see: https://stackoverflow.com/questions/51973441/how-to-fade-from-one-colour-to-another-in-pygame
+        """
         self.step += 1
         if self.step < self.number_of_steps:
             self.current_color = [
@@ -209,4 +261,3 @@ class Game:
             self.base_color = self.next_color
             self.next_color = choice(self.settings["void_colors"])
         self.bg_color = self.current_color
-        return self.player.hp, self.player.coins

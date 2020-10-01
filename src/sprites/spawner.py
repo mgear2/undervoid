@@ -70,23 +70,23 @@ class Spawner(pg.sprite.Sprite):
                         break
                     elif self.level_data[row][col] == "." and random() < 0.25:
                         if random() < 0.5:
-                            Mob(
+                            mob = Mob(
                                 self.settings,
-                                self.sprite_grouping,
                                 self.img,
                                 "sleeper",
                                 col,
                                 row,
                             )
                         else:
-                            Mob(
+                            mob = Mob(
                                 self.settings,
-                                self.sprite_grouping,
                                 self.img,
                                 "thrall",
                                 col,
                                 row,
                             )
+                        self.sprite_grouping.all_sprites.add(mob)
+                        self.sprite_grouping.mobs.add(mob)
                         count += 1
         self.kill()
         return count
