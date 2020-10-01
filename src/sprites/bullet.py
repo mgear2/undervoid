@@ -22,7 +22,7 @@ class Bullet(pg.sprite.Sprite):
         sprite_groups: (pg.sprite.Group),
         game_client_data_vbullet_img: pg.Surface,
         pos: vec,
-        dir: vec,
+        direction: vec,
         rot: float,
     ):
         self.settings = settings
@@ -37,7 +37,9 @@ class Bullet(pg.sprite.Sprite):
             -self.settings["weapon"]["vbullet"]["spread"],
             self.settings["weapon"]["vbullet"]["spread"],
         )
-        self.vel = dir.rotate(spread) * self.settings["weapon"]["vbullet"]["speed"]
+        self.vel = (
+            direction.rotate(spread) * self.settings["weapon"]["vbullet"]["speed"]
+        )
         self.spawn_time = pg.time.get_ticks()
 
     def update(self, game_client_dt: float):

@@ -71,10 +71,12 @@ class Game:
             self.init_player = False
             self.player = Player(
                 self.settings,
-                self.sprite_grouping,
                 self.data.player_img[self.character]["magic"],
                 self.data.player_img[self.character]["move"],
             )
+            self.sprite_grouping.all_sprites.add(self.player, self.player.legs)
+            self.sprite_grouping.player_sprite.add(self.player)
+            self.sprite_grouping.legs_sprite.add(self.player.legs)
         self.map = Forge(
             self.settings,
             self.sprite_grouping,
@@ -134,6 +136,10 @@ class Game:
             dt,
             self.data.vbullet_img,
             self.data.weapon_vfx,
+            self.sprite_grouping.all_sprites,
+            self.sprite_grouping.bullets,
+            self.sprite_grouping.weaponvfx_sprite,
+            self.sprite_grouping.walls,
         )
         self.sprite_grouping.cursor_sprite.update()
         self.sprite_grouping.weaponvfx_sprite.update()

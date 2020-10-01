@@ -21,13 +21,12 @@ class Legs(pg.sprite.Sprite):
     def __init__(
         self,
         settings: ruamel.yaml.comments.CommentedMap,
-        sprite_groups: (pg.sprite.Group),
         player_img: pg.Surface,
         x=0,
         y=0,
     ):
         self._layer = settings["layer"]["player_move"]
-        pg.sprite.Sprite.__init__(self, sprite_groups)
+        pg.sprite.Sprite.__init__(self)
         self.images = player_img
         self.image = self.images[0]
         self.current = self.image

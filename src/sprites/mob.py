@@ -70,9 +70,7 @@ class Mob(pg.sprite.Sprite):
     ) -> (bool, str):
         self.target_dist = player_pos - self.pos
         self.rot = self.target_dist.angle_to(vec(1, 0))
-        self.image = pg.transform.rotate(
-            data_mob_img["base"][self.kind], self.rot
-        )
+        self.image = pg.transform.rotate(data_mob_img["base"][self.kind], self.rot)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
         if (
