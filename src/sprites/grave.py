@@ -21,8 +21,6 @@ class Grave(pg.sprite.Sprite):
     def __init__(
         self,
         settings: ruamel.yaml.comments.CommentedMap,
-        all_sprites: pg.sprite.LayeredUpdates,
-        grave_group: pg.sprite.Group,
         game_client_data_mob_img: pg.Surface,
         kind: str,
         pos: vec,
@@ -30,8 +28,7 @@ class Grave(pg.sprite.Sprite):
     ):
         self.settings = settings
         self._layer = self.settings["layer"]["grave"]
-        self.groups = all_sprites, grave_group
-        pg.sprite.Sprite.__init__(self, self.groups)
+        pg.sprite.Sprite.__init__(self)
         self.pos = pos
         self.image = pg.transform.rotate(
             pg.transform.scale(

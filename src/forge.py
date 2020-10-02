@@ -8,11 +8,11 @@ import ruamel.yaml
 from random import choice, random
 from os import path
 from src.sprites.sprites import *
-from src.sprites.pmove import pMove
+from src.sprites.grouping import Grouping
 from src.sprites.player import Player
 from src.sprites.item import Item
 from src.sprites.wall import Wall, Rift
-from src.spawner import Spawner
+from src.sprites.spawner import Spawner
 from src.loader import Loader
 
 vec = pg.math.Vector2
@@ -26,51 +26,24 @@ class Forge:
 
     def __init__(
         self,
-        client_data: Loader,
-        all_sprites: pg.sprite.LayeredUpdates,
-        walls,
-        stops_bullets: pg.sprite.Group,
-        character: str,
-        player_sprite,
-        pmove_sprite: pg.sprite.Group,
-        init_player: bool,
-        player: Player,
-        pmove: pMove,
-        items,
-        spawners,
-        mobs: pg.sprite.Group,
         settings: ruamel.yaml.comments.CommentedMap,
+        sprite_grouping: Grouping,
+        client_data: Loader,
+        character: str,
+        player: Player,
         lvl_pieces=1,
     ):
         (
             self.client_data,
-            self.all_sprites,
-            self.walls,
-            self.stops_bullets,
+            self.sprite_grouping,
             self.character,
-            self.player_sprite,
-            self.pmove_sprite,
-            self.init_player,
             self.player,
-            self.pmove,
-            self.items,
-            self.spawners,
-            self.mobs,
             self.settings,
         ) = (
             client_data,
-            all_sprites,
-            walls,
-            stops_bullets,
+            sprite_grouping,
             character,
-            player_sprite,
-            pmove_sprite,
-            init_player,
             player,
-            pmove,
-            items,
-            spawners,
-            mobs,
             settings,
         )
         self.forge_data, self.level_data, self.rot, self.max_size = (
@@ -140,36 +113,28 @@ class Forge:
                 if tile == "0":
                     Wall(
                         self.settings,
-                        self.all_sprites,
-                        self.walls,
-                        self.stops_bullets,
+                        self.sprite_grouping,
                         vec(x, y + y_offset) * self.settings["gen"]["tilesize"],
                         False,
                     )
                 if tile == "1":
                     Wall(
                         self.settings,
-                        self.all_sprites,
-                        self.walls,
-                        self.stops_bullets,
+                        self.sprite_grouping,
                         vec(x, y + y_offset) * self.settings["gen"]["tilesize"],
                         True,
                     )
                 if tile == "y" and i == 0:
                     Wall(
                         self.settings,
-                        self.all_sprites,
-                        self.walls,
-                        self.stops_bullets,
+                        self.sprite_grouping,
                         vec(x, y + y_offset) * self.settings["gen"]["tilesize"],
                         False,
                     )
                 if tile == "x" and i == self.max_size - 1:
                     Wall(
                         self.settings,
-                        self.all_sprites,
-                        self.walls,
-                        self.stops_bullets,
+                        self.sprite_grouping,
                         vec(x, y + y_offset) * self.settings["gen"]["tilesize"],
                         True,
                     )
@@ -177,56 +142,31 @@ class Forge:
                 if tile == "R" and i == 0:
                     Rift(
                         self.settings,
-                        self.all_sprites,
-                        self.walls,
-                        self.stops_bullets,
+                        self.sprite_grouping,
                         self.client_data.rift_img,
                         vec(x, y + y_offset) * self.settings["gen"]["tilesize"],
                     )
                 if tile == "M":
-                    Spawner(
+                    spawner = Spawner(
+                        self.settings,
                         self.level_data,
                         self.client_data.mob_img,
-                        self.all_sprites,
-                        self.spawners,
-                        self.mobs,
-                        self.settings,
                         x,
                         y + y_offset,
                     )
+                    self.sprite_grouping.spawners.add(spawner)
                 if tile == "p":
-                    Item(
+                    item = Item(
                         self.settings,
-                        self.all_sprites,
-                        self.items,
                         self.client_data.item_img,
                         vec(x, y + y_offset) * self.settings["gen"]["tilesize"],
                         "redpotion",
                         "hp",
                     )
+                    self.sprite_grouping.all_sprites.add(item)
+                    self.sprite_grouping.items.add(item)
                 if tile == "P" and i == self.max_size - 1:
-                    if self.init_player:
-                        # print(self.character)
-                        self.player = Player(
-                            self.settings,
-                            self.all_sprites,
-                            self.player_sprite,
-                            self.client_data.player_img[self.character]["magic"],
-                            col,
-                            row + row_offset,
-                        )
-                        self.pmove = pMove(
-                            self.settings,
-                            self.all_sprites,
-                            self.pmove_sprite,
-                            self.client_data.player_img[self.character]["move"],
-                            col,
-                            row + row_offset,
-                        )
-                        self.init_player = False
-                    else:
-                        self.player.place(col, row + row_offset)
-                        self.pmove.place(col, row + row_offset)
+                    self.player.place(col, row + row_offset)
 
     def make_map(self) -> pg.Surface:
         """

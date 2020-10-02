@@ -8,6 +8,7 @@ import ruamel.yaml
 from random import randint, random
 from src.sprites.mob import Mob
 from src.sprites.player import Player
+from src.sprites.grouping import Grouping
 
 vec = pg.math.Vector2
 
@@ -20,25 +21,27 @@ class Spawner(pg.sprite.Sprite):
 
     def __init__(
         self,
+        settings: ruamel.yaml.comments.CommentedMap,
         level_data,
         img: list,
-        all_sprites,
-        spawners,
-        mobs: pg.sprite.Group,
-        settings: ruamel.yaml.comments.CommentedMap,
         col,
         row: int,
     ):
         self.level_data = level_data
         self.img = img
         self.settings = settings
-        self.groups = spawners
-        self.all_sprites, self.mobs = all_sprites, mobs
-        pg.sprite.Sprite.__init__(self, self.groups)
+        pg.sprite.Sprite.__init__(self)
         self.cols, self.rows = col, row
         self.pos = vec(col, row) * settings["gen"]["tilesize"]
 
-    def update(self, player_pos: vec, mob_count, mob_max: int) -> int:
+    def update(
+        self,
+        player_pos: vec,
+        mob_count,
+        mob_max: int,
+        all_sprites,
+        mobs: pg.sprite.Group,
+    ) -> int:
         """
         Tracks distance to player and calls spawn function
         when appropriate.
@@ -50,13 +53,14 @@ class Spawner(pg.sprite.Sprite):
             < self.settings["gen"]["spawn_max_dist"] ** 2
             and mob_count < mob_max
         ):
-            return self.spawn()
+            return self.spawn(all_sprites, mobs)
         return 0
 
-    def spawn(self) -> int:
+    def spawn(self, all_sprites, mobs: pg.sprite.Group) -> int:
         """
         Spawns enemies pseudo-randomly in an 8x8 tile area
         centered on the Spawner.
+        Returns count of enemies spawned.
         """
         max_count = randint(
             self.settings["gen"]["spawn_min"],
@@ -70,25 +74,23 @@ class Spawner(pg.sprite.Sprite):
                         break
                     elif self.level_data[row][col] == "." and random() < 0.25:
                         if random() < 0.5:
-                            Mob(
+                            mob = Mob(
                                 self.settings,
-                                self.all_sprites,
-                                self.mobs,
                                 self.img,
                                 "sleeper",
                                 col,
                                 row,
                             )
                         else:
-                            Mob(
+                            mob = Mob(
                                 self.settings,
-                                self.all_sprites,
-                                self.mobs,
                                 self.img,
                                 "thrall",
                                 col,
                                 row,
                             )
+                        all_sprites.add(mob)
+                        mobs.add(mob)
                         count += 1
         self.kill()
         return count

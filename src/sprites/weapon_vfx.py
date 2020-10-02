@@ -20,16 +20,12 @@ class Weapon_VFX(pg.sprite.Sprite):
     def __init__(
         self,
         settings: ruamel.yaml.comments.CommentedMap,
-        all_sprites: pg.sprite.LayeredUpdates,
-        weaponvfx_sprite: pg.sprite.Group,
         game_client_data_weaponvfx: list,
         pos: vec,
     ):
         self.settings = settings
         self._layer = self.settings["layer"]["vfx"]
-        self.groups = all_sprites, weaponvfx_sprite
-        pg.sprite.Sprite.__init__(self, self.groups)
-
+        pg.sprite.Sprite.__init__(self)
         self.image = pg.transform.scale(
             choice(game_client_data_weaponvfx),
             (

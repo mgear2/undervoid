@@ -24,18 +24,18 @@ class Client:
     def __init__(self):
         pg.init()
         pg.mixer.init()
-        self.game, self.player, self.character = None, None, None
+        self.character = self.dt = None
+        self.clock = pg.time.Clock()
         with open("settings.yaml") as f:
             self.settings = yaml.load(f)
             f.close()
         self.init_game_window()
         pg.display.set_caption(self.settings["gen"]["title"])
-        self.clock = pg.time.Clock()
         pg.key.set_repeat(100, 100)
         self.data = Loader(self.settings)
         self.data.build_path()
         self.data.load_data()
-
+        self.hp = self.max_hp = self.settings["player"]["hp"]
         pg.mouse.set_visible(False)
         pg.display.set_icon(self.data.undervoid_icon)
 
@@ -57,18 +57,16 @@ class Client:
                 (self.settings["gen"]["width"], self.settings["gen"]["height"])
             )
 
-    def draw(self):
+    def draw(self, game):
         """
         Draws the map and all sprites.
         Draws Player health and gold coins.
         """
         pg.display.set_caption("Undervoid")
-        self.screen.fill(self.game.bg_color)
-        self.screen.blit(
-            self.game.map_img, self.game.camera.apply_rect(self.game.map_rect)
-        )
+        self.screen.fill(game.bg_color)
+        self.screen.blit(game.map_img, game.camera.apply_rect(game.map_rect))
         # self.draw_grid()
-        for sprite in self.game.all_sprites:
+        for sprite in game.sprite_grouping.all_sprites:
             if isinstance(sprite, Mob) and sprite.hp < sprite.max_hp:
                 draw_hp(
                     self,
@@ -80,18 +78,18 @@ class Client:
                     int(self.settings["gen"]["tilesize"] / 10),
                     False,
                 )
-            self.screen.blit(sprite.image, self.game.camera.apply(sprite))
+            self.screen.blit(sprite.image, game.camera.apply(sprite))
         draw_hp(
             self,
             self.screen,
             10,
             self.settings["gen"]["height"] - 30,
-            self.player.hp / self.player.max_hp,
+            game.player.hp / game.player.max_hp,
             200,
             15,
             True,
         )
-        draw_score(self)
+        draw_score(self, game.player.coins)
         if self.settings["gen"]["displayfps"] == "on":
             draw_fps(self)
         pg.display.flip()
@@ -142,14 +140,13 @@ class Client:
         This method is used upon player death to restart at the main menu.
         """
         self.show_start_screen()
-        g = Game(c)
+        g = Game(c.data, c.character)
         self.run(g)
 
     def run(self, game: Game):
         """
         Game loop; ticks the clock, checks for events, updates game state, draws game state
         """
-        self.game = game
         if self.settings["gen"]["music"] == "on":
             pg.mixer.music.load(
                 path.join(self.data.music_folder, self.settings["music"]["leavinghome"])
@@ -161,10 +158,10 @@ class Client:
             # tick_busy_loop() uses more cpu but is more accurate
             self.dt = self.clock.tick_busy_loop(self.settings["gen"]["fps"]) / 1000
             self.events()
-            game.update()
-            if self.player.hp <= 0:
+            game.update(self.dt)
+            if game.player.hp <= 0:
                 self.playing = False
-            self.draw()
+            self.draw(game)
 
     def quit(self):
         """
@@ -177,7 +174,7 @@ class Client:
 if __name__ == "__main__":
     c = Client()
     c.show_start_screen()
-    g = Game(c)
+    g = Game(c.data, c.character)
     while True:
         c.run(g)
         c.show_go_screen()

@@ -16,14 +16,10 @@ class Cursor(pg.sprite.Sprite):
     def __init__(
         self,
         settings: ruamel.yaml.comments.CommentedMap,
-        all_sprites: pg.sprite.LayeredUpdates,
-        cursor_sprite: pg.sprite.Group,
         cursor_img: list,
     ):
         self._layer = settings["layer"]["cursor"]
-        self.groups = all_sprites, cursor_sprite
-        pg.sprite.Sprite.__init__(self, self.groups)
-        # self.game = game
+        pg.sprite.Sprite.__init__(self)
         self.cursor_img = cursor_img
         self.image = cursor_img[0]
         self.rect = self.image.get_rect()

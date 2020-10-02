@@ -5,6 +5,7 @@
 
 import pygame as pg
 import ruamel.yaml
+from src.sprites.grouping import Grouping
 from random import uniform
 
 vec = pg.math.Vector2
@@ -18,20 +19,14 @@ class Bullet(pg.sprite.Sprite):
     def __init__(
         self,
         settings: ruamel.yaml.comments.CommentedMap,
-        all_sprites: pg.sprite.LayeredUpdates,
-        bullets: pg.sprite.Group,
         game_client_data_vbullet_img: pg.Surface,
-        stops_bullets: bool,
         pos: vec,
-        dir: vec,
+        direction: vec,
         rot: float,
     ):
-        self.settings = settings
-        self.stops_bullets = stops_bullets
+        self.settings, self.rot = settings, rot
         self._layer = self.settings["layer"]["bullet"]
-        self.groups = all_sprites, bullets
-        pg.sprite.Sprite.__init__(self, self.groups)
-        self.rot = rot
+        pg.sprite.Sprite.__init__(self)
         self.image = pg.transform.rotate(game_client_data_vbullet_img, self.rot + 90)
         self.rect = self.image.get_rect()
         self.pos = vec(pos)
@@ -40,15 +35,15 @@ class Bullet(pg.sprite.Sprite):
             -self.settings["weapon"]["vbullet"]["spread"],
             self.settings["weapon"]["vbullet"]["spread"],
         )
-        self.vel = dir.rotate(spread) * self.settings["weapon"]["vbullet"]["speed"]
+        self.lifetime = self.settings["weapon"]["vbullet"]["life"]
+        self.vel = (
+            direction.rotate(spread) * self.settings["weapon"]["vbullet"]["speed"]
+        )
         self.spawn_time = pg.time.get_ticks()
 
-    def update(self, game_client_dt: float):
+    def update(self, game_client_dt: float, bullets, stops_bullets: pg.sprite.Group):
         self.pos += self.vel * game_client_dt
         self.rect.center = self.pos
-        if (
-            pg.sprite.spritecollideany(self, self.stops_bullets)
-            or pg.time.get_ticks() - self.spawn_time
-            > self.settings["weapon"]["vbullet"]["life"]
-        ):
+        if pg.time.get_ticks() - self.spawn_time > self.lifetime:
             self.kill()
+        pg.sprite.groupcollide(bullets, stops_bullets, True, False)

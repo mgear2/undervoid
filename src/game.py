@@ -7,11 +7,16 @@ import pygame as pg
 import sys
 import ruamel.yaml
 from os import path, environ
+from src.sprites.player import Player
 from src.sprites.sprites import *
+from src.sprites.item import Item
+from src.sprites.grave import Grave
 from src.sprites.cursor import Cursor
+from src.sprites.grouping import Grouping
 from src.forge import Forge
-from src.spawner import Spawner
+from src.sprites.spawner import Spawner
 from src.camera import Camera
+from src.loader import Loader
 from random import random, randint
 
 yaml = ruamel.yaml.YAML()
@@ -22,33 +27,16 @@ class Game:
     Overarching Game class; loads and manipulates game data and runs the main game loop.
     """
 
-    def __init__(self, client):
+    def __init__(self, data: Loader, character: str):
         """
         Initializes sprite groups, builds initial level,
         specifies variables to be used for morphing background color.
         """
-        self.client = client
-        self.player, self.pmove, self.character, self.map = (
-            self.client.player,
-            None,
-            self.client.character,
-            None,
-        )
+        self.data, self.character, self.player, self.map = data, character, None, None
         with open("settings.yaml") as f:
             self.settings = yaml.load(f)
             f.close()
-        self.all_sprites = pg.sprite.LayeredUpdates()
-        self.pmove_sprite = pg.sprite.Group()
-        self.walls = pg.sprite.Group()
-        self.stops_bullets = pg.sprite.Group()
-        self.mobs = pg.sprite.Group()
-        self.bullets = pg.sprite.Group()
-        self.graves = pg.sprite.Group()
-        self.items = pg.sprite.Group()
-        self.player_sprite = pg.sprite.Group()
-        self.cursor_sprite = pg.sprite.Group()
-        self.weaponvfx_sprite = pg.sprite.Group()
-        self.spawners = pg.sprite.Group()
+        self.sprite_grouping = Grouping()
         self.init_player = True
         self.level("temple.txt", "void")
         # https://stackoverflow.com/questions/51973441/how-to-fade-from-one-colour-to-another-in-pygame
@@ -58,18 +46,18 @@ class Game:
         self.number_of_steps = self.change_every_x_seconds * self.settings["gen"]["fps"]
         self.step = 1
 
-    def level(self, target_lvl, biome):
+    def level(self, target_lvl, biome: str):
         """
         Utilizes the Forge class to build and returns a level with the desired specifications.
         If the level is "gen", a new level will be generated. Otherwise, Forge will attempt to
         load a map from the specified file.
         """
-        for sprite in self.all_sprites:
-            if sprite != self.client.player and sprite != self.client.pmove:
+        for sprite in self.sprite_grouping.all_sprites:
+            if sprite != self.player and sprite != self.player.legs:
                 sprite.kill()
-        for wall in self.walls:
+        for wall in self.sprite_grouping.walls:
             wall.kill()
-        for spawner in self.spawners:
+        for spawner in self.sprite_grouping.spawners:
             spawner.kill()
         if target_lvl == "gen":
             lvl_pieces, surf_w, surf_h = (
@@ -79,21 +67,22 @@ class Game:
             )
         else:
             lvl_pieces, surf_w, surf_h = 1, 128, 128
+        if self.init_player:
+            self.init_player = False
+            self.player = Player(
+                self.settings,
+                self.data.player_img[self.character]["magic"],
+                self.data.player_img[self.character]["move"],
+            )
+            self.sprite_grouping.all_sprites.add(self.player, self.player.legs)
+            self.sprite_grouping.player_sprite.add(self.player)
+            self.sprite_grouping.legs_sprite.add(self.player.legs)
         self.map = Forge(
-            self.client.data,
-            self.all_sprites,
-            self.walls,
-            self.stops_bullets,
-            self.character,
-            self.player_sprite,
-            self.pmove_sprite,
-            self.init_player,
-            self.player,
-            self.pmove,
-            self.items,
-            self.spawners,
-            self.mobs,
             self.settings,
+            self.sprite_grouping,
+            self.data,
+            self.character,
+            self.player,
             lvl_pieces,
         )
         if target_lvl == "gen":
@@ -101,28 +90,24 @@ class Game:
         else:
             self.map.load(target_lvl)
             if target_lvl == "temple.txt" and not self.init_player:
-                self.client.player.hp = self.client.player.max_hp
+                self.player.hp = self.player.max_hp
         self.map.new_surface(surf_w, surf_h)
-        if self.init_player:
-            self.init_player = False
         self.map.build_lvl(biome)
         self.map_img = self.map.make_map()
         self.map_rect = self.map_img.get_rect()
         self.cursor = Cursor(
             self.settings,
-            self.all_sprites,
-            self.cursor_sprite,
-            self.client.data.cursor_img,
+            self.data.cursor_img,
         )
+        self.sprite_grouping.all_sprites.add(self.cursor)
+        self.sprite_grouping.cursor_sprite.add(self.cursor)
         self.camera = Camera(
             self.settings, self.map.width, self.map.height, self.cursor
         )
-        self.player = self.client.player = self.map.player
-        self.pmove = self.client.pmove = self.map.pmove
-        self.mob_count = 0
-        self.mob_max = self.settings["gen"]["mob_max"]
+        self.player = self.map.player
+        self.mob_count, self.mob_max = 0, self.settings["gen"]["mob_max"]
 
-    def update(self):
+    def update(self, dt: float):
         """
         Updates sprites, spawners and camera.
         Checks for player hitting items and resolves hits.
@@ -130,96 +115,149 @@ class Game:
         Checks for bullets hitting mobs and resolves hits.
         Morphs the background color one step.
         """
-        # self.all_sprites.update()
-
-        self.walls.update(self.client.player.pos, self.level, self.client.data.biomes)
-        self.stops_bullets.update(
-            self.client.player.pos, self.level, self.client.data.biomes
+        self.sprite_grouping.rifts.update(self.player.pos, self.level, self.data.biomes)
+        self.handle_mobs(dt)
+        self.sprite_grouping.bullets.update(
+            dt, self.sprite_grouping.bullets, self.sprite_grouping.stops_bullets
         )
-        for mob in self.mobs:
-            self.mob_count += mob.update(
-                self.client.player.pos,
-                self.client.data.mob_img,
-                self.client.data.sounds,
-                self.client.dt,
-                self.walls,
-                self.graves,
-                self.items,
-                self.client.data.item_img,
-                self.mob_count,
-            )
-        self.bullets.update(self.client.dt)
-        self.graves.update()
-        self.items.update()
-        self.player_sprite.update(
-            self.cursor.pos,
-            self.client.data.sounds["wave01"],
-            self.client.data.player_img[self.client.character]["magic"],
-            self.client.dt,
-            self.walls,
-            self.bullets,
-            self.client.data.vbullet_img,
-            self.stops_bullets,
-            self.weaponvfx_sprite,
-            self.client.data.weapon_vfx,
-        )
-        self.cursor_sprite.update()
-        self.weaponvfx_sprite.update()
-        self.pmove_sprite.update(self.client.player.vel, self.client.player.pos)
-        for spawner in self.spawners:
+        self.sprite_grouping.items.update()
+        self.handle_player(dt)
+        self.sprite_grouping.cursor_sprite.update()
+        self.sprite_grouping.weaponvfx_sprite.update()
+        self.sprite_grouping.legs_sprite.update(self.player.vel, self.player.pos)
+        for spawner in self.sprite_grouping.spawners:
             self.mob_count += spawner.update(
-                self.player.pos, self.mob_count, self.mob_max
+                self.player.pos,
+                self.mob_count,
+                self.mob_max,
+                self.sprite_grouping.all_sprites,
+                self.sprite_grouping.mobs,
             )
-        self.camera.update(self.client.player)
-        # player hits items
+        self.camera.update(self.player)
+        self.handle_item_hits()
+        self.handle_mob_hits()
+        self.handle_bullet_hits()
+        self.handle_background_fade()
+
+    def handle_player(self, dt: float):
+        """
+        Helper function which handles player updates with bullet and vfx sprite group additions.
+        """
+        for player_sprite in self.sprite_grouping.player_sprite:
+            bullet, vfx = player_sprite.update(
+                self.cursor.pos,
+                self.data.sounds["wave01"],
+                self.data.player_img[self.character]["magic"],
+                dt,
+                self.data.vbullet_img,
+                self.data.weapon_vfx,
+                self.sprite_grouping.walls,
+            )
+            if bullet:
+                self.sprite_grouping.all_sprites.add(bullet, vfx)
+                self.sprite_grouping.bullets.add(bullet)
+                self.sprite_grouping.weaponvfx_sprite.add(vfx)
+
+    def handle_mobs(self, dt: float):
+        """
+        Helper function which handles mob updates, grave placement, and item drops.
+        """
+        for mob in self.sprite_grouping.mobs:
+            alive, dropped_item = mob.update(
+                self.player.pos,
+                self.data.mob_img,
+                self.data.sounds,
+                dt,
+                self.mob_count,
+                self.sprite_grouping.mobs,
+                self.sprite_grouping.walls,
+            )
+            if not alive:
+                self.mob_count -= 1
+                grave = Grave(
+                    self.settings,
+                    self.data.mob_img,
+                    mob.kind,
+                    mob.pos,
+                    mob.rot,
+                )
+                self.sprite_grouping.all_sprites.add(grave)
+                self.sprite_grouping.graves.add(grave)
+                if dropped_item:
+                    item = Item(
+                        self.settings,
+                        self.data.item_img,
+                        mob.pos,
+                        dropped_item[0],
+                        dropped_item[1],
+                    )
+                    self.sprite_grouping.all_sprites.add(item)
+                    self.sprite_grouping.items.add(item)
+                mob.kill()
+
+    def handle_item_hits(self):
+        """
+        Helper function which handles instances of the player hitting items.
+        """
         hits = pg.sprite.spritecollide(
-            self.client.player, self.items, False, collide_hit_rect
+            self.player, self.sprite_grouping.items, False, collide_hit_rect
         )
         for hit in hits:
-            if (
-                hit.kind == "hp"
-                and self.client.player.hp < self.settings["player"]["hp"]
-            ):
+            if hit.kind == "hp" and self.player.hp < self.settings["player"]["hp"]:
                 hit.kill()
                 if self.settings["gen"]["sound"] == "on":
-                    self.client.sounds["treasure02"].play()
-                self.client.player.add_hp(
-                    self.settings["items"]["potions"]["red"]["hp"]
-                    * self.client.player.max_hp
+                    self.data.sounds["treasure02"].play()
+                self.player.add_hp(
+                    self.settings["items"]["potions"]["red"]["hp"] * self.player.max_hp
                 )
             if hit.kind == "gp":
                 hit.kill()
                 if self.settings["gen"]["sound"] == "on":
-                    self.client.sounds["treasure03"].play()
-                self.client.player.coins += 1
-        # mobs hitting player
+                    self.data.sounds["treasure03"].play()
+                self.player.coins += 1
+
+    def handle_mob_hits(self):
+        """
+        Helper function which handles instances of mobs hitting the player.
+        """
         hits = pg.sprite.spritecollide(
-            self.client.player, self.mobs, False, collide_hit_rect
+            self.player, self.sprite_grouping.mobs, False, collide_hit_rect
         )
         for hit in hits:
             now = pg.time.get_ticks()
             if now - hit.last_hit > self.settings["mob"]["thrall"]["dmg_rate"]:
                 hit.last_hit = now
-                self.client.player.hp -= self.settings["mob"]["thrall"]["dmg"]
+                self.player.hp -= self.settings["mob"]["thrall"]["dmg"]
                 hit.vel = vec(0, 0)
-                self.client.player.pos += vec(
+                self.player.pos += vec(
                     self.settings["mob"]["thrall"]["knockback"], 0
                 ).rotate(-hits[0].rot)
                 if self.settings["gen"]["sound"] == "on":
-                    self.client.sounds[(choice(self.settings["hit_sounds"]))].play()
+                    self.data.sounds[(choice(self.settings["hit_sounds"]))].play()
             elif random() < 0.5:  # enemies get bounced back on ~50% of failed hits
                 hit.pos += vec(self.settings["mob"]["thrall"]["knockback"], 0).rotate(
                     hits[0].rot
                 )
-        # bullets hitting mobs
-        hits = pg.sprite.groupcollide(self.mobs, self.bullets, False, True)
+
+    def handle_bullet_hits(self):
+        """
+        Helper function which handles instances of bullets hitting mobs.
+        """
+        hits = pg.sprite.groupcollide(
+            self.sprite_grouping.mobs, self.sprite_grouping.bullets, False, True
+        )
         for hit in hits:
             hit.hp -= (
                 self.settings["weapon"]["vbullet"]["dmg"]
                 * self.settings["player"]["dmg_mult"]
             )
             # hit.vel = vec(0, 0)
-        # https://stackoverflow.com/questions/51973441/how-to-fade-from-one-colour-to-another-in-pygame
+
+    def handle_background_fade(self):
+        """
+        Helper function which handles a single step of the continuous background color fade.
+        Also see: https://stackoverflow.com/questions/51973441/how-to-fade-from-one-colour-to-another-in-pygame
+        """
         self.step += 1
         if self.step < self.number_of_steps:
             self.current_color = [

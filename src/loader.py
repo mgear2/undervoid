@@ -24,7 +24,7 @@ class Loader:
         self.sound_folder = path.join(self.data_folder, "sounds")
         self.fonts_folder = path.join(self.data_folder, "fonts")
 
-    def load_img(self, source: str, scale: tuple, alpha: bool):
+    def load_img(self, source: str, scale: tuple, alpha: bool) -> pg.Surface:
         """
         Used to load images from source files, scale them, and convert() or convert_alpha() as specified.
         """

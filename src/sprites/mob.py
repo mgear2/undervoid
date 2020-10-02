@@ -6,8 +6,6 @@
 import pygame as pg
 import ruamel.yaml
 from random import choice, random
-from src.sprites.grave import Grave
-from src.sprites.item import Item
 
 vec = pg.math.Vector2
 
@@ -20,8 +18,6 @@ class Mob(pg.sprite.Sprite):
     def __init__(
         self,
         settings: ruamel.yaml.comments.CommentedMap,
-        all_sprites: pg.sprite.LayeredUpdates,
-        mobs: pg.sprite.Group,
         game_client_data_mob_img: pg.Surface,
         kind: str,
         x,
@@ -30,8 +26,7 @@ class Mob(pg.sprite.Sprite):
         self.settings = settings
         self.kind = kind
         self._layer = self.settings["layer"]["mob"]
-        self.groups = all_sprites, mobs
-        pg.sprite.Sprite.__init__(self, self.groups)
+        pg.sprite.Sprite.__init__(self)
         self.image = game_client_data_mob_img["base"][kind].copy()
         self.rect = self.image.get_rect()
         self.rect.center = x, y
@@ -56,8 +51,8 @@ class Mob(pg.sprite.Sprite):
         self.last_hit = 0
         self.items = [("redpotion", "hp"), ("coin", "gp")]
 
-    def avoid_mobs(self):
-        for mob in self.groups[1]:
+    def avoid_mobs(self, mob_group):
+        for mob in mob_group:
             if mob != self:
                 dist = self.pos - mob.pos
                 if 0 < dist.length() < self.settings["gen"]["tilesize"] * 2:
@@ -66,20 +61,16 @@ class Mob(pg.sprite.Sprite):
     def update(
         self,
         player_pos: vec,
-        game_client_data_mob_img: dict,
+        data_mob_img,
         game_sounds: dict,
         game_client_dt: float,
-        game_walls,
-        grave_group,
-        item_group: pg.sprite.Group,
-        game_client_data_item_img: dict,
         mob_count: int,
-    ) -> int:
+        mob_group: pg.sprite.Group,
+        walls_group: pg.sprite.Group,
+    ) -> (bool, str):
         self.target_dist = player_pos - self.pos
         self.rot = self.target_dist.angle_to(vec(1, 0))
-        self.image = pg.transform.rotate(
-            game_client_data_mob_img["base"][self.kind], self.rot
-        )
+        self.image = pg.transform.rotate(data_mob_img["base"][self.kind], self.rot)
         self.rect = self.image.get_rect()
         self.rect.center = self.pos
         if (
@@ -95,7 +86,7 @@ class Mob(pg.sprite.Sprite):
             if self.settings["gen"]["sound"] == "on" and random() < 0.0015:
                 game_sounds["growl01"].play()
             self.acc = vec(1, 0).rotate(-self.rot)
-            self.avoid_mobs()
+            self.avoid_mobs(mob_group)
             try:
                 self.acc.scale_to_length(self.speed)
             except Exception as e:
@@ -107,34 +98,16 @@ class Mob(pg.sprite.Sprite):
                 self.vel * game_client_dt + 0.5 * self.acc * game_client_dt ** 1.025
             )
             self.hit_rect.centerx = self.pos.x
-            self.collide_with_walls(self, game_walls, "x")
+            self.collide_with_walls(self, walls_group, "x")
             self.hit_rect.centery = self.pos.y
-            self.collide_with_walls(self, game_walls, "y")
+            self.collide_with_walls(self, walls_group, "y")
             self.rect.center = self.hit_rect.center
         if self.hp <= 0:
-            Grave(
-                self.settings,
-                self.groups[0],
-                grave_group,
-                game_client_data_mob_img,
-                self.kind,
-                self.pos,
-                self.rot,
-            )
+            item = None
             if random() < self.settings["mob"][self.kind]["drop_chance"]:
                 item = choice(self.items)
-                Item(
-                    self.settings,
-                    self.groups[0],
-                    item_group,
-                    game_client_data_item_img,
-                    self.pos,
-                    item[0],
-                    item[1],
-                )
-            self.kill()
-            return -1
-        return 0
+            return False, item
+        return True, None
 
     def collide_with_walls(
         self, sprite: pg.sprite.Sprite, group: pg.sprite.Group, dir: str
