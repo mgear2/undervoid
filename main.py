@@ -24,7 +24,7 @@ class Client:
     def __init__(self):
         pg.init()
         pg.mixer.init()
-        self.character = self.coins = self.dt = None
+        self.character = self.dt = None
         self.clock = pg.time.Clock()
         with open("settings.yaml") as f:
             self.settings = yaml.load(f)
@@ -84,12 +84,12 @@ class Client:
             self.screen,
             10,
             self.settings["gen"]["height"] - 30,
-            self.hp / self.max_hp,
+            game.player.hp / game.player.max_hp,
             200,
             15,
             True,
         )
-        draw_score(self)
+        draw_score(self, game.player.coins)
         if self.settings["gen"]["displayfps"] == "on":
             draw_fps(self)
         pg.display.flip()
@@ -158,8 +158,8 @@ class Client:
             # tick_busy_loop() uses more cpu but is more accurate
             self.dt = self.clock.tick_busy_loop(self.settings["gen"]["fps"]) / 1000
             self.events()
-            self.hp, self.coins = game.update(self.dt)
-            if self.hp <= 0:
+            game.update(self.dt)
+            if game.player.hp <= 0:
                 self.playing = False
             self.draw(game)
 

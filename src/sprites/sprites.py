@@ -49,18 +49,18 @@ def draw_hp(
         pg.draw.rect(surface, client.settings["colors"]["white"], outline_rect, 2)
 
 
-def draw_score(client):
+def draw_score(client, coins):
     """
     Draws the players score and a coin image in the lower right corner of the screen.
     """
     score = client.text_format(
-        str(client.coins), client.font, 60, client.settings["colors"]["white"]
+        str(coins), client.font, 60, client.settings["colors"]["white"]
     )
     client.screen.blit(
         pg.transform.scale(client.data.item_img["coin"], (92, 92)),
         (client.settings["gen"]["width"] - 100, client.settings["gen"]["height"] - 100),
     )
-    score_x = 75 + len(str(client.coins)) * 25
+    score_x = 75 + len(str(coins)) * 25
     client.screen.blit(
         score,
         (

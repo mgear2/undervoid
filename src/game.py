@@ -106,14 +106,13 @@ class Game:
         self.player = self.map.player
         self.mob_count, self.mob_max = 0, self.settings["gen"]["mob_max"]
 
-    def update(self, dt: float) -> (int, int):
+    def update(self, dt: float):
         """
         Updates sprites, spawners and camera.
         Checks for player hitting items and resolves hits.
         Checks for mobs hitting player and resolves hits.
         Checks for bullets hitting mobs and resolves hits.
         Morphs the background color one step.
-        Returns player hp and coins.
         """
         self.sprite_grouping.rifts.update(self.player.pos, self.level, self.data.biomes)
         self.handle_mobs(dt)
@@ -134,11 +133,10 @@ class Game:
         self.handle_mob_hits()
         self.handle_bullet_hits()
         self.handle_background_fade()
-        return self.player.hp, self.player.coins
 
     def handle_player(self, dt: float):
         """
-        Helper function which handles player updates with bullet and vfx sprite placement.
+        Helper function which handles player updates with bullet and vfx sprite group additions.
         """
         for player_sprite in self.sprite_grouping.player_sprite:
             bullet, vfx = player_sprite.update(
