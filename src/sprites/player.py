@@ -100,33 +100,26 @@ class Player(pg.sprite.Sprite):
         game_client_dt: float,
         game_client_data_bullet_img: pg.Surface,
         game_client_data_weaponvfx: list,
-        all_sprites: pg.sprite.LayeredUpdates,
-        bullets,
-        weaponvfx_sprite,
         walls: pg.sprite.Group,
-    ):
+    ) -> (pg.sprite.Sprite, pg.sprite.Sprite):
         pos, direction = self.get_keys(game_cursor_pos)
-        if pos and direction:
-            Bullet(
+        bullet, vfx = None, None
+        if pos:
+            bullet = Bullet(
                 self.settings,
-                (all_sprites, bullets),
                 game_client_data_bullet_img,
                 pos,
                 direction,
                 self.rot,
             )
-            if self.sound_on:  # and random() < 0.75:
-                game_sound.play()
-            Weapon_VFX(
+            vfx = Weapon_VFX(
                 self.settings,
-                (
-                    all_sprites,
-                    weaponvfx_sprite,
-                ),
                 game_client_data_weaponvfx,
                 self.pos
                 + vec(self.settings["player"]["hand_offset"]).rotate(-self.rot),
             )
+            if self.sound_on:  # and random() < 0.75:
+                game_sound.play()
         self.rot = (game_cursor_pos - self.pos).angle_to(vec(1, 0)) % 360
         self.image = pg.transform.rotate(
             game_client_data_player_img,
@@ -140,6 +133,7 @@ class Player(pg.sprite.Sprite):
         self.hit_rect.centery = self.pos.y
         collide_with_walls(self, walls, "y")
         self.rect.center = self.hit_rect.center
+        return bullet, vfx
 
     def add_hp(self, amount: int):
         self.hp += amount

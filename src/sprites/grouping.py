@@ -11,6 +11,7 @@ class Grouping:
         self.all_sprites = pg.sprite.LayeredUpdates()
         self.legs_sprite = pg.sprite.Group()
         self.walls = pg.sprite.Group()
+        self.rifts = pg.sprite.Group()
         self.stops_bullets = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
         self.bullets = pg.sprite.Group()

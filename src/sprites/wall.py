@@ -31,6 +31,7 @@ class Wall(pg.sprite.Sprite):
         if stops_bullets == "Rift":
             self.groups = (
                 sprite_grouping.all_sprites,
+                sprite_grouping.rifts,
                 sprite_grouping.walls,
                 sprite_grouping.stops_bullets,
             )

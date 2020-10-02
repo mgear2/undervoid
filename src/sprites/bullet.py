@@ -19,16 +19,14 @@ class Bullet(pg.sprite.Sprite):
     def __init__(
         self,
         settings: ruamel.yaml.comments.CommentedMap,
-        sprite_groups: (pg.sprite.Group),
         game_client_data_vbullet_img: pg.Surface,
         pos: vec,
         direction: vec,
         rot: float,
     ):
-        self.settings = settings
+        self.settings, self.rot = settings, rot
         self._layer = self.settings["layer"]["bullet"]
-        pg.sprite.Sprite.__init__(self, sprite_groups)
-        self.rot = rot
+        pg.sprite.Sprite.__init__(self)
         self.image = pg.transform.rotate(game_client_data_vbullet_img, self.rot + 90)
         self.rect = self.image.get_rect()
         self.pos = vec(pos)
@@ -37,16 +35,15 @@ class Bullet(pg.sprite.Sprite):
             -self.settings["weapon"]["vbullet"]["spread"],
             self.settings["weapon"]["vbullet"]["spread"],
         )
+        self.lifetime = self.settings["weapon"]["vbullet"]["life"]
         self.vel = (
             direction.rotate(spread) * self.settings["weapon"]["vbullet"]["speed"]
         )
         self.spawn_time = pg.time.get_ticks()
 
-    def update(self, game_client_dt: float):
+    def update(self, game_client_dt: float, bullets, stops_bullets: pg.sprite.Group):
         self.pos += self.vel * game_client_dt
         self.rect.center = self.pos
-        if (
-            pg.time.get_ticks() - self.spawn_time
-            > self.settings["weapon"]["vbullet"]["life"]
-        ):
+        if pg.time.get_ticks() - self.spawn_time > self.lifetime:
             self.kill()
+        pg.sprite.groupcollide(bullets, stops_bullets, True, False)

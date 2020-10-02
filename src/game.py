@@ -115,32 +115,13 @@ class Game:
         Morphs the background color one step.
         Returns player hp and coins.
         """
-        self.sprite_grouping.walls.update(self.player.pos, self.level, self.data.biomes)
-        self.sprite_grouping.stops_bullets.update(
-            self.player.pos, self.level, self.data.biomes
-        )
+        self.sprite_grouping.rifts.update(self.player.pos, self.level, self.data.biomes)
         self.handle_mobs(dt)
-        self.sprite_grouping.bullets.update(dt)
-        pg.sprite.groupcollide(
-            self.sprite_grouping.bullets,
-            self.sprite_grouping.stops_bullets,
-            True,  # destroys sprites from the first group (bullets)
-            False,  # but not the second (stops_bullets) if they collided
+        self.sprite_grouping.bullets.update(
+            dt, self.sprite_grouping.bullets, self.sprite_grouping.stops_bullets
         )
-        self.sprite_grouping.graves.update()
         self.sprite_grouping.items.update()
-        self.sprite_grouping.player_sprite.update(
-            self.cursor.pos,
-            self.data.sounds["wave01"],
-            self.data.player_img[self.character]["magic"],
-            dt,
-            self.data.vbullet_img,
-            self.data.weapon_vfx,
-            self.sprite_grouping.all_sprites,
-            self.sprite_grouping.bullets,
-            self.sprite_grouping.weaponvfx_sprite,
-            self.sprite_grouping.walls,
-        )
+        self.handle_player(dt)
         self.sprite_grouping.cursor_sprite.update()
         self.sprite_grouping.weaponvfx_sprite.update()
         self.sprite_grouping.legs_sprite.update(self.player.vel, self.player.pos)
@@ -154,6 +135,25 @@ class Game:
         self.handle_bullet_hits()
         self.handle_background_fade()
         return self.player.hp, self.player.coins
+
+    def handle_player(self, dt: float):
+        """
+        Helper function which handles player updates with bullet and vfx sprite placement.
+        """
+        for player_sprite in self.sprite_grouping.player_sprite:
+            bullet, vfx = player_sprite.update(
+                self.cursor.pos,
+                self.data.sounds["wave01"],
+                self.data.player_img[self.character]["magic"],
+                dt,
+                self.data.vbullet_img,
+                self.data.weapon_vfx,
+                self.sprite_grouping.walls,
+            )
+            if bullet:
+                self.sprite_grouping.all_sprites.add(bullet, vfx)
+                self.sprite_grouping.bullets.add(bullet)
+                self.sprite_grouping.weaponvfx_sprite.add(vfx)
 
     def handle_mobs(self, dt: float):
         """
