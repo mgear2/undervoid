@@ -97,9 +97,10 @@ class Game:
         self.map_rect = self.map_img.get_rect()
         self.cursor = Cursor(
             self.settings,
-            (self.sprite_grouping.all_sprites, self.sprite_grouping.cursor_sprite),
             self.data.cursor_img,
         )
+        self.sprite_grouping.all_sprites.add(self.cursor)
+        self.sprite_grouping.cursor_sprite.add(self.cursor)
         self.camera = Camera(
             self.settings, self.map.width, self.map.height, self.cursor
         )
@@ -126,7 +127,11 @@ class Game:
         self.sprite_grouping.legs_sprite.update(self.player.vel, self.player.pos)
         for spawner in self.sprite_grouping.spawners:
             self.mob_count += spawner.update(
-                self.player.pos, self.mob_count, self.mob_max
+                self.player.pos,
+                self.mob_count,
+                self.mob_max,
+                self.sprite_grouping.all_sprites,
+                self.sprite_grouping.mobs,
             )
         self.camera.update(self.player)
         self.handle_item_hits()
@@ -169,24 +174,25 @@ class Game:
             )
             if not alive:
                 self.mob_count -= 1
-                Grave(
+                grave = Grave(
                     self.settings,
-                    self.sprite_grouping.all_sprites,
-                    self.sprite_grouping.graves,
                     self.data.mob_img,
                     mob.kind,
                     mob.pos,
                     mob.rot,
                 )
+                self.sprite_grouping.all_sprites.add(grave)
+                self.sprite_grouping.graves.add(grave)
                 if dropped_item:
-                    Item(
+                    item = Item(
                         self.settings,
-                        (self.sprite_grouping.all_sprites, self.sprite_grouping.items),
                         self.data.item_img,
                         mob.pos,
                         dropped_item[0],
                         dropped_item[1],
                     )
+                    self.sprite_grouping.all_sprites.add(item)
+                    self.sprite_grouping.items.add(item)
                 mob.kill()
 
     def handle_item_hits(self):

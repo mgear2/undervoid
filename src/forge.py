@@ -147,23 +147,24 @@ class Forge:
                         vec(x, y + y_offset) * self.settings["gen"]["tilesize"],
                     )
                 if tile == "M":
-                    Spawner(
+                    spawner = Spawner(
                         self.settings,
-                        self.sprite_grouping,
                         self.level_data,
                         self.client_data.mob_img,
                         x,
                         y + y_offset,
                     )
+                    self.sprite_grouping.spawners.add(spawner)
                 if tile == "p":
-                    Item(
+                    item = Item(
                         self.settings,
-                        (self.sprite_grouping.all_sprites, self.sprite_grouping.items),
                         self.client_data.item_img,
                         vec(x, y + y_offset) * self.settings["gen"]["tilesize"],
                         "redpotion",
                         "hp",
                     )
+                    self.sprite_grouping.all_sprites.add(item)
+                    self.sprite_grouping.items.add(item)
                 if tile == "P" and i == self.max_size - 1:
                     self.player.place(col, row + row_offset)
 
